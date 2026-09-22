@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-plLZ6dL4Ey7aR46s6WP4D7qYpnvt6G0/C2C58/41YiY=' 'sha256-hpvDL/VlYMOWCfqbS+14hYULlG/bSZnJae7AlPbmWFg='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-plLZ6dL4Ey7aR46s6WP4D7qYpnvt6G0/C2C58/41YiY=' 'sha256-Uz6YT8L1WELdsHbkCGgnFT0t0MH/hXQVrdxBK436MwQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
@@ -2304,7 +2304,9 @@ function startView() {
         <button class="btn ink" type="submit">Приєднатися</button>
       </form>
     </div>
-    <div class="center small"><button class="btn sm ghost" data-act="logout">Вийти з акаунта</button></div>
+    <div class="center small actions" style="justify-content:center">
+      ${S.boot && S.boot.is_admin ? '<a class="btn sm" href="#/admin">Адмін-панель сервісу</a>' : ''}
+      <button class="btn sm ghost" data-act="logout">Вийти з акаунта</button></div>
   </div></div>`;
 }
 
@@ -2477,8 +2479,9 @@ function screen() {
   if (mode === 'auth') return r.name === 'signup' ? signupView() : r.name === 'forgot' ? forgotView() : loginView();
   // mode === 'app'
   if (!S.boot) return `<div class="auth"><div class="auth-card"><div class="loading">Завантаження…</div>${navigator.onLine ? '' : '<div class="banner warn">Немає інтернету. Перший запуск на цьому пристрої потребує з’єднання.</div>'}</div></div>`;
-  if (!S.boot.shops.length) return startView();
+  // адмін сервісу може не мати жодного магазину — панель має відкриватися й так
   if (r.name === 'admin' && S.boot.is_admin) return shell('admin', adminView(), 'Адмін-панель');
+  if (!S.boot.shops.length) return startView();
   if (r.name === 'overview') return shell('overview', overviewView(), 'Усі магазини');
   if (!S.shop) return shell('overview', overviewView(), 'Усі магазини');
   view.name = r.name; view.clientId = r.name === 'client' ? r.arg : null;
