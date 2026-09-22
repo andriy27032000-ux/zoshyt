@@ -1,6 +1,6 @@
 // Service worker: дає програмі працювати без інтернету.
 // Стратегія: спершу мережа (щоб оновлення доходили самі), якщо мережі немає або вона повільна — копія з пристрою.
-const CACHE = 'zoshyt-v1';
+const CACHE = 'zoshyt-v2';
 const FILES = ['./', 'index.html', 'icon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'maskable-512.png', 'apple-touch-icon.png', 'terms.html', 'privacy.html'];
 const NET_TIMEOUT = 3500;
 
