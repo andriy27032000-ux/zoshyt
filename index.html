@@ -1,0 +1,2647 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Зошит боржників</title>
+<meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
+<meta name="theme-color" content="#2140a8">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-plLZ6dL4Ey7aR46s6WP4D7qYpnvt6G0/C2C58/41YiY=' 'sha256-hpvDL/VlYMOWCfqbS+14hYULlG/bSZnJae7AlPbmWFg='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Зошит">
+<style>
+/* Зошит боржників — стилі. Мотив: зошит у клітинку, чорнильна ручка, червоне поле. */
+:root {
+  --paper: #f5f7fb; --grid: #e3e8f2; --surface: #ffffff; --surface-2: #eef2f9;
+  --text: #18203a; --muted: #5a6582; --line: #d5dcea;
+  --ink: #2140a8; --ink-soft: #e4eafc; --on-ink: #ffffff;
+  --bad: #c2362b; --bad-soft: #fbe7e4; --ok: #1c7a4a; --ok-soft: #e1f3e9;
+  --warn: #8f5b00; --warn-soft: #fdf0d3; --info-soft: #e7eefc; --margin: #e79a92;
+  --on-solid: #ffffff;
+  --shadow: 0 1px 2px rgba(24,32,58,.06), 0 6px 20px rgba(24,32,58,.06);
+  --r: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #10131b; --grid: #171c28; --surface: #181d28; --surface-2: #212838;
+    --text: #e7eaf3; --muted: #9aa4bc; --line: #2d3549;
+    --ink: #8ea5ff; --ink-soft: #232c4a; --on-ink: #0e1320;
+    --bad: #ff8478; --bad-soft: #3a1d1c; --ok: #62d49c; --ok-soft: #15301f;
+    --warn: #f2bd55; --warn-soft: #352a12; --info-soft: #1c2640; --margin: #7a3a36;
+    --on-solid: #10131b;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--text);
+  font: 15px/1.45 var(--font);
+  font-variant-numeric: tabular-nums;
+  padding: 0 16px calc(90px + env(safe-area-inset-bottom, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+body.modal-open { overflow: hidden; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--ink); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-size: 24px; } h2 { font-size: 18px; }
+h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 650; }
+p { margin: 0; }
+.wrap { max-width: 1000px; margin: 0 auto; }
+.muted { color: var(--muted); } .small { font-size: 13px; } .center { text-align: center; }
+.txt-bad { color: var(--bad); } .txt-ok { color: var(--ok); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.stack { display: grid; gap: 12px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+
+/* ---------- верхня панель ---------- */
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); margin: 0 -16px; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 0; border-bottom: 3px double var(--margin); }
+.top-row { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 10px; padding-bottom: 8px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); flex: none; }
+.brand-name { font-weight: 800; font-size: 19px; letter-spacing: -.01em; }
+.shop-switch { min-width: 0; flex: 1 1 auto; }
+.shop-switch select { width: 100%; max-width: 320px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 7px 10px; font-weight: 600; min-height: 38px; }
+.shop-name { font-weight: 650; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-right { display: flex; align-items: center; gap: 6px; margin-left: auto; flex: none; }
+.sync { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 10px; font-size: 12.5px; color: var(--muted); min-height: 32px; white-space: nowrap; }
+.sync.ok { color: var(--ok); } .sync.off { color: var(--warn); background: var(--warn-soft); border-color: transparent; } .sync.bad { color: var(--bad); background: var(--bad-soft); border-color: transparent; }
+.tabs { display: flex; gap: 4px; max-width: 1000px; margin: 0 auto; }
+.tab { padding: 8px 14px; border-radius: 8px 8px 0 0; color: var(--muted); font-weight: 550; text-decoration: none; }
+.tab[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+@media (max-width: 720px) {
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; max-width: none; background: var(--surface); border-top: 1px solid var(--line); padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)); justify-content: space-around; z-index: 6; }
+  .tab { border-radius: 10px; flex: 1; text-align: center; font-size: 13px; padding: 11px 2px; }
+  .tab[aria-current="page"] { background: var(--ink-soft); box-shadow: none; }
+  .brand-name { display: none; }
+  .sync span { max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* ---------- кнопки ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-weight: 550; min-height: 44px; text-decoration: none; color: var(--text); }
+.btn:hover { border-color: var(--ink); }
+.btn.sm { min-height: 34px; padding: 5px 11px; font-size: 13px; border-radius: 8px; }
+.btn.big { min-height: 50px; font-size: 16px; }
+.btn.ink { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.btn.bad { background: var(--bad); border-color: var(--bad); color: var(--on-solid); }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: var(--on-solid); }
+.btn.bad-outline { color: var(--bad); border-color: var(--bad); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn.ghost:hover { color: var(--text); }
+.btn[disabled] { opacity: .5; cursor: progress; }
+
+/* ---------- блоки ---------- */
+main { padding-top: 16px; display: grid; gap: 14px; }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); min-width: 0; }
+.pad { padding: 16px; } .pb0 { padding-bottom: 6px; } .pt0 { padding-top: 0; }
+.banner { border-radius: 10px; padding: 10px 14px; font-size: 13.5px; background: var(--info-soft); }
+.banner.warn { background: var(--warn-soft); color: var(--warn); }
+.banner.bad { background: var(--bad-soft); color: var(--bad); }
+.banner.ok { background: var(--ok-soft); color: var(--ok); }
+.banner.info { background: var(--info-soft); color: var(--text); }
+.banner a { color: inherit; font-weight: 650; }
+.note-box { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin-top: 8px; white-space: pre-wrap; }
+
+.summary { display: grid; gap: 1px; background: var(--line); border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); }
+.summary.three { grid-template-columns: repeat(3, 1fr); }
+.summary.four { grid-template-columns: repeat(4, 1fr); }
+.summary > div { background: var(--surface); padding: 12px 16px; min-width: 0; }
+.summary .k { font-size: 12px; color: var(--muted); }
+.summary .v { font-size: 22px; font-weight: 750; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v.bad { color: var(--bad); } .v.ok { color: var(--ok); } .v.warn { color: var(--warn); }
+@media (max-width: 720px) {
+  .summary > div { padding: 10px 10px; }
+  .summary .v { font-size: 18px; }
+  .summary.four { grid-template-columns: repeat(2, 1fr); }
+  .summary.three { grid-template-columns: repeat(2, 1fr); }
+  .summary.three > div:first-child { grid-column: 1 / -1; }
+  .summary.three > div:first-child .v { font-size: 24px; }
+}
+
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar.between { justify-content: space-between; }
+.search { flex: 1 1 220px; min-width: 0; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; min-height: 44px; font-size: 16px; }
+.seg { display: flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: none; padding: 7px 10px; border-radius: 8px; font-size: 13px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+label.inline { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+label.inline select { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 8px; min-height: 36px; }
+
+/* ---------- список (рядки зошита з полем перед сумою) ---------- */
+.rows { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 10rem; border-top: 1px solid var(--line); cursor: pointer; }
+@media (max-width: 480px) { .row { grid-template-columns: minmax(0, 1fr) 8.9rem; } .row .sum { padding: 12px 12px; } .row .amt { font-size: 16px; } }
+.rows > .row:first-child { border-top: 0; }
+.row:hover { background: var(--surface-2); }
+.row .who { padding: 12px 14px 12px 16px; min-width: 0; }
+.row .name { font-weight: 650; overflow-wrap: anywhere; }
+.row .meta { font-size: 12.5px; color: var(--muted); display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+.row .sum { padding: 12px 16px; border-left: 2px solid var(--margin); text-align: right; display: flex; flex-direction: column; justify-content: center; }
+.amt { font-weight: 750; font-size: 17px; white-space: nowrap; }
+.amt.sm { font-size: 15px; }
+.amt.bad { color: var(--bad); } .amt.ok { color: var(--ok); } .amt.zero { color: var(--muted); font-weight: 500; }
+.meter { height: 4px; border-radius: 2px; background: var(--surface-2); margin-top: 6px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--ink); }
+.meter i.over { background: var(--bad); }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 650; border-radius: 999px; padding: 2px 8px; white-space: nowrap; background: var(--surface-2); color: var(--muted); vertical-align: middle; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.ok { background: var(--ok-soft); color: var(--ok); }
+.chip.ink { background: var(--ink-soft); color: var(--ink); }
+.empty { padding: 28px 16px; text-align: center; color: var(--muted); }
+
+/* ---------- картка клієнта ---------- */
+.client-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: start; }
+.client-name { overflow-wrap: anywhere; }
+.balance-box { text-align: right; display: grid; gap: 3px; min-width: 180px; }
+.big { font-size: 34px; font-weight: 800; line-height: 1.1; }
+.big.bad { color: var(--bad); } .big.ok { color: var(--ok); } .big.zero { color: var(--muted); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+.facts a { display: inline-flex; align-items: center; gap: 4px; }
+.sheet .actions { margin-top: 16px; }
+@media (max-width: 560px) { .client-head { grid-template-columns: 1fr; } .balance-box { text-align: left; } .sheet .actions .btn { flex: 1 1 45%; } }
+.hist { list-style: none; margin: 0; padding: 0; }
+.hist li { display: grid; grid-template-columns: 82px minmax(0, 1fr) auto; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--line); align-items: center; }
+.hist .d { font-size: 12.5px; color: var(--muted); }
+.hist .t { min-width: 0; overflow-wrap: anywhere; }
+.hist .t b { font-weight: 650; }
+.hist .by { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.hist .x { text-align: right; }
+.hist li.cancel .amt, .hist li.cancel .t > b { text-decoration: line-through; opacity: .55; }
+.hist li.failed { background: var(--bad-soft); }
+.hist.log li { grid-template-columns: 82px minmax(0, 1fr); }
+.hist li.click, tr.click { cursor: pointer; }
+.hist li.click:hover, tr.click:hover { background: var(--surface-2); }
+@media (max-width: 480px) { .hist li { grid-template-columns: minmax(0, 1fr) auto; } .hist .d { grid-column: 1 / -1; } .hist.log li { grid-template-columns: 1fr; } }
+
+/* ---------- таблиці, звіти ---------- */
+.tbl-wrap { overflow-x: auto; margin: 8px -16px -16px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 16px; border-top: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; color: var(--muted); font-weight: 650; border-top: 0; }
+td.n, th.n { text-align: right; }
+.sheet > .tbl-wrap { margin: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.buckets { margin-top: 8px; display: grid; gap: 4px; }
+.bucket { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+.bar { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; }
+.t-ok { background: var(--ok); } .t-ink { background: var(--ink); } .t-warn { background: var(--warn); } .t-bad { background: var(--bad); }
+dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; font-size: 14px; }
+dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; font-weight: 550; }
+@media (max-width: 520px) { dl.kv { grid-template-columns: 1fr; } dl.kv dd { margin-bottom: 6px; } }
+ul.plain { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 6px; }
+ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; letter-spacing: .08em; }
+
+/* ---------- вхід / перший запуск ---------- */
+.auth { min-height: 88vh; display: grid; place-items: center; padding-block: 28px; }
+.auth-card { width: 100%; max-width: 420px; display: grid; gap: 16px; }
+.auth-card.wide { max-width: 820px; }
+.auth-card > form, .auth-card > .banner { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); }
+.auth-brand { display: flex; gap: 14px; align-items: center; }
+.auth-brand h1 { color: var(--ink); font-size: 26px; font-weight: 800; }
+.legal { font-size: 12px; }
+.loading { color: var(--ink); font-size: 18px; font-weight: 600; }
+.choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.h-start { color: var(--ink); font-size: 28px; }
+.code-in { text-transform: uppercase; letter-spacing: .15em; font-family: ui-monospace, Consolas, monospace; font-size: 20px !important; }
+.invite-code { font-family: ui-monospace, Consolas, monospace; font-size: 38px; font-weight: 800; letter-spacing: .18em; text-align: center; color: var(--ink); background: var(--ink-soft); border-radius: 12px; padding: 14px; }
+
+/* ---------- вікна ---------- */
+.overlay.opaque { background: var(--paper); }
+.overlay { position: fixed; inset: 0; background: rgba(10,14,25,.5); z-index: 20; display: flex; align-items: flex-end; justify-content: center; padding: 12px; }
+@media (min-width: 640px) { .overlay { align-items: center; } }
+.modal { background: var(--surface); border-radius: 16px; width: 100%; max-width: 480px; max-height: calc(100% - 12px); overflow: auto; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3); margin-bottom: env(safe-area-inset-bottom, 0px); }
+.modal.wide { max-width: 720px; }
+.modal h2 { font-size: 20px; }
+label.f { display: grid; gap: 5px; font-size: 13px; color: var(--muted); }
+label.f input, label.f select, label.f textarea, .modal textarea { border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 10px 12px; font-size: 16px; min-height: 46px; width: 100%; color: var(--text); }
+label.f input[readonly] { opacity: .7; }
+.money-in { font-size: 30px !important; font-weight: 750; }
+.quick { display: flex; gap: 6px; flex-wrap: wrap; }
+.quick button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; min-height: 34px; }
+.m-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.m-actions.start { justify-content: flex-start; margin-top: 6px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+.check input { width: 20px; height: 20px; margin-top: 1px; flex: none; }
+.err { color: var(--bad); font-size: 13.5px; min-height: 0; }
+.err:empty { display: none; }
+details summary { cursor: pointer; padding: 6px 0; }
+.notices li { border-top: 1px solid var(--line); padding-top: 6px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--text); color: var(--paper); padding: 10px 16px; border-radius: 10px; z-index: 30; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.toast.bad { background: var(--bad); color: var(--on-solid); }
+.update-bar { position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 40; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 12px; padding: 8px 8px 8px 14px; display: flex; gap: 10px; align-items: center; font-size: 14px; max-width: calc(100% - 24px); }
+.q-item { border-top: 1px solid var(--line); padding-top: 8px; align-items: flex-start; }
+
+</style>
+<script>window.ZOSHYT_CONFIG = {
+  "supabaseUrl": "https://bafzvncwbfjqgbuchdkh.supabase.co",
+  "supabaseAnonKey": "sb_publishable_YCt2G_UE6KCG9piN0oNtRg_H1NdWShL",
+  "priceText": "Ціна: 190 грн на місяць за магазин (необмежено продавців і клієнтів).",
+  "supportPayInfo": "переказ на картку 0000 0000 0000 0000 (ФОП Прізвище І.П.)",
+  "supportContact": "Telegram @your_support або +380 00 000 00 00"
+};</script>
+
+</head>
+<body>
+<div id="root"><div class="auth"><div class="loading">Відкриваю зошит…</div></div></div>
+<div id="modal" class="overlay" hidden></div>
+<div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+<div id="update-bar" class="update-bar" hidden><span>Доступна нова версія програми.</span><button class="btn sm ink" type="button">Оновити</button></div>
+<noscript><p style="padding:16px">Для роботи програми потрібен JavaScript.</p></noscript>
+<script>
+(function () {
+'use strict';
+const M = {};
+M.util = (function () {
+
+// Дрібні допоміжні функції
+const DAY = 86400000;
+
+const $ = (s, root = document) => root.querySelector(s);
+
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ESC[c]);
+
+const fmtNum = (k) => (k / 100).toLocaleString('uk-UA', { minimumFractionDigits: k % 100 ? 2 : 0, maximumFractionDigits: 2 });
+const money = (k) => fmtNum(k) + ' грн';
+const moneyInput = (k) => (k / 100).toFixed(k % 100 ? 2 : 0).replace('.', ',');
+/** "1 250,50" → 125050 копійок; NaN якщо не число */
+function parseMoney(s) {
+  const t = String(s ?? '').replace(/[\s ]/g, '').replace(',', '.');
+  if (!/^\d+(\.\d{0,2})?$/.test(t)) return NaN;
+  return Math.round(parseFloat(t) * 100);
+}
+
+const pad2 = (n) => String(n).padStart(2, '0');
+const fmtDT = (t) => { const d = new Date(t); return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+const fmtD = (t) => { const d = new Date(t); return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`; };
+const fmtTime = (t) => { const d = new Date(t); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+const isoDate = (t = Date.now()) => { const d = new Date(t); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+const startOfDay = (t) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const ts = (v) => (v ? new Date(v).getTime() : 0);
+
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
+const days = (n) => `${n} ${plural(n, 'день', 'дні', 'днів')}`;
+
+function uuid() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+  const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
+function debounce(fn, ms) {
+  let t;
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+const digits = (s) => String(s || '').replace(/\D/g, '');
+const cleanPhone = (s) => String(s || '').replace(/[^\d+]/g, '');
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function lsSet(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* приватний режим */ } }
+
+/** Завантажити файл, згенерований у браузері */
+function downloadFile(name, content, type) {
+  const blob = content instanceof Blob ? content : new Blob([content], { type });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch { /* */ }
+    ta.remove(); return ok;
+  }
+}
+
+return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText };
+})();
+
+M.idb = (function () {
+
+// Мінімальна обгортка над IndexedDB — локальна копія даних для роботи без інтернету.
+const DB_NAME = 'zoshyt';
+const VERSION = 1;
+let dbp = null;
+
+function open() {
+  if (dbp) return dbp;
+  dbp = new Promise((resolve, reject) => {
+    const r = indexedDB.open(DB_NAME, VERSION);
+    r.onupgradeneeded = () => {
+      const db = r.result;
+      if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+      if (!db.objectStoreNames.contains('clients')) db.createObjectStore('clients', { keyPath: 'id' }).createIndex('shop', 'shop_id');
+      if (!db.objectStoreNames.contains('ops')) db.createObjectStore('ops', { keyPath: 'id' }).createIndex('shop', 'shop_id');
+      if (!db.objectStoreNames.contains('outbox')) db.createObjectStore('outbox', { keyPath: 'seq', autoIncrement: true });
+    };
+    r.onsuccess = () => {
+      const db = r.result;
+      db.onversionchange = () => { db.close(); dbp = null; };
+      resolve(db);
+    };
+    r.onerror = () => reject(r.error);
+    r.onblocked = () => reject(new Error('База зайнята іншою вкладкою. Закрийте інші вкладки з програмою.'));
+  });
+  return dbp;
+}
+
+const wrap = (req) => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
+const done = (tx) => new Promise((res, rej) => { tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error || new Error('abort')); });
+
+async function get(store, key) {
+  const db = await open();
+  return wrap(db.transaction(store).objectStore(store).get(key));
+}
+async function put(store, value, key) {
+  const db = await open();
+  const tx = db.transaction(store, 'readwrite');
+  const r = key === undefined ? tx.objectStore(store).put(value) : tx.objectStore(store).put(value, key);
+  const k = await wrap(r); await done(tx); return k;
+}
+async function putMany(store, values) {
+  if (!values.length) return;
+  const db = await open();
+  const tx = db.transaction(store, 'readwrite');
+  const os = tx.objectStore(store);
+  for (const v of values) os.put(v);
+  await done(tx);
+}
+async function del(store, key) {
+  const db = await open();
+  const tx = db.transaction(store, 'readwrite');
+  tx.objectStore(store).delete(key);
+  await done(tx);
+}
+async function all(store) {
+  const db = await open();
+  return wrap(db.transaction(store).objectStore(store).getAll());
+}
+async function byShop(store, shopId) {
+  const db = await open();
+  return wrap(db.transaction(store).objectStore(store).index('shop').getAll(shopId));
+}
+async function clearAll() {
+  const db = await open();
+  const names = ['kv', 'clients', 'ops', 'outbox'];
+  const tx = db.transaction(names, 'readwrite');
+  names.forEach(n => tx.objectStore(n).clear());
+  await done(tx);
+}
+
+const kv = {
+  get: (k) => get('kv', k),
+  set: (k, v) => put('kv', v, k),
+  del: (k) => del('kv', k),
+};
+
+/** Попросити браузер не видаляти локальні дані при нестачі місця */
+async function persist() {
+  try { if (navigator.storage && navigator.storage.persist) return await navigator.storage.persist(); } catch { /* */ }
+  return false;
+}
+
+return { get, put, putMany, del, all, byShop, clearAll, kv, persist };
+})();
+
+M.api = (function () {
+const { lsGet, lsSet } = M.util;
+// Зв'язок із Supabase: вхід/реєстрація (Auth) і виклики функцій бази (RPC).
+// Без сторонніх бібліотек — лише fetch.
+
+const CFG = window.ZOSHYT_CONFIG || {};
+const BASE = String(CFG.supabaseUrl || '').replace(/\/+$/, '');
+const KEY = CFG.supabaseAnonKey || '';
+const SESSION_KEY = 'zoshyt.session';
+const TIMEOUT = 20000;
+
+const configured = () => !!(BASE && KEY && !BASE.includes('YOUR-PROJECT'));
+
+/** Помилка з кодом, який розуміє застосунок */
+class ApiError extends Error {
+  constructor(message, { code = 'error', status = 0, network = false, auth = false } = {}) {
+    super(message);
+    this.code = code; this.status = status; this.network = network; this.auth = auth;
+  }
+}
+
+// ---------- сесія ----------
+function getSession() {
+  try { return JSON.parse(lsGet(SESSION_KEY) || 'null'); } catch { return null; }
+}
+function saveSession(s) {
+  const expires_at = s.expires_at || Math.floor(Date.now() / 1000) + (s.expires_in || 3600);
+  const v = { access_token: s.access_token, refresh_token: s.refresh_token, expires_at, user: s.user };
+  lsSet(SESSION_KEY, JSON.stringify(v));
+  return v;
+}
+function clearSession() { lsSet(SESSION_KEY, null); }
+
+const listeners = new Set();
+/** Подія: сесія стала недійсною (напр. змінили пароль на іншому пристрої) */
+const onAuthExpired = (fn) => listeners.add(fn);
+const emitExpired = () => listeners.forEach(fn => { try { fn(); } catch { /* */ } });
+
+// ---------- низькорівневий запит ----------
+async function request(path, { method = 'POST', body, token } = {}) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT);
+  let res;
+  try {
+    res = await fetch(BASE + path, {
+      method,
+      headers: token ? { apikey: KEY, 'content-type': 'application/json', authorization: 'Bearer ' + token } : { apikey: KEY, 'content-type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: ctrl.signal,
+      cache: 'no-store',
+    });
+  } catch (e) {
+    throw new ApiError('Немає зв’язку з сервером. Перевірте інтернет.', { code: 'network', network: true });
+  } finally { clearTimeout(timer); }
+  if (res.status === 204) return null;
+  const text = await res.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = { message: text }; }
+  if (!res.ok) {
+    if (res.status >= 500 || res.status === 429) {
+      throw new ApiError(res.status === 429 ? 'Забагато запитів. Спробуйте за хвилину.' : 'Сервер тимчасово недоступний.', { code: res.status === 429 ? 'rate_limited' : 'server', status: res.status, network: true });
+    }
+    const code = (data && (data.hint || data.error_code || data.error || data.code)) || 'error';
+    const msg = (data && (data.hint ? data.message : (data.msg || data.error_description || data.message))) || 'Помилка запиту.';
+    throw new ApiError(msg, { code: String(code), status: res.status, auth: res.status === 401 });
+  }
+  return data;
+}
+
+// ---------- Auth ----------
+const AUTH_ERRORS = {
+  invalid_credentials: 'Невірний email або пароль.',
+  invalid_grant: 'Невірний email або пароль.',
+  email_not_confirmed: 'Email ще не підтверджено. Відкрийте лист від нас і натисніть посилання.',
+  user_already_exists: 'Такий email уже зареєстровано. Увійдіть або відновіть пароль.',
+  weak_password: 'Пароль закороткий — мінімум 6 символів.',
+  validation_failed: 'Перевірте правильність email.',
+  over_email_send_rate_limit: 'Забагато листів за короткий час. Спробуйте пізніше.',
+  over_request_rate_limit: 'Забагато спроб. Спробуйте за кілька хвилин.',
+  same_password: 'Новий пароль має відрізнятися від старого.',
+};
+function authErr(e) {
+  if (e instanceof ApiError && AUTH_ERRORS[e.code]) e.message = AUTH_ERRORS[e.code];
+  return e;
+}
+
+async function signUp(email, password, name) {
+  try {
+    const r = await request('/auth/v1/signup', { body: { email: email.trim(), password, data: { name } } });
+    if (r && r.access_token) return { session: saveSession(r) };
+    return { needsConfirm: true };   // у Supabase увімкнено підтвердження email
+  } catch (e) { throw authErr(e); }
+}
+
+async function signIn(email, password) {
+  try {
+    const r = await request('/auth/v1/token?grant_type=password', { body: { email: email.trim(), password } });
+    return saveSession(r);
+  } catch (e) { throw authErr(e); }
+}
+
+async function signOut() {
+  const s = getSession();
+  clearSession();
+  if (s) { try { await request('/auth/v1/logout', { token: s.access_token }); } catch { /* офлайн — не страшно */ } }
+}
+
+async function recoverPassword(email) {
+  const back = location.origin + location.pathname;
+  try { await request('/auth/v1/recover?redirect_to=' + encodeURIComponent(back), { body: { email: email.trim() } }); }
+  catch (e) { throw authErr(e); }
+}
+
+/** Посилання з листа "відновити пароль" приходить з #access_token=...&type=recovery */
+function takeRecoveryFromUrl() {
+  const h = location.hash.replace(/^#/, '');
+  if (!h.includes('access_token=')) return false;
+  const p = new URLSearchParams(h);
+  if (p.get('error_description')) return { error: p.get('error_description') };
+  saveSession({ access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: +p.get('expires_in') || 3600, user: null });
+  history.replaceState(null, '', location.pathname + location.search);
+  return { type: p.get('type') || 'magiclink' };
+}
+
+async function updatePassword(password) {
+  const token = await accessToken();
+  try { return await request('/auth/v1/user', { method: 'PUT', body: { password }, token }); }
+  catch (e) { throw authErr(e); }
+}
+
+async function fetchUser() {
+  const token = await accessToken();
+  const u = await request('/auth/v1/user', { method: 'GET', token });
+  const s = getSession();
+  if (s) { s.user = u; lsSet(SESSION_KEY, JSON.stringify(s)); }
+  return u;
+}
+
+let refreshing = null;
+async function doRefresh() {
+  const run = async () => {
+    const s = getSession();            // читаємо заново: інша вкладка могла вже оновити
+    if (!s) throw new ApiError('Потрібно увійти.', { code: 'not_authenticated', auth: true });
+    if (s.expires_at - Date.now() / 1000 > 60) return s;
+    try {
+      const r = await request('/auth/v1/token?grant_type=refresh_token', { body: { refresh_token: s.refresh_token } });
+      return saveSession({ ...r, user: r.user || s.user });
+    } catch (e) {
+      if (e.network) throw e;
+      // сервер відмовив в оновленні сесії (400/401) — треба увійти знову; черга записів зберігається
+      clearSession(); emitExpired();
+      throw new ApiError('Сесія закінчилась — увійдіть знову.', { code: 'not_authenticated', auth: true, status: e.status });
+    }
+  };
+  if (navigator.locks && navigator.locks.request) return navigator.locks.request('zoshyt-auth-refresh', run);
+  return run();
+}
+
+/** Дійсний токен доступу (оновлює, якщо скоро спливає). Офлайн повертає старий. */
+async function accessToken() {
+  const s = getSession();
+  if (!s) throw new ApiError('Потрібно увійти.', { code: 'not_authenticated', auth: true });
+  if (s.expires_at - Date.now() / 1000 > 60) return s.access_token;
+  if (!refreshing) refreshing = doRefresh().finally(() => { refreshing = null; });
+  try { return (await refreshing).access_token; }
+  catch (e) { if (e.network) return s.access_token; throw e; }
+}
+
+// ---------- RPC ----------
+async function rpc(fn, args = {}) {
+  let token = await accessToken();
+  try {
+    return await request('/rest/v1/rpc/' + fn, { body: args, token });
+  } catch (e) {
+    if (e.status === 401 && !e.network) {
+      // токен прострочено — одна спроба з оновленим
+      const s = getSession(); if (s) { s.expires_at = 0; lsSet(SESSION_KEY, JSON.stringify(s)); }
+      token = await accessToken();
+      return await request('/rest/v1/rpc/' + fn, { body: args, token });
+    }
+    throw e;
+  }
+}
+
+return { configured, ApiError, getSession, clearSession, onAuthExpired, signUp, signIn, signOut, recoverPassword, takeRecoveryFromUrl, updatePassword, fetchUser, accessToken, rpc };
+})();
+
+M.ui = (function () {
+const { $, esc } = M.util;
+// Спільні елементи інтерфейсу: вікна, сповіщення, підтвердження, реєстр дій
+
+const actions = {};   // data-act="назва" → функція(елемент, подія)
+const forms = {};     // <form data-form="назва"> → функція(форма)
+const register = (acts = {}, frms = {}) => { Object.assign(actions, acts); Object.assign(forms, frms); };
+
+let modalClose = null;
+function openModal(html, { onClose, wide = false, opaque = false } = {}) {
+  const m = $('#modal');
+  m.classList.toggle('opaque', opaque);
+  m.innerHTML = `<div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true">${html}</div>`;
+  m.hidden = false;
+  document.body.classList.add('modal-open');
+  modalClose = onClose || null;
+  const f = m.querySelector('[autofocus]') || m.querySelector('input,select,textarea,button');
+  if (f) f.focus();   // одразу, в межах дотику — інакше на iPhone не з’являється клавіатура
+}
+function closeModal() {
+  const m = $('#modal');
+  if (m.hidden) return;
+  m.hidden = true; m.innerHTML = '';
+  document.body.classList.remove('modal-open');
+  const cb = modalClose; modalClose = null;
+  if (cb) cb();
+}
+const modalOpen = () => !$('#modal').hidden;
+
+function toast(msg, tone = '') {
+  const t = $('#toast');
+  t.textContent = msg; t.className = 'toast ' + tone; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+/** Показати помилку у формі (елемент .err усередині) */
+function formError(form, msg) {
+  const e = form.querySelector('.err');
+  if (e) { e.textContent = msg || ''; if (msg) e.scrollIntoView({ block: 'nearest' }); }
+  else if (msg) toast(msg, 'bad');
+}
+
+/** Кнопка "зайнята" на час асинхронної дії */
+async function busy(form, fn) {
+  const btn = form.querySelector('[type=submit]');
+  if (btn) { if (btn.disabled) return; btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = 'Зачекайте…'; }
+  try { return await fn(); }
+  finally { if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = btn.dataset.label; } }
+}
+
+function confirmBox({ title, text, ok = 'Так', cancel = 'Скасувати', danger = false }) {
+  return new Promise(resolve => {
+    openModal(`<div class="stack">
+      <h2>${esc(title)}</h2>
+      ${text ? `<p class="muted">${text}</p>` : ''}
+      <div class="m-actions">
+        <button type="button" class="btn ghost" data-act="confirm-no">${esc(cancel)}</button>
+        <button type="button" class="btn ${danger ? 'bad' : 'ink'}" data-act="confirm-yes">${esc(ok)}</button>
+      </div></div>`, { onClose: () => resolve(false) });
+    actions['confirm-yes'] = () => { modalClose = null; closeModal(); resolve(true); };
+    actions['confirm-no'] = () => { closeModal(); };
+  });
+}
+
+const icon = {
+  cloud: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M6.5 19a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.6 8.5 5 5 0 0 1 17.5 19h-11Z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m5 12 5 5L20 7"/></svg>',
+  off: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M2 8.8a15 15 0 0 1 4.3-2.6M22 8.8A15 15 0 0 0 12 5c-.9 0-1.8.1-2.6.2M5 12.5a10 10 0 0 1 3-1.9m8.4.6A10 10 0 0 1 19 12.5M8.5 16a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>',
+  sync: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" class="spin"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1l-2.2 2.2Z"/></svg>',
+};
+
+return { actions, forms, register, openModal, closeModal, modalOpen, toast, formError, busy, confirmBox, icon };
+})();
+
+M.router = (function () {
+
+// Маршрути через #адресу: #/list, #/client/<id>, #/reports ...
+const view = { name: 'list', clientId: null, rerender: () => {} };
+
+function parse() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const [name, arg] = h.split('/');
+  return { name: name || 'list', arg: arg ? decodeURIComponent(arg) : null };
+}
+
+function go(hash) {
+  if (location.hash === hash) view.rerender();
+  else location.hash = hash;
+}
+
+return { view, parse, go };
+})();
+
+M.store = (function () {
+const api = M.api;
+const idb = M.idb;
+const { uuid } = M.util;
+// Дані застосунку: локальна копія (IndexedDB) + черга відправки + синхронізація з сервером.
+// Усі записи спершу зберігаються на пристрої, тому програма працює і без інтернету.
+
+
+
+const S = {
+  user: null,          // {id, email}
+  boot: null,          // {is_admin, shops: [...]} — останні відомі з сервера
+  shopId: null,
+  shop: null,          // інформація про поточний магазин (роль, підписка, налаштування)
+  members: [],
+  clients: new Map(),
+  ops: new Map(),
+  outbox: 0,           // скільки дій чекає відправки
+  sync: { state: 'idle', lastOk: 0, error: null },
+  notices: [],         // повідомлення про дії, які сервер не прийняв
+  authExpired: false,
+  version: 0,
+};
+
+// ---------- підписка на зміни ----------
+const subs = new Set();
+const subscribe = (fn) => { subs.add(fn); return () => subs.delete(fn); };
+let scheduled = false;
+function changed() {
+  S.version++;
+  if (scheduled) return;
+  scheduled = true;
+  queueMicrotask(() => { scheduled = false; subs.forEach(f => { try { f(); } catch (e) { console.error(e); } }); });
+}
+
+const isOwner = () => S.shop && S.shop.role === 'owner';
+const writable = () => !S.shop || S.shop.writable !== false;
+const memberName = (id) => { const m = S.members.find(x => x.user_id === id); return m ? m.display_name : (id === S.user?.id ? 'Я' : 'Працівник'); };
+const me = () => S.members.find(m => m.user_id === S.user?.id);
+
+// ---------- старт / вихід ----------
+/** Чи є на пристрої невідправлені записи ІНШОГО користувача (напр. продавця, в якого закінчилась сесія) */
+async function foreignPending(user) {
+  const owner = await idb.kv.get('user_id');
+  if (!owner || owner === user.id) return null;
+  const failed = (await idb.all('ops')).filter(o => o._failed || o._pending).length + (await idb.all('clients')).filter(c => c._failed || c._pending).length;
+  const n = Math.max((await idb.all('outbox')).length, failed);
+  return n ? { count: n, email: (await idb.kv.get('user_email')) || 'інший користувач' } : null;
+}
+
+async function start(user) {
+  S.user = { id: user.id, email: user.email };
+  const owner = await idb.kv.get('user_id');
+  if (owner && owner !== user.id) await idb.clearAll();   // на пристрої були дані іншого користувача
+  await idb.kv.set('user_id', user.id);
+  await idb.kv.set('user_email', user.email);
+  S.boot = (await idb.kv.get('boot')) || null;
+  S.notices = (await idb.kv.get('notices')) || [];
+  const saved = await idb.kv.get('current_shop');
+  const shops = S.boot ? S.boot.shops : [];
+  const pick = shops.find(s => s.id === saved) || shops[0];
+  if (pick) await loadShop(pick.id);
+  await countOutbox();
+  idb.persist();
+  changed();
+}
+
+async function pendingForLogout() { await countOutbox(); return S.outbox; }
+
+async function logout() {
+  await api.signOut();
+  await idb.clearAll();
+  Object.assign(S, { user: null, boot: null, shopId: null, shop: null, members: [], clients: new Map(), ops: new Map(), outbox: 0, notices: [], authExpired: false });
+  S.sync = { state: 'idle', lastOk: 0, error: null };
+  changed();
+}
+
+// ---------- магазини ----------
+async function loadShop(id) {
+  const [clients, ops, meta] = await Promise.all([idb.byShop('clients', id), idb.byShop('ops', id), idb.kv.get('shop:' + id)]);
+  S.shopId = id;
+  S.clients = new Map(clients.map(c => [c.id, c]));
+  S.ops = new Map(ops.map(o => [o.id, o]));
+  const fromBoot = S.boot && S.boot.shops.find(s => s.id === id);
+  S.shop = (meta && meta.shop) || fromBoot || null;
+  S.members = (meta && meta.members) || [];
+  await idb.kv.set('current_shop', id);
+  changed();
+}
+
+async function selectShop(id) {
+  if (id === S.shopId) return;
+  await loadShop(id);
+  requestSync();
+}
+
+async function refreshBoot() {
+  const b = await api.rpc('app_bootstrap');
+  S.boot = { is_admin: b.is_admin, shops: b.shops, email: b.email, at: Date.now() };
+  await idb.kv.set('boot', S.boot);
+  const ids = new Set(b.shops.map(s => s.id));
+  // магазини, до яких більше немає доступу, прибираємо з пристрою
+  const known = (await idb.kv.get('known_shops')) || [];
+  for (const old of known) if (!ids.has(old)) await purgeShop(old);
+  await idb.kv.set('known_shops', [...ids]);
+  if (S.shopId && !ids.has(S.shopId)) { S.shopId = null; S.shop = null; S.clients = new Map(); S.ops = new Map(); S.members = []; }
+  if (!S.shopId && b.shops.length) await loadShop(b.shops[0].id);
+  else if (S.shopId) {
+    const fresh = b.shops.find(s => s.id === S.shopId);
+    if (fresh) S.shop = { ...(S.shop || {}), ...fresh };
+  }
+  changed();
+  return S.boot;
+}
+
+async function purgeShop(id) {
+  const [clients, ops] = await Promise.all([idb.byShop('clients', id), idb.byShop('ops', id)]);
+  for (const c of clients) await idb.del('clients', c.id);
+  for (const o of ops) await idb.del('ops', o.id);
+  await idb.kv.del('shop:' + id);
+  const box = await idb.all('outbox');
+  for (const e of box) if (e.shop_id === id) await idb.del('outbox', e.seq);
+}
+
+// ---------- локальні записи (працюють і офлайн) ----------
+async function enqueue(entry) {
+  await idb.put('outbox', { ...entry, user_id: S.user.id, at: Date.now() });
+  await countOutbox();
+}
+async function countOutbox() {
+  const box = await idb.all('outbox');
+  S.outbox = box.filter(e => e.user_id === S.user?.id).length;
+}
+function assertWritable() {
+  if (!writable()) throw new Error('Підписка магазину закінчилась — нові записи недоступні. Зверніться до продавця програми.');
+}
+
+async function addOp({ client_id, type, amount, note, over_limit }) {
+  assertWritable();
+  const op = {
+    id: uuid(), shop_id: S.shopId, client_id, type, amount, note: note || '',
+    created_by: S.user.id, client_at: new Date().toISOString(), created_at: null,
+    cancelled_at: null, cancelled_by: null, cancel_reason: null,
+    over_limit: !!over_limit, _pending: true,
+  };
+  await idb.put('ops', op);
+  S.ops.set(op.id, op);
+  await enqueue({ kind: 'op', shop_id: S.shopId, id: op.id });
+  changed(); requestSync();
+  return op;
+}
+
+async function cancelOp(id, reason) {
+  assertWritable();
+  const op = S.ops.get(id);
+  if (!op || op.cancelled_at) return;
+  const upd = { ...op, cancelled_at: new Date().toISOString(), cancelled_by: S.user.id, cancel_reason: reason, _pendingCancel: true };
+  await idb.put('ops', upd);
+  S.ops.set(id, upd);
+  await enqueue({ kind: 'cancel', shop_id: S.shopId, id, reason });
+  changed(); requestSync();
+}
+
+async function createClient(data) {
+  assertWritable();
+  const c = {
+    id: uuid(), shop_id: S.shopId, name: data.name, phone: data.phone || '', address: data.address || '', note: data.note || '',
+    limit_kop: isOwner() ? data.limit_kop : (S.shop?.default_limit ?? 0), archived: false,
+    created_by: S.user.id, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), _pending: true,
+  };
+  await idb.put('clients', c);
+  S.clients.set(c.id, c);
+  await enqueue({ kind: 'client_create', shop_id: S.shopId, id: c.id });
+  changed(); requestSync();
+  return c;
+}
+
+async function updateClient(id, data) {
+  assertWritable();
+  const cur = S.clients.get(id);
+  if (!cur) return;
+  const snapshot = cur._pendingUpdate ? cur._server : stripLocal(cur);
+  const upd = { ...cur, ...data, _pendingUpdate: true, _server: snapshot };
+  await idb.put('clients', upd);
+  S.clients.set(id, upd);
+  await enqueue({ kind: 'client_update', shop_id: S.shopId, id });
+  changed(); requestSync();
+}
+
+function stripLocal(o) {
+  const r = {};
+  for (const k in o) if (!k.startsWith('_')) r[k] = o[k];
+  return r;
+}
+
+// невдалі записи: повторити або прибрати з пристрою
+async function retryFailed(kind, id) {
+  if (kind === 'op') {
+    const op = S.ops.get(id); if (!op) return;
+    const upd = { ...op, _failed: undefined, _pending: true };
+    delete upd._failed;
+    await idb.put('ops', upd); S.ops.set(id, upd);
+    await enqueue({ kind: 'op', shop_id: op.shop_id, id });
+  } else {
+    const c = S.clients.get(id); if (!c) return;
+    const upd = { ...c, _pending: true }; delete upd._failed;
+    await idb.put('clients', upd); S.clients.set(id, upd);
+    await enqueue({ kind: 'client_create', shop_id: c.shop_id, id });
+  }
+  changed(); requestSync();
+}
+async function discardFailed(kind, id) {
+  if (kind === 'op') { await idb.del('ops', id); S.ops.delete(id); }
+  else {
+    const c = S.clients.get(id);
+    const removed = new Set([id]);
+    await idb.del('clients', id); S.clients.delete(id);
+    for (const o of [...S.ops.values()]) if (o.client_id === id && (o._pending || o._failed)) { removed.add(o.id); await idb.del('ops', o.id); S.ops.delete(o.id); }
+    const box = await idb.all('outbox');
+    for (const e of box) if ((!c || e.shop_id === c.shop_id) && removed.has(e.id)) await idb.del('outbox', e.seq);
+    await countOutbox();
+  }
+  changed();
+}
+
+async function notice(text) {
+  S.notices = [{ id: uuid(), at: Date.now(), text }, ...S.notices].slice(0, 50);
+  await idb.kv.set('notices', S.notices);
+}
+async function clearNotices() { S.notices = []; await idb.kv.set('notices', []); changed(); }
+
+// ---------- синхронізація ----------
+// Лише ці відповіді сервера означають "запис остаточно не прийнято". Усе інше (немає зв'язку,
+// сесія закінчилась, збій сервера, невідома помилка) — запис лишається в черзі й відправиться пізніше.
+const BUSINESS = new Set(['invalid', 'not_found', 'forbidden', 'too_late', 'archived', 'limit_exceeded', 'disabled', 'not_member', 'owner_only', 'too_many', 'conflict']);
+const PER_SHOP_STOP = new Set(['subscription_expired']);
+const isTransient = (e) => !(e.status === 400 && BUSINESS.has(e.code));
+
+/** Відправити чергу. Повертає магазини, де підписка закінчилась (їхні записи чекають). */
+async function push() {
+  const box = (await idb.all('outbox')).filter(e => e.user_id === S.user.id).sort((a, b) => a.seq - b.seq);
+  const stopped = new Set();
+  let i = 0;
+  while (i < box.length) {
+    const e = box[i];
+    if (stopped.has(e.shop_id)) { i++; continue; }
+    try {
+      if (e.kind === 'op') {
+        const batch = [];
+        while (i < box.length && box[i].kind === 'op' && box[i].shop_id === e.shop_id && batch.length < 100) batch.push(box[i++]);
+        await pushOps(e.shop_id, batch);
+        continue;
+      }
+      i++;
+      try {
+        if (e.kind === 'cancel') await pushCancel(e);
+        else if (e.kind === 'client_create') await pushClientCreate(e);
+        else if (e.kind === 'client_update') await pushClientUpdate(e);
+        await idb.del('outbox', e.seq);
+      } catch (err) {
+        if (isTransient(err)) throw err;
+        await idb.del('outbox', e.seq);
+        await failEntry(e, err);
+      }
+    } catch (err) {
+      if (PER_SHOP_STOP.has(err.code)) { stopped.add(e.shop_id); continue; }   // інші магазини синхронізуємо далі
+      throw err;
+    }
+  }
+  return stopped;
+}
+
+async function getOp(id) { return S.ops.get(id) || await idb.get('ops', id); }
+async function saveOp(op) { await idb.put('ops', op); if (op.shop_id === S.shopId) S.ops.set(op.id, op); }
+async function getClient(id) { return S.clients.get(id) || await idb.get('clients', id); }
+async function saveClient(c) { await idb.put('clients', c); if (c.shop_id === S.shopId) S.clients.set(c.id, c); }
+
+async function pushOps(shopId, entries) {
+  const payload = [], map = new Map();
+  for (const e of entries) {
+    const op = await getOp(e.id);
+    if (!op || !op._pending) { await idb.del('outbox', e.seq); continue; }
+    map.set(op.id, e);
+    payload.push({ id: op.id, client_id: op.client_id, type: op.type, amount: op.amount, note: op.note, client_at: op.client_at, over_limit: !!op.over_limit });
+  }
+  if (!payload.length) return;
+  let res;
+  try { res = await api.rpc('add_ops', { p_shop: shopId, p_ops: payload }); }
+  catch (err) {
+    if (isTransient(err)) throw err;
+    res = payload.map(p => ({ id: p.id, ok: false, code: err.code, message: err.message }));
+  }
+  for (const r of res) {
+    const e = map.get(r.id); if (!e) continue;
+    const op = await getOp(r.id);
+    if (op) {
+      const upd = { ...op };
+      delete upd._pending;
+      if (!r.ok) {
+        upd._failed = { code: r.code, message: r.message };
+        const c = await getClient(op.client_id);
+        await notice(`Не збережено ${op.type === 'debt' ? 'борг' : 'оплату'} ${(op.amount / 100).toLocaleString('uk-UA')} грн${c ? ' (' + c.name + ')' : ''}: ${r.message}`);
+      }
+      await saveOp(upd);
+    }
+    await idb.del('outbox', e.seq);
+  }
+}
+
+async function pushCancel(e) {
+  try { await api.rpc('cancel_op', { p_shop: e.shop_id, p_id: e.id, p_reason: e.reason }); }
+  catch (err) { err.entry = e; throw err; }
+  const op = await getOp(e.id);
+  if (op) { const upd = { ...op }; delete upd._pendingCancel; await saveOp(upd); }
+}
+
+async function pushClientCreate(e) {
+  const c = await getClient(e.id);
+  if (!c || !c._pending) return;
+  await api.rpc('create_client', { p_shop: e.shop_id, p_id: c.id, p_name: c.name, p_phone: c.phone, p_address: c.address, p_note: c.note, p_limit: c.limit_kop, p_client_at: c.created_at });
+  const upd = { ...c }; delete upd._pending; await saveClient(upd);
+}
+
+async function pushClientUpdate(e) {
+  const c = await getClient(e.id);
+  if (!c || !c._pendingUpdate) return;
+  await api.rpc('update_client', { p_shop: e.shop_id, p_id: c.id, p_name: c.name, p_phone: c.phone, p_address: c.address, p_note: c.note, p_limit: c.limit_kop, p_archived: !!c.archived, p_expected: (c._server && c._server.updated_at) || null });
+  const upd = { ...c }; delete upd._pendingUpdate; delete upd._server; await saveClient(upd);
+}
+
+async function failEntry(e, err) {
+  if (e.kind === 'cancel') {
+    const op = await getOp(e.id);
+    if (op) { const upd = { ...op, cancelled_at: null, cancelled_by: null, cancel_reason: null }; delete upd._pendingCancel; await saveOp(upd); }
+    await notice(`Не вдалося скасувати запис: ${err.message}`);
+  } else if (e.kind === 'client_create') {
+    const c = await getClient(e.id);
+    if (c) { const upd = { ...c, _failed: { code: err.code, message: err.message } }; delete upd._pending; await saveClient(upd); }
+    await notice(`Не збережено нового клієнта${c ? ' ' + c.name : ''}: ${err.message}`);
+  } else if (e.kind === 'client_update') {
+    const c = await getClient(e.id);
+    if (c && c._server) await saveClient(c._server);
+    await notice(`Не збережено зміни клієнта${c ? ' ' + c.name : ''}: ${err.message}`);
+  }
+}
+
+async function pull(shopId) {
+  let meta = (await idb.kv.get('shop:' + shopId)) || {};
+  let cursor = meta.cursor || null;
+  for (let round = 0; round < 100; round++) {
+    const r = await api.rpc('sync_pull', { p_shop: shopId, p_cursor: cursor });
+    await applyPull(shopId, r);
+    cursor = r.cursor;
+    if (!r.more) break;
+  }
+}
+
+async function applyPull(shopId, r) {
+  const current = shopId === S.shopId;
+  const clients = [], ops = [];
+  for (const sc of r.clients) {
+    const local = current ? S.clients.get(sc.id) : await idb.get('clients', sc.id);
+    const merged = local && local._pendingUpdate ? { ...local, _server: sc } : sc;
+    clients.push(merged);
+    if (current) S.clients.set(sc.id, merged);
+  }
+  for (const so of r.ops) {
+    const local = current ? S.ops.get(so.id) : await idb.get('ops', so.id);
+    const merged = local && local._pendingCancel && !so.cancelled_at ? local : so;
+    ops.push(merged);
+    if (current) S.ops.set(so.id, merged);
+  }
+  await idb.putMany('clients', clients);
+  await idb.putMany('ops', ops);
+  await idb.kv.set('shop:' + shopId, { shop: r.shop, members: r.members, cursor: r.cursor, at: Date.now() });
+  if (current) { S.shop = r.shop; S.members = r.members; }
+  changed();
+}
+
+let running = null, again = false, lastBoot = 0;
+let timer = null;
+function requestSync(delay = 300) {
+  clearTimeout(timer);
+  timer = setTimeout(() => { runSync(); }, delay);
+}
+
+async function runSync({ forceBoot = false } = {}) {
+  if (!S.user) return;
+  if (running) { again = true; return running; }
+  running = (async () => {
+    if (!navigator.onLine) { S.sync.state = 'offline'; changed(); return; }
+    S.sync.state = 'syncing'; changed();
+    try {
+      const stopped = await push();
+      if (forceBoot || stopped.size || !S.boot || Date.now() - lastBoot > 60000) { await refreshBoot(); lastBoot = Date.now(); }
+      if (S.shopId) await pull(S.shopId);
+      S.sync = { state: 'ok', lastOk: Date.now(), error: null };
+      if (stopped.size) {
+        const names = [...stopped].map(id => (S.boot?.shops.find(s => s.id === id) || {}).name || 'магазин').join(', ');
+        S.sync = { state: 'error', lastOk: Date.now(), error: `Підписка закінчилась (${names}) — записи чекають і відправляться після продовження.` };
+      }
+    } catch (e) {
+      if (e.code === 'not_member') { await refreshBoot().catch(() => {}); S.sync = { state: 'ok', lastOk: Date.now(), error: null }; }
+      else if (e.network || e.status >= 500) S.sync = { ...S.sync, state: 'offline', error: null };
+      else if (e.auth || e.code === 'not_authenticated') { S.sync = { ...S.sync, state: 'error', error: 'Потрібно увійти знову.' }; S.authExpired = true; }
+      else S.sync = { ...S.sync, state: 'error', error: e.message };
+    } finally {
+      await countOutbox();
+      changed();
+    }
+  })();
+  try { await running; } finally {
+    running = null;
+    if (again) { again = false; requestSync(50); }
+  }
+}
+
+api.onAuthExpired(() => { S.authExpired = true; changed(); });
+
+/** Онлайн-дія (налаштування, працівники тощо): виконати й одразу підтягнути зміни */
+async function online(fn, args) {
+  if (!navigator.onLine) throw new Error('Для цієї дії потрібен інтернет.');
+  const r = await api.rpc(fn, args);
+  requestSync(50);
+  return r;
+}
+
+return { S, subscribe, changed, isOwner, writable, memberName, me, foreignPending, start, pendingForLogout, logout, loadShop, selectShop, refreshBoot, addOp, cancelOp, createClient, updateClient, retryFailed, discardFailed, clearNotices, requestSync, runSync, online };
+})();
+
+M.calc = (function () {
+const { DAY, ts, startOfDay } = M.util;
+const { S } = M.store;
+// Розрахунки: баланси клієнтів, прострочення, звіти
+
+
+const counts = (o) => !o.cancelled_at && !o._failed;
+let cache = { v: -1, st: null };
+
+/** Баланс і "давність" для кожного клієнта поточного магазину */
+function stats() {
+  if (cache.v === S.version) return cache.st;
+  const per = new Map();
+  for (const c of S.clients.values()) per.set(c.id, { bal: 0, lastPay: 0, firstDebt: 0, lastAt: 0, days: 0, pending: 0 });
+  const ops = [...S.ops.values()].sort((a, b) => ts(a.client_at) - ts(b.client_at));
+  for (const o of ops) {
+    const p = per.get(o.client_id); if (!p) continue;
+    if (o._pending || o._pendingCancel) p.pending++;
+    if (!counts(o)) continue;
+    const t = ts(o.client_at);
+    if (o.type === 'debt') { if (p.bal <= 0) p.firstDebt = t; p.bal += o.amount; }
+    else { p.bal -= o.amount; p.lastPay = t; }
+    p.lastAt = t;
+  }
+  const now = Date.now();
+  for (const p of per.values()) p.days = p.bal > 0 ? Math.max(0, Math.floor((now - Math.max(p.lastPay, p.firstDebt)) / DAY)) : 0;
+  cache = { v: S.version, st: per };
+  return per;
+}
+
+function balanceOf(clientId) { const p = stats().get(clientId); return p ? p.bal : 0; }
+
+function summary() {
+  const st = stats();
+  let total = 0, debtors = 0, overdue = 0, overdueSum = 0;
+  for (const c of S.clients.values()) {
+    const p = st.get(c.id);
+    if (p.bal > 0) { total += p.bal; debtors++; if (p.days >= 30) { overdue++; overdueSum += p.bal; } }
+  }
+  return { total, debtors, overdue, overdueSum };
+}
+
+function periodStart(period) {
+  const now = Date.now();
+  if (period === 'today') return startOfDay(now);
+  if (period === 'week') return startOfDay(now - 6 * DAY);
+  return startOfDay(now - 29 * DAY);
+}
+
+function report(period) {
+  const st = stats();
+  const from = periodStart(period);
+  const all = [...S.ops.values()];
+  const inP = all.filter(o => counts(o) && ts(o.client_at) >= from);
+  const given = inP.filter(o => o.type === 'debt').reduce((s, o) => s + o.amount, 0);
+  const taken = inP.filter(o => o.type === 'pay').reduce((s, o) => s + o.amount, 0);
+  const cancelled = all.filter(o => o.cancelled_at && ts(o.cancelled_at) >= from).length;
+  const debtors = [...S.clients.values()].filter(c => st.get(c.id).bal > 0);
+  const buckets = [
+    { label: 'до 7 днів', a: 0, b: 7, tone: 'ok' },
+    { label: '8–30 днів', a: 8, b: 30, tone: 'ink' },
+    { label: '31–60 днів', a: 31, b: 60, tone: 'warn' },
+    { label: 'понад 60 днів', a: 61, b: Infinity, tone: 'bad' },
+  ].map(b => {
+    const cs = debtors.filter(c => st.get(c.id).days >= b.a && st.get(c.id).days <= b.b);
+    return { ...b, n: cs.length, sum: cs.reduce((s, c) => s + st.get(c.id).bal, 0) };
+  });
+  const byStaff = new Map();
+  for (const o of inP) {
+    const r = byStaff.get(o.created_by) || { id: o.created_by, debt: 0, pay: 0, n: 0 };
+    r[o.type] += o.amount; r.n++;
+    byStaff.set(o.created_by, r);
+  }
+  const top = debtors.sort((a, b) => st.get(b.id).bal - st.get(a.id).bal).slice(0, 10);
+  const daily = [];
+  for (let i = 0; i < 7; i++) {
+    const d0 = startOfDay(Date.now() - i * DAY), d1 = d0 + DAY;
+    const os = all.filter(o => counts(o) && ts(o.client_at) >= d0 && ts(o.client_at) < d1);
+    daily.push({ d: d0, debt: os.filter(o => o.type === 'debt').reduce((s, o) => s + o.amount, 0), pay: os.filter(o => o.type === 'pay').reduce((s, o) => s + o.amount, 0) });
+  }
+  const sm = summary();
+  return { ...sm, given, taken, cancelled, buckets, byStaff: [...byStaff.values()], top, daily };
+}
+
+return { stats, balanceOf, summary, periodStart, report };
+})();
+
+M.views_auth = (function () {
+const api = M.api;
+const { esc } = M.util;
+const { register, formError, busy, toast, openModal, closeModal } = M.ui;
+const { S, changed, runSync } = M.store;
+// Вхід, реєстрація, відновлення пароля
+
+
+
+
+const CFG = window.ZOSHYT_CONFIG || {};
+let onSignedIn = () => {};
+const setOnSignedIn = (fn) => { onSignedIn = fn; };
+
+const brand = `<div class="auth-brand"><img src="icon.svg" alt="" width="56" height="56"><div><h1>Зошит боржників</h1><p class="muted">Облік боргів для магазину — з телефону й комп’ютера</p></div></div>`;
+const legal = `<p class="small muted legal">Реєструючись, ви погоджуєтесь з <a href="terms.html" target="_blank" rel="noopener">умовами користування</a> та <a href="privacy.html" target="_blank" rel="noopener">політикою конфіденційності</a>.</p>`;
+
+function loginView() {
+  return `<div class="auth"><div class="auth-card">${brand}
+    <form data-form="login" class="stack" novalidate>
+      <h2>Вхід</h2>
+      <label class="f">Email<input id="l-email" type="email" autocomplete="username" inputmode="email" required autofocus></label>
+      <label class="f">Пароль<input id="l-pass" type="password" autocomplete="current-password" required></label>
+      <div class="err" role="alert"></div>
+      <button class="btn ink big" type="submit">Увійти</button>
+      <div class="row-between small"><a href="#/forgot">Забули пароль?</a><a href="#/signup">Реєстрація</a></div>
+    </form>
+    ${!navigator.onLine ? '<div class="banner warn">Немає інтернету. Для входу потрібне з’єднання — після входу програма працюватиме й без нього.</div>' : ''}
+  </div></div>`;
+}
+
+function signupView() {
+  return `<div class="auth"><div class="auth-card">${brand}
+    <form data-form="signup" class="stack" novalidate>
+      <h2>Реєстрація</h2>
+      <p class="small muted">Один акаунт для власника і для продавця. Після реєстрації ви створите свій магазин або приєднаєтесь до магазину за кодом від власника.</p>
+      <label class="f">Ваше ім’я<input id="s-name" autocomplete="name" required autofocus maxlength="60"></label>
+      <label class="f">Email<input id="s-email" type="email" autocomplete="username" inputmode="email" required></label>
+      <label class="f">Пароль (мінімум 6 символів)<input id="s-pass" type="password" autocomplete="new-password" required minlength="6"></label>
+      <div class="err" role="alert"></div>
+      <button class="btn ink big" type="submit">Зареєструватися</button>
+      ${legal}
+      <div class="small">Вже є акаунт? <a href="#/login">Увійти</a></div>
+    </form>
+  </div></div>`;
+}
+
+function forgotView() {
+  return `<div class="auth"><div class="auth-card">${brand}
+    <form data-form="forgot" class="stack" novalidate>
+      <h2>Відновлення пароля</h2>
+      <p class="small muted">Надішлемо на email посилання для встановлення нового пароля.</p>
+      <label class="f">Email<input id="f-email" type="email" inputmode="email" required autofocus></label>
+      <div class="err" role="alert"></div>
+      <button class="btn ink big" type="submit">Надіслати посилання</button>
+      <div class="small"><a href="#/login">← Повернутися до входу</a></div>
+    </form>
+  </div></div>`;
+}
+
+function resetView() {
+  return `<div class="auth"><div class="auth-card">${brand}
+    <form data-form="reset" class="stack" novalidate>
+      <h2>Новий пароль</h2>
+      <label class="f">Новий пароль (мінімум 6 символів)<input id="r-pass" type="password" autocomplete="new-password" required minlength="6" autofocus></label>
+      <label class="f">Повторіть пароль<input id="r-pass2" type="password" autocomplete="new-password" required></label>
+      <div class="err" role="alert"></div>
+      <button class="btn ink big" type="submit">Зберегти пароль</button>
+    </form>
+  </div></div>`;
+}
+
+function setupView() {
+  return `<div class="auth"><div class="auth-card">${brand}
+    <div class="banner warn">Програму ще не підключено до бази даних. Відкрийте файл <b>config.js</b> і впишіть адресу та ключ вашого проєкту Supabase (див. інструкцію, крок 3).</div>
+  </div></div>`;
+}
+
+/** Вікно повторного входу, якщо сесія закінчилась (дані на пристрої зберігаються) */
+function reloginModal() {
+  openModal(`<form data-form="relogin" class="stack" novalidate>
+    <h2>Увійдіть знову</h2>
+    <p class="small muted">Сесія закінчилась. Ваші записи на цьому пристрої збережені і відправляться після входу.</p>
+    <label class="f">Email<input id="rl-email" type="email" value="${esc(S.user?.email || '')}" readonly></label>
+    <label class="f">Пароль<input id="rl-pass" type="password" autocomplete="current-password" required autofocus></label>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="logout">Вийти з акаунта</button><button class="btn ink" type="submit">Увійти</button></div>
+  </form>`, { onClose: () => {}, opaque: true });
+}
+
+const val = (id) => document.getElementById(id).value;
+
+register({}, {
+  async login(form) {
+    const email = val('l-email'), pass = val('l-pass');
+    if (!email || !pass) return formError(form, 'Введіть email і пароль.');
+    await busy(form, async () => {
+      try { const s = await api.signIn(email, pass); formError(form, ''); await onSignedIn(s.user); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async signup(form) {
+    const name = val('s-name').trim(), email = val('s-email').trim(), pass = val('s-pass');
+    if (!name) return formError(form, 'Вкажіть ваше ім’я.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return formError(form, 'Перевірте email.');
+    if (pass.length < 6) return formError(form, 'Пароль закороткий — мінімум 6 символів.');
+    await busy(form, async () => {
+      try {
+        const r = await api.signUp(email, pass, name);
+        if (r.needsConfirm) {
+          form.innerHTML = `<h2>Перевірте пошту</h2><p>Ми надіслали лист на <b>${esc(email)}</b>. Натисніть посилання в листі, а потім <a href="#/login">увійдіть</a>.</p><p class="small muted">Листа немає? Перевірте папку «Спам».</p>`;
+          return;
+        }
+        sessionStorage.setItem('zoshyt.name', name);
+        await onSignedIn(r.session.user);
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async forgot(form) {
+    const email = val('f-email').trim();
+    if (!email) return formError(form, 'Введіть email.');
+    await busy(form, async () => {
+      try {
+        await api.recoverPassword(email);
+        form.innerHTML = `<h2>Лист надіслано</h2><p>Якщо акаунт з email <b>${esc(email)}</b> існує, ви отримаєте посилання для нового пароля. Відкрийте його на цьому пристрої.</p><a class="btn" href="#/login">До входу</a>`;
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async reset(form) {
+    const p1 = val('r-pass'), p2 = val('r-pass2');
+    if (p1.length < 6) return formError(form, 'Мінімум 6 символів.');
+    if (p1 !== p2) return formError(form, 'Паролі не збігаються.');
+    await busy(form, async () => {
+      try {
+        await api.updatePassword(p1);
+        const u = await api.fetchUser();
+        toast('Пароль змінено');
+        sessionStorage.removeItem('zoshyt.recovery');
+        await onSignedIn(u);
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async relogin(form) {
+    const pass = val('rl-pass');
+    await busy(form, async () => {
+      try {
+        const s = await api.signIn(S.user.email, pass);
+        if (s.user.id !== S.user.id) throw new Error('Це інший акаунт.');
+        S.authExpired = false; closeModal(); changed(); runSync({ forceBoot: true });
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+});
+
+
+return { setOnSignedIn, loginView, signupView, forgotView, resetView, setupView, reloginModal, CFG };
+})();
+
+M.views_shop = (function () {
+const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText } = M.util;
+const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
+const { S, isOwner, writable, memberName, addOp, cancelOp, createClient, updateClient, retryFailed, discardFailed } = M.store;
+const { stats, summary } = M.calc;
+const { go, view } = M.router;
+// Список боржників, картка клієнта, запис боргу/оплати, скасування, нагадування
+
+
+
+
+
+const QUICK_NOTES = ['Хліб', 'Молоко', 'Продукти', 'Цигарки', 'Побутове', 'Пиво', 'Олія', 'Крупи'];
+
+const listState = { q: '', filter: 'debtors', sort: 'debt' };
+
+// ---------------- список ----------------
+function listView() {
+  const st = stats();
+  const sm = summary();
+  const q = listState.q.trim().toLowerCase();
+  const qd = digits(q);
+  let list = [...S.clients.values()].filter(c => !c.archived || q);
+  if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || (qd.length >= 3 && digits(c.phone).includes(qd)) || (c.address || '').toLowerCase().includes(q));
+  else if (listState.filter === 'debtors') list = list.filter(c => st.get(c.id).bal > 0 || c._failed);
+  else if (listState.filter === 'overdue') list = list.filter(c => st.get(c.id).bal > 0 && st.get(c.id).days >= 30);
+  const sorters = {
+    name: (a, b) => a.name.localeCompare(b.name, 'uk'),
+    days: (a, b) => st.get(b.id).days - st.get(a.id).days || st.get(b.id).bal - st.get(a.id).bal,
+    debt: (a, b) => st.get(b.id).bal - st.get(a.id).bal || a.name.localeCompare(b.name, 'uk'),
+  };
+  list.sort(sorters[listState.sort]);
+  const shown = list.slice(0, 300);
+  const total = S.clients.size;
+
+  return `
+  <section class="summary three" aria-label="Підсумок">
+    <div><div class="k">Загалом винні</div><div class="v bad">${money(sm.total)}</div></div>
+    <div><div class="k">Боржників</div><div class="v">${sm.debtors}</div></div>
+    <div><div class="k">Не платять 30+ днів</div><div class="v ${sm.overdue ? 'warn' : ''}">${sm.overdue}</div></div>
+  </section>
+  <div class="toolbar">
+    <input id="q" class="search" type="search" placeholder="Пошук: ім’я, телефон, вулиця" value="${esc(listState.q)}" autocomplete="off" aria-label="Пошук клієнта">
+    ${writable() ? '<button class="btn ink" data-act="new-client">+ Новий клієнт</button>' : ''}
+  </div>
+  ${q ? '' : `<div class="toolbar">
+    <div class="seg" role="group" aria-label="Фільтр">${[['debtors', 'Винні'], ['overdue', 'Прострочені'], ['all', 'Усі']].map(([k, l]) => `<button data-act="list-filter" data-v="${k}" aria-pressed="${listState.filter === k}">${l}</button>`).join('')}</div>
+    <div class="seg" role="group" aria-label="Сортування">${[['debt', 'Більший борг'], ['days', 'Довше не платять'], ['name', 'За ім’ям']].map(([k, l]) => `<button data-act="list-sort" data-v="${k}" aria-pressed="${listState.sort === k}">${l}</button>`).join('')}</div>
+  </div>`}
+  <section class="sheet">
+    ${shown.length ? `<ul class="rows">${shown.map(c => clientRow(c, st.get(c.id))).join('')}</ul>${list.length > shown.length ? `<div class="empty small">Показано 300 з ${list.length}. Уточніть пошук.</div>` : ''}`
+      : `<div class="empty">${q ? `Нікого не знайдено.${writable() ? `<br><button class="btn sm" data-act="new-client" style="margin-top:10px">Додати «${esc(listState.q)}»</button>` : ''}`
+        : total === 0 ? `Клієнтів ще немає.${writable() ? '<br><button class="btn ink" data-act="new-client" style="margin-top:10px">+ Додати першого клієнта</button>' : ''}`
+        : listState.filter === 'all' ? 'Клієнтів немає.' : 'Ніхто не винен. Гарний день!'}</div>`}
+  </section>`;
+}
+
+function clientRow(c, p) {
+  const lim = c.limit_kop || 0;
+  const pct = lim ? Math.min(100, Math.round(p.bal / lim * 100)) : 0;
+  return `<li class="row" data-act="open-client" data-id="${esc(c.id)}" tabindex="0">
+    <div class="who"><div class="name">${esc(c.name)}${c.archived ? ' <span class="chip">архів</span>' : ''}</div>
+      <div class="meta">${c.phone ? `<span>${esc(c.phone)}</span>` : ''}${c.address ? `<span>${esc(c.address)}</span>` : ''}
+      ${p.bal > 0 && p.days >= 30 ? `<span class="chip warn">${days(p.days)} без оплати</span>` : ''}
+      ${lim && p.bal > lim ? '<span class="chip bad">понад ліміт</span>' : ''}
+      ${p.pending ? `<span class="chip ink" title="Чекає відправки на сервер">${icon.cloud} не відправлено</span>` : ''}
+      ${c._failed ? '<span class="chip bad">не збережено</span>' : ''}</div></div>
+    <div class="sum">${balHtml(p.bal)}${p.bal > 0 && lim ? `<div class="meter" title="${pct}% ліміту"><i class="${p.bal > lim ? 'over' : ''}" style="width:${pct}%"></i></div>` : ''}</div>
+  </li>`;
+}
+function balHtml(b) {
+  return b > 0 ? `<span class="amt bad">${money(b)}</span>`
+    : b < 0 ? `<span class="amt ok">+${money(-b)}</span><span class="small muted">переплата</span>`
+    : '<span class="amt zero">0 грн</span>';
+}
+
+// ---------------- картка клієнта ----------------
+function clientView(id) {
+  const c = S.clients.get(id);
+  if (!c) return `<div class="empty">Клієнта не знайдено. <a href="#/list">До списку</a></div>`;
+  const p = stats().get(c.id);
+  const ops = [...S.ops.values()].filter(o => o.client_id === c.id).sort((a, b) => new Date(b.client_at) - new Date(a.client_at));
+  const lim = c.limit_kop || 0;
+  const w = writable();
+  return `
+  <div><a class="btn sm ghost" href="#/list">← До списку</a></div>
+  ${c._failed ? `<div class="banner bad">Цього клієнта сервер не прийняв: ${esc(c._failed.message)}
+      <div class="m-actions start"><button class="btn sm" data-act="retry-client" data-id="${esc(c.id)}">Спробувати ще раз</button><button class="btn sm ghost" data-act="discard-client" data-id="${esc(c.id)}">Прибрати з пристрою</button></div></div>` : ''}
+  <section class="sheet pad">
+    <div class="client-head">
+      <div>
+        <h1 class="client-name">${esc(c.name)} ${c.archived ? '<span class="chip">в архіві</span>' : ''}</h1>
+        <div class="facts">${c.phone ? `<a href="tel:${esc(cleanPhone(c.phone))}">${icon.phone} ${esc(c.phone)}</a>` : '<span>телефон не вказано</span>'}${c.address ? `<span>${esc(c.address)}</span>` : ''}<span>клієнт з ${fmtD(c.created_at)}</span></div>
+        ${c.note ? `<div class="note-box">${esc(c.note)}</div>` : ''}
+      </div>
+      <div class="balance-box">
+        <div class="small muted">${p.bal > 0 ? 'Винен' : p.bal < 0 ? 'Переплата' : 'Боргу немає'}</div>
+        <div class="big ${p.bal > 0 ? 'bad' : p.bal < 0 ? 'ok' : 'zero'}">${money(Math.abs(p.bal))}</div>
+        ${lim ? `<div class="small muted">ліміт ${money(lim)}${p.bal > 0 ? ' · ' + Math.round(p.bal / lim * 100) + '%' : ''}</div><div class="meter"><i class="${p.bal > lim ? 'over' : ''}" style="width:${Math.min(100, Math.max(0, Math.round(p.bal / lim * 100)))}%"></i></div>` : '<div class="small muted">без ліміту</div>'}
+        ${p.bal > 0 && p.days >= 30 ? `<div><span class="chip warn">${days(p.days)} без оплати</span></div>` : ''}
+      </div>
+    </div>
+    <div class="actions">
+      ${w && !c.archived ? '<button class="btn bad" data-act="op" data-type="debt">+ Записати борг</button>' : ''}
+      ${w ? '<button class="btn ok" data-act="op" data-type="pay">Прийняти оплату</button>' : ''}
+      ${p.bal > 0 ? '<button class="btn" data-act="remind">Нагадати</button>' : ''}
+      ${isOwner() && w ? '<button class="btn" data-act="edit-client">Редагувати</button>' : ''}
+    </div>
+  </section>
+  <section class="sheet">
+    <div class="pad pb0"><h3>Історія · ${ops.length} ${plural(ops.length, 'запис', 'записи', 'записів')}</h3></div>
+    ${ops.length ? `<ul class="hist">${ops.map(opRow).join('')}</ul>` : '<div class="empty">Записів ще немає.</div>'}
+  </section>`;
+}
+
+function canCancel(o) {
+  if (o.cancelled_at || o._failed || !writable()) return false;
+  if (isOwner()) return true;
+  if (o.created_by !== S.user.id) return false;
+  if (o._pending) return true;
+  const mins = S.shop?.cancel_minutes ?? 15;
+  return Date.now() - new Date(o.created_at || o.client_at).getTime() < mins * 60000;
+}
+
+function opRow(o) {
+  const debt = o.type === 'debt';
+  const cls = o.cancelled_at ? 'cancel' : o._failed ? 'failed' : '';
+  return `<li class="${cls}">
+    <div class="d">${fmtDT(o.client_at)}</div>
+    <div class="t"><b>${debt ? 'Взяв у борг' : 'Оплатив'}</b>${o.note ? ' · ' + esc(o.note) : ''}
+      <div class="by">записав(ла) ${esc(memberName(o.created_by))}
+        ${o._pending ? ` · <span class="chip ink">${icon.cloud} чекає відправки</span>` : ''}
+        ${o._pendingCancel ? ` · <span class="chip ink">${icon.cloud} скасування чекає відправки</span>` : ''}
+        ${o.cancelled_at ? ` · <span class="txt-bad">скасовано: ${esc(o.cancel_reason)} (${esc(memberName(o.cancelled_by))}, ${fmtDT(o.cancelled_at)})</span>` : ''}
+        ${o._failed ? ` · <span class="txt-bad">не збережено: ${esc(o._failed.message)}</span>` : ''}
+      </div>
+      ${o._failed ? `<div class="m-actions start"><button class="btn sm" data-act="retry-op" data-id="${esc(o.id)}">Спробувати ще раз</button><button class="btn sm ghost" data-act="discard-op" data-id="${esc(o.id)}">Прибрати</button></div>` : ''}
+    </div>
+    <div class="x"><span class="amt ${debt ? 'bad' : 'ok'}">${debt ? '+' : '−'}${money(o.amount)}</span>
+      ${canCancel(o) ? `<div><button class="btn sm ghost" data-act="cancel-op" data-id="${esc(o.id)}">Скасувати</button></div>` : ''}</div>
+  </li>`;
+}
+
+// ---------------- вікна ----------------
+function opModal(type) {
+  const c = S.clients.get(view.clientId); if (!c) return;
+  const p = stats().get(c.id);
+  const debt = type === 'debt';
+  openModal(`<form data-form="op" data-type="${type}" class="stack" novalidate>
+    <h2>${debt ? 'Записати борг' : 'Прийняти оплату'}</h2>
+    <div class="muted small">${esc(c.name)} · зараз ${p.bal > 0 ? 'винен ' + money(p.bal) : 'боргу немає'}</div>
+    <label class="f">Сума, грн<input id="op-amount" class="money-in" inputmode="decimal" autocomplete="off" required autofocus placeholder="0"></label>
+    ${debt ? `<div class="quick">${QUICK_NOTES.map(n => `<button type="button" data-act="quick-note" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>`
+      : (p.bal > 0 ? `<div class="quick"><button type="button" data-act="fill-amount" data-v="${p.bal}">Весь борг: ${money(p.bal)}</button></div>` : '')}
+    <label class="f">${debt ? 'Що взяв' : 'Коментар'}<input id="op-note" autocomplete="off" maxlength="200" placeholder="${debt ? 'Хліб, молоко…' : 'необов’язково'}"></label>
+    ${debt && c.limit_kop ? `<div class="small muted">Ліміт ${money(c.limit_kop)} · можна ще ${money(Math.max(0, c.limit_kop - p.bal))}</div>` : ''}
+    <div id="op-extra"></div>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ${debt ? 'bad' : 'ok'}" type="submit">${debt ? 'Записати борг' : 'Прийняти'}</button></div>
+  </form>`);
+}
+
+function clientModal(c) {
+  const edit = !!c;
+  const q = listState.q.trim();
+  const phoneLike = /^\+?[\d\s()-]{5,}$/.test(q);
+  c = c || { name: phoneLike ? '' : q, phone: phoneLike ? q : '', address: '', note: '', limit_kop: S.shop?.default_limit ?? 200000 };
+  openModal(`<form data-form="client" data-id="${edit ? esc(c.id) : ''}" class="stack" novalidate>
+    <h2>${edit ? 'Редагувати клієнта' : 'Новий клієнт'}</h2>
+    <label class="f">Ім’я та прізвище *<input id="c-name" required value="${esc(c.name)}" autofocus autocomplete="off" maxlength="100"></label>
+    <label class="f">Телефон<input id="c-phone" type="tel" inputmode="tel" value="${esc(c.phone)}" placeholder="+380…" autocomplete="off" maxlength="30"></label>
+    <label class="f">Адреса<input id="c-address" value="${esc(c.address)}" placeholder="вул. Шевченка, 12" autocomplete="off" maxlength="150"></label>
+    ${isOwner() ? `<label class="f">Ліміт боргу, грн (0 — без ліміту)<input id="c-limit" inputmode="decimal" value="${moneyInput(c.limit_kop || 0)}"></label>` : `<div class="small muted">Ліміт боргу: ${money(c.limit_kop || 0)} (змінює власник)</div>`}
+    <label class="f">Примітка<textarea id="c-note" rows="2" maxlength="300" placeholder="Напр.: платить з пенсії 5-го числа">${esc(c.note)}</textarea></label>
+    ${edit ? `<label class="check"><input type="checkbox" id="c-archived" ${c.archived ? 'checked' : ''}> Сховати в архів (історія зберігається, нові борги не записуються)</label>` : ''}
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">${edit ? 'Зберегти' : 'Додати клієнта'}</button></div>
+  </form>`);
+}
+
+function cancelModal(o) {
+  openModal(`<form data-form="cancel" data-id="${esc(o.id)}" class="stack" novalidate>
+    <h2>Скасувати запис?</h2>
+    <div class="note-box">${o.type === 'debt' ? 'Борг' : 'Оплата'} ${money(o.amount)} від ${fmtDT(o.client_at)}${o.note ? ' · ' + esc(o.note) : ''}</div>
+    <p class="small muted">Запис не зникне: він лишиться закресленим в історії та журналі з вашим ім’ям і причиною.</p>
+    <label class="f">Причина *<input id="cancel-reason" required autofocus maxlength="200" placeholder="Помилилась у сумі" autocomplete="off"></label>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Назад</button><button class="btn bad" type="submit">Скасувати запис</button></div>
+  </form>`);
+}
+
+function remindModal() {
+  const c = S.clients.get(view.clientId); if (!c) return;
+  const bal = stats().get(c.id).bal;
+  const first = c.name.trim().split(/\s+/)[0];
+  const text = `Добрий день, ${first}! Нагадуємо про борг у магазині «${S.shop?.name || ''}»: ${money(bal)}. Дякуємо!`;
+  const phone = cleanPhone(c.phone);
+  const intl = phone.startsWith('+') ? phone : phone.startsWith('0') ? '+38' + phone : phone;
+  openModal(`<div class="stack">
+    <h2>Нагадування</h2>
+    <label class="f">Текст повідомлення<textarea id="r-text" rows="4">${esc(text)}</textarea></label>
+    <div class="m-actions start">
+      <button class="btn ink" data-act="copy-remind">Копіювати</button>
+      ${phone ? `<a class="btn" href="sms:${esc(intl)}?body=${encodeURIComponent(text)}">SMS</a>
+        <a class="btn" href="viber://chat?number=${encodeURIComponent(intl)}">Viber</a>
+        <a class="btn" href="https://t.me/${esc(intl)}" target="_blank" rel="noopener">Telegram</a>` : '<span class="small muted">Додайте телефон клієнта, щоб надіслати SMS чи Viber.</span>'}
+    </div>
+    <p class="small muted">У Viber і Telegram спершу скопіюйте текст, потім вставте в чат.</p>
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
+  </div>`);
+}
+
+// ---------------- дії ----------------
+register({
+  'list-filter': (el) => { listState.filter = el.dataset.v; view.rerender(); },
+  'list-sort': (el) => { listState.sort = el.dataset.v; view.rerender(); },
+  'open-client': (el) => go('#/client/' + el.dataset.id),
+  'new-client': () => clientModal(null),
+  'edit-client': () => clientModal(S.clients.get(view.clientId)),
+  op: (el) => opModal(el.dataset.type),
+  remind: () => remindModal(),
+  'copy-remind': async () => { toast(await copyText(document.getElementById('r-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте вручну'); },
+  'cancel-op': (el) => { const o = S.ops.get(el.dataset.id); if (o) cancelModal(o); },
+  'quick-note': (el) => { const n = document.getElementById('op-note'); n.value = n.value ? n.value + ', ' + el.dataset.v.toLowerCase() : el.dataset.v; },
+  'fill-amount': (el) => { document.getElementById('op-amount').value = moneyInput(+el.dataset.v); },
+  'retry-op': (el) => retryFailed('op', el.dataset.id),
+  'discard-op': (el) => discardFailed('op', el.dataset.id),
+  'retry-client': (el) => retryFailed('client', el.dataset.id),
+  'discard-client': async (el) => { await discardFailed('client', el.dataset.id); go('#/list'); },
+}, {
+  async op(form) {
+    const type = form.dataset.type;
+    const c = S.clients.get(view.clientId); if (!c) return closeModal();
+    const bal = stats().get(c.id).bal;
+    const amount = parseMoney(document.getElementById('op-amount').value);
+    const note = document.getElementById('op-note').value.trim();
+    if (!(amount > 0)) return formError(form, 'Введіть суму більше нуля (напр. 85 або 85,50).');
+    if (amount > 10000000) return formError(form, 'Завелика сума — перевірте, чи немає зайвих нулів.');
+    let over = false;
+    if (type === 'debt' && c.limit_kop && bal + amount > c.limit_kop) {
+      if (!isOwner()) return formError(form, `Перевищено ліміт ${money(c.limit_kop)}. Можна ще ${money(Math.max(0, c.limit_kop - bal))}. Більше — лише з дозволу власника.`);
+      const box = document.getElementById('op-over');
+      if (!box) { document.getElementById('op-extra').innerHTML = `<label class="check"><input type="checkbox" id="op-over"> Борг стане ${money(bal + amount)} — більше ліміту ${money(c.limit_kop)}. Все одно записати.</label>`; return formError(form, 'Підтвердіть запис понад ліміт.'); }
+      if (!box.checked) return formError(form, 'Поставте позначку, щоб записати понад ліміт.');
+      over = true;
+    }
+    if (type === 'pay' && bal > 0 && amount > bal && !form.dataset.confirmed) {
+      form.dataset.confirmed = '1';
+      return formError(form, `Оплата більша за борг на ${money(amount - bal)} — буде переплата. Натисніть ще раз, щоб підтвердити.`);
+    }
+    await busy(form, async () => {
+      try {
+        await addOp({ client_id: c.id, type, amount, note, over_limit: over });
+        closeModal();
+        toast(type === 'debt' ? `Записано борг ${money(amount)}` : `Прийнято ${money(amount)}`, 'ok');
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async client(form) {
+    const id = form.dataset.id;
+    const name = document.getElementById('c-name').value.trim().replace(/\s+/g, ' ');
+    const phone = document.getElementById('c-phone').value.trim();
+    if (!name) return formError(form, 'Вкажіть ім’я.');
+    let limit = id ? S.clients.get(id).limit_kop : (S.shop?.default_limit ?? 0);
+    if (isOwner()) {
+      limit = parseMoney(document.getElementById('c-limit').value || '0');
+      if (!(limit >= 0)) return formError(form, 'Ліміт має бути числом, напр. 2000.');
+    }
+    if (!id && !form.dataset.dupOk) {
+      const dup = [...S.clients.values()].find(c => c.name.toLowerCase() === name.toLowerCase() || (phone && digits(c.phone).length >= 9 && digits(c.phone).slice(-9) === digits(phone).slice(-9)));
+      if (dup) { form.dataset.dupOk = '1'; return formError(form, `Схожий клієнт уже є: ${dup.name}${dup.phone ? ', ' + dup.phone : ''}. Натисніть ще раз, якщо це інша людина.`); }
+    }
+    const data = { name, phone, address: document.getElementById('c-address').value.trim(), note: document.getElementById('c-note').value.trim(), limit_kop: limit };
+    await busy(form, async () => {
+      try {
+        if (id) {
+          data.archived = document.getElementById('c-archived').checked;
+          await updateClient(id, data); closeModal(); toast('Збережено', 'ok');
+        } else {
+          const c = await createClient(data); closeModal(); listState.q = ''; go('#/client/' + c.id); toast('Клієнта додано', 'ok');
+        }
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async cancel(form) {
+    const reason = document.getElementById('cancel-reason').value.trim();
+    if (!reason) return formError(form, 'Вкажіть причину.');
+    const o = S.ops.get(form.dataset.id);
+    const c = o && S.clients.get(o.client_id);
+    if (o && c && !isOwner() && o.type === 'pay' && c.limit_kop && stats().get(c.id).bal + o.amount > c.limit_kop) {
+      return formError(form, 'Після скасування цієї оплати борг перевищить ліміт клієнта. Попросіть власника скасувати запис.');
+    }
+    await busy(form, async () => {
+      try { await cancelOp(form.dataset.id, reason); closeModal(); toast('Запис скасовано'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+});
+
+return { listState, listView, balHtml, clientView };
+})();
+
+M.views_reports = (function () {
+const { esc, money, fmtD, isoDate, downloadFile } = M.util;
+const { register, toast } = M.ui;
+const { S, memberName } = M.store;
+const { report, stats } = M.calc;
+const { view } = M.router;
+// Звіти для власника + вивантаження
+
+
+
+
+
+const rs = { period: 'today' };
+const PL = { today: 'сьогодні', week: 'за 7 днів', month: 'за 30 днів' };
+
+function reportsView() {
+  const r = report(rs.period);
+  const st = stats();
+  const pl = PL[rs.period];
+  const maxB = Math.max(1, ...r.buckets.map(b => b.sum));
+  return `
+  <div class="toolbar between">
+    <div class="seg" role="group" aria-label="Період">${[['today', 'Сьогодні'], ['week', '7 днів'], ['month', '30 днів']].map(([k, l]) => `<button data-act="period" data-v="${k}" aria-pressed="${rs.period === k}">${l}</button>`).join('')}</div>
+    <div class="actions"><button class="btn sm" data-act="csv-clients">Excel: боржники</button><button class="btn sm" data-act="csv-ops">Excel: усі записи</button><button class="btn sm" data-act="backup-json">Повна копія</button></div>
+  </div>
+  <section class="summary four">
+    <div><div class="k">Загальний борг</div><div class="v bad">${money(r.total)}</div></div>
+    <div><div class="k">Дали в борг ${pl}</div><div class="v">${money(r.given)}</div></div>
+    <div><div class="k">Повернули ${pl}</div><div class="v ok">${money(r.taken)}</div></div>
+    <div><div class="k">Скасовано записів ${pl}</div><div class="v ${r.cancelled ? 'warn' : ''}">${r.cancelled}</div></div>
+  </section>
+  <div class="grid2">
+    <section class="sheet pad"><h3>Працівники ${pl}</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>Хто</th><th class="n">Дав у борг</th><th class="n">Прийняв</th><th class="n">Записів</th></tr></thead><tbody>
+      ${r.byStaff.length ? r.byStaff.map(x => `<tr><td>${esc(memberName(x.id))}</td><td class="n">${money(x.debt)}</td><td class="n">${money(x.pay)}</td><td class="n">${x.n}</td></tr>`).join('') : '<tr><td colspan="4" class="muted">Записів за період немає</td></tr>'}
+      </tbody></table></div></section>
+    <section class="sheet pad"><h3>Як давно не платять</h3>
+      <div class="buckets">${r.buckets.map(b => `<div class="bucket"><span>${b.label}</span><div class="bar"><i class="t-${b.tone}" style="width:${Math.round(b.sum / maxB * 100)}%"></i></div><span class="small"><b>${money(b.sum)}</b> · ${b.n}</span></div>`).join('')}</div></section>
+  </div>
+  <div class="grid2">
+    <section class="sheet pad"><h3>Найбільші борги</h3>
+      <div class="tbl-wrap"><table><tbody>
+      ${r.top.length ? r.top.map(c => `<tr class="click" data-act="open-client" data-id="${esc(c.id)}"><td>${esc(c.name)}</td><td class="n muted small">${st.get(c.id).days} дн.</td><td class="n"><span class="amt bad sm">${money(st.get(c.id).bal)}</span></td></tr>`).join('') : '<tr><td class="muted">Боржників немає</td></tr>'}
+      </tbody></table></div></section>
+    <section class="sheet pad"><h3>Останні 7 днів</h3>
+      <div class="tbl-wrap"><table><thead><tr><th>День</th><th class="n">У борг</th><th class="n">Повернули</th><th class="n">Різниця</th></tr></thead><tbody>
+      ${r.daily.map(d => { const diff = d.debt - d.pay; return `<tr><td>${fmtD(d.d).slice(0, 5)}</td><td class="n">${money(d.debt)}</td><td class="n">${money(d.pay)}</td><td class="n ${diff > 0 ? 'txt-bad' : diff < 0 ? 'txt-ok' : ''}">${diff > 0 ? '+' : diff < 0 ? '−' : ''}${money(Math.abs(diff))}</td></tr>`; }).join('')}
+      </tbody></table></div></section>
+  </div>`;
+}
+
+const csvCell = (v) => { v = String(v ?? ''); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+const num = (k) => (k / 100).toFixed(2).replace('.', ',');
+const dt = (t) => t ? new Date(t).toLocaleString('uk-UA') : '';
+const csv = (rows) => '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n');
+const shopSlug = () => (S.shop?.name || 'magazyn').replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 30);
+
+function exportClients() {
+  const st = stats();
+  const rows = [['Клієнт', 'Телефон', 'Адреса', 'Борг, грн', 'Ліміт, грн', 'Днів без оплати', 'Примітка', 'В архіві']];
+  [...S.clients.values()].sort((a, b) => st.get(b.id).bal - st.get(a.id).bal)
+    .forEach(c => rows.push([c.name, c.phone, c.address, num(st.get(c.id).bal), num(c.limit_kop || 0), st.get(c.id).days, c.note, c.archived ? 'так' : '']));
+  downloadFile(`borzhnyky-${shopSlug()}-${isoDate()}.csv`, csv(rows), 'text/csv;charset=utf-8');
+}
+function exportOps() {
+  const rows = [['Дата', 'Клієнт', 'Тип', 'Сума, грн', 'Що/коментар', 'Записав', 'Надійшло на сервер', 'Скасовано', 'Причина скасування', 'Хто скасував']];
+  [...S.ops.values()].sort((a, b) => new Date(a.client_at) - new Date(b.client_at)).forEach(o => rows.push([
+    dt(o.client_at), (S.clients.get(o.client_id) || {}).name, o.type === 'debt' ? 'борг' : 'оплата', num(o.amount), o.note, memberName(o.created_by),
+    dt(o.created_at), o.cancelled_at ? dt(o.cancelled_at) : '', o.cancel_reason || '', o.cancelled_by ? memberName(o.cancelled_by) : '']));
+  downloadFile(`zapysy-${shopSlug()}-${isoDate()}.csv`, csv(rows), 'text/csv;charset=utf-8');
+}
+function exportJson() {
+  const strip = (o) => { const r = {}; for (const k in o) if (!k.startsWith('_')) r[k] = o[k]; return r; };
+  const data = { format: 'zoshyt-backup-1', exported_at: new Date().toISOString(), shop: S.shop, members: S.members,
+    clients: [...S.clients.values()].map(strip), ops: [...S.ops.values()].map(strip) };
+  downloadFile(`kopiya-${shopSlug()}-${isoDate()}.json`, JSON.stringify(data, null, 1), 'application/json');
+}
+
+register({
+  period: (el) => { rs.period = el.dataset.v; view.rerender(); },
+  'csv-clients': () => { exportClients(); toast('Файл збережено'); },
+  'csv-ops': () => { exportOps(); toast('Файл збережено'); },
+  'backup-json': () => { exportJson(); toast('Копію збережено'); },
+});
+
+return { reportsView, exportClients, exportOps, exportJson };
+})();
+
+M.views_journal = (function () {
+const { esc, money, fmtDT, fmtD } = M.util;
+const { register } = M.ui;
+const { S, isOwner, memberName } = M.store;
+const api = M.api;
+const { view } = M.router;
+// Журнал: хто, коли і що записав або змінив
+
+
+
+
+
+const js = { who: 'all', kind: 'all', audit: null, auditShop: null, loading: false, error: null };
+
+async function loadAudit() {
+  if (js.loading || !isOwner()) return;
+  js.loading = true; js.error = null;
+  try { js.audit = await api.rpc('get_audit', { p_shop: S.shopId, p_limit: 500 }); js.auditShop = S.shopId; }
+  catch (e) { js.error = e.network ? 'Зміни налаштувань і клієнтів підвантажуються з інтернету — зараз зв’язку немає.' : e.message; }
+  finally { js.loading = false; view.rerender(); }
+}
+
+const FIELD = { name: 'ім’я', phone: 'телефон', address: 'адреса', note: 'примітка', limit_kop: 'ліміт', archived: 'архів',
+  default_limit: 'стандартний ліміт', cancel_minutes: 'час на скасування', paid_until: 'підписка до', trial_until: 'пробний період до',
+  role: 'роль', active: 'доступ', display_name: 'ім’я' };
+function fmtVal(k, v) {
+  if (v === null || v === undefined || v === '') return '—';
+  if (k === 'limit_kop' || k === 'default_limit') return money(+v);
+  if (k === 'archived') return v ? 'так' : 'ні';
+  if (k === 'active') return v ? 'увімкнено' : 'вимкнено';
+  if (k === 'role') return v === 'owner' ? 'власник' : 'продавець';
+  if (k === 'paid_until' || k === 'trial_until') return fmtD(v);
+  if (k === 'cancel_minutes') return v + ' хв';
+  return String(v);
+}
+function changes(d) {
+  return Object.entries(d).filter(([k]) => FIELD[k]).map(([k, v]) => `${FIELD[k]}: ${fmtVal(k, v.old)} → ${fmtVal(k, v.new)}`).join('; ');
+}
+function describe(a) {
+  const d = a.details || {};
+  const cname = (id) => (S.clients.get(id) || {}).name || d.name?.new || d.name || 'клієнт';
+  switch (a.action) {
+    case 'insert:shops': return 'Створив магазин';
+    case 'update:shops': return 'Змінив налаштування магазину: ' + changes(d);
+    case 'insert:members': return `Новий працівник: ${d.display_name} (${d.role === 'owner' ? 'власник' : 'продавець'})`;
+    case 'update:members': return `Змінено працівника ${memberName(a.entity_id)}: ${changes(d)}`;
+    case 'insert:clients': return `Додав клієнта ${d.name}${d.limit_kop ? ', ліміт ' + money(d.limit_kop) : ''}`;
+    case 'update:clients': return `Змінив клієнта ${cname(a.entity_id)}: ${changes(d)}`;
+    case 'insert:invites': return `Створив код запрошення (${d.role === 'owner' ? 'власник' : 'продавець'})`;
+    case 'update:invites': return d.used_by ? 'Код запрошення використано' : d.revoked_at ? 'Код запрошення скасовано' : 'Змінено запрошення';
+    default: return null;
+  }
+}
+
+function events() {
+  const ev = [];
+  for (const o of S.ops.values()) {
+    if (o._failed) continue;
+    const cn = (S.clients.get(o.client_id) || {}).name || '—';
+    ev.push({ at: o.client_at, by: o.created_by, kind: o.type, text: `${o.type === 'debt' ? 'Записав борг' : 'Прийняв оплату'} ${money(o.amount)} · ${cn}${o.note ? ' · ' + o.note : ''}`, cid: o.client_id, pending: o._pending });
+    if (o.cancelled_at) ev.push({ at: o.cancelled_at, by: o.cancelled_by, kind: 'cancel', text: `Скасував ${o.type === 'debt' ? 'борг' : 'оплату'} ${money(o.amount)} · ${cn} · причина: ${o.cancel_reason}`, cid: o.client_id, pending: o._pendingCancel });
+  }
+  if (isOwner() && js.audit && js.auditShop === S.shopId) {
+    for (const a of js.audit) {
+      if (a.action === 'update:ops') continue;
+      const text = describe(a); if (!text) continue;
+      ev.push({ at: a.at, by: a.user_id, kind: 'change', text, cid: a.action.endsWith(':clients') ? a.entity_id : null });
+    }
+  }
+  return ev.sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+
+function journalView() {
+  if (isOwner() && (js.auditShop !== S.shopId || !js.audit) && !js.loading && !js.error && navigator.onLine) loadAudit();
+  let ev = events();
+  if (!isOwner()) ev = ev.filter(e => e.by === S.user.id);
+  else if (js.who !== 'all') ev = ev.filter(e => e.by === js.who);
+  if (js.kind !== 'all') ev = ev.filter(e => (js.kind === 'change' ? e.kind === 'change' : js.kind === 'cancel' ? e.kind === 'cancel' : e.kind === 'debt' || e.kind === 'pay'));
+  const chip = (k) => k === 'debt' ? '<span class="chip bad">борг</span>' : k === 'pay' ? '<span class="chip ok">оплата</span>' : k === 'cancel' ? '<span class="chip warn">скасування</span>' : '<span class="chip ink">зміни</span>';
+  return `
+  ${isOwner() ? `<div class="toolbar">
+      <label class="inline">Хто: <select id="j-who">${['all', ...S.members.map(m => m.user_id)].map(id => `<option value="${esc(id)}" ${js.who === id ? 'selected' : ''}>${id === 'all' ? 'Усі' : esc(memberName(id))}</option>`).join('')}</select></label>
+      <label class="inline">Що: <select id="j-kind">${[['all', 'Усе'], ['ops', 'Борги й оплати'], ['cancel', 'Скасування'], ['change', 'Зміни клієнтів і налаштувань']].map(([k, l]) => `<option value="${k}" ${js.kind === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      ${js.loading ? '<span class="small muted">Завантаження змін…</span>' : '<button class="btn sm ghost" data-act="reload-audit">Оновити</button>'}
+    </div>
+    ${js.error ? `<div class="banner warn">${esc(js.error)}</div>` : ''}
+    <p class="small muted">Записи не видаляються: скасовані лишаються в журналі з причиною та іменем.</p>`
+    : `<p class="small muted">Тут усе, що записали ви. Свій запис можна скасувати протягом ${S.shop?.cancel_minutes ?? 15} хв.</p>`}
+  <section class="sheet">
+    ${ev.length ? `<ul class="hist log">${ev.slice(0, 500).map(e => `<li ${e.cid && S.clients.has(e.cid) ? `class="click" data-act="open-client" data-id="${esc(e.cid)}"` : ''}><div class="d">${fmtDT(e.at)}</div><div class="t">${chip(e.kind)} ${esc(e.text)}<div class="by">${esc(memberName(e.by))}${e.pending ? ' · не відправлено' : ''}</div></div></li>`).join('')}</ul>${ev.length > 500 ? '<div class="empty small">Показано останні 500. Повний список — у вивантаженні Excel.</div>' : ''}`
+      : '<div class="empty">Записів немає.</div>'}
+  </section>`;
+}
+
+register({
+  'reload-audit': () => { js.audit = null; js.error = null; loadAudit(); },
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'j-who') { js.who = e.target.value; view.rerender(); }
+  if (e.target.id === 'j-kind') { js.kind = e.target.value; view.rerender(); }
+});
+
+return { journalView };
+})();
+
+M.views_settings = (function () {
+const { esc, money, moneyInput, parseMoney, fmtD, days, copyText, DAY } = M.util;
+const { register, openModal, closeModal, toast, formError, busy, confirmBox } = M.ui;
+const { S, isOwner, me, online, pendingForLogout, logout } = M.store;
+const api = M.api;
+const { exportClients, exportOps, exportJson } = M.views_reports;
+const { view } = M.router;
+// Налаштування: магазин, працівники, запрошення, підписка, профіль
+
+
+
+
+
+
+const CFG = window.ZOSHYT_CONFIG || {};
+const ss = { invites: null, invShop: null };
+
+function subscriptionInfo(shop) {
+  if (!shop) return null;
+  const until = new Date(shop.access_until || shop.trial_until).getTime();
+  const left = Math.ceil((until - Date.now()) / DAY);
+  const trial = !shop.paid_until || new Date(shop.paid_until) <= new Date(shop.trial_until);
+  return { until, left, trial, writable: shop.writable !== false };
+}
+
+function subscriptionBanner() {
+  const i = subscriptionInfo(S.shop);
+  if (!i) return '';
+  if (!i.writable) return `<div class="banner bad"><b>Підписка закінчилась.</b> Дані можна переглядати й вивантажувати, але нові записи недоступні. ${isOwner() ? `<a href="#/settings">Як продовжити →</a>` : 'Зверніться до власника магазину.'}</div>`;
+  if (i.left <= 0) return `<div class="banner warn">Підписка закінчилась ${fmtD(i.until)}. Ще кілька днів програма працює як звичайно. ${isOwner() ? '<a href="#/settings">Продовжити →</a>' : ''}</div>`;
+  if (isOwner() && i.left <= 5) return `<div class="banner warn">${i.trial ? 'Пробний період' : 'Підписка'} закінчується через ${days(i.left)} (${fmtD(i.until)}). <a href="#/settings">Як продовжити →</a></div>`;
+  return '';
+}
+
+async function loadInvites() {
+  try { ss.invites = await api.rpc('list_invites', { p_shop: S.shopId }); }
+  catch { ss.invites = []; }
+  view.rerender();
+}
+
+function settingsView() {
+  const shop = S.shop || {};
+  const i = subscriptionInfo(shop);
+  const owner = isOwner();
+  // список кодів оновлюємо при зміні магазину або складу працівників (код міг бути використаний)
+  const key = S.shopId + ':' + S.members.length;
+  if (owner && ss.invShop !== key && navigator.onLine) { ss.invShop = key; loadInvites(); }
+  const mine = me();
+  return `
+  <section class="sheet pad stack">
+    <div class="row-between"><h2>Підписка</h2>${i ? `<span class="chip ${i.writable ? (i.left > 5 ? 'ok' : 'warn') : 'bad'}">${i.writable ? (i.trial ? 'пробний період' : 'активна') : 'закінчилась'}</span>` : ''}</div>
+    ${i ? `<div>${i.trial ? 'Пробний період' : 'Оплачено'} до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` — залишилось ${days(i.left)}` : ''}.</div>` : ''}
+    ${owner ? `<div class="note-box small">${CFG.priceText ? esc(CFG.priceText) + '<br>' : ''}${CFG.supportPayInfo ? 'Як оплатити: ' + esc(CFG.supportPayInfo) + '<br>' : ''}${CFG.supportContact ? 'Питання й допомога: ' + esc(CFG.supportContact) : ''}<br>У призначенні платежу вкажіть назву магазину: <b>${esc(shop.name || '')}</b></div>` : ''}
+  </section>
+
+  ${owner && shop.quarantine > 0 ? `<section class="sheet pad stack" id="quarantine">
+    <div class="row-between"><h2>На перевірку: ${shop.quarantine}</h2><button class="btn sm ink" data-act="open-quarantine">Переглянути</button></div>
+    <p class="small muted">Ці записи надіслав працівник, якому ви вже вимкнули доступ (зроблені без інтернету до вимкнення). Вони не враховуються в боргах, поки ви їх не приймете.</p>
+  </section>` : ''}
+
+  ${owner ? `<section class="sheet pad stack">
+    <div class="row-between"><h2>Магазин</h2><button class="btn sm" data-act="edit-shop">Змінити</button></div>
+    <dl class="kv">
+      <dt>Назва</dt><dd>${esc(shop.name)}</dd>
+      <dt>Ліміт боргу для нових клієнтів</dt><dd>${money(shop.default_limit || 0)}</dd>
+      <dt>Продавець може скасувати свій запис протягом</dt><dd>${shop.cancel_minutes ?? 15} хв</dd>
+    </dl>
+  </section>
+
+  <section class="sheet">
+    <div class="pad row-between"><h2>Працівники</h2><button class="btn sm ink" data-act="new-invite">+ Запросити</button></div>
+    <ul class="rows">${S.members.map(m => `<li class="row" data-act="edit-member" data-id="${esc(m.user_id)}" tabindex="0">
+      <div class="who"><div class="name">${esc(m.display_name)}${m.user_id === S.user.id ? ' <span class="chip">це ви</span>' : ''}</div>
+        <div class="meta"><span>${m.role === 'owner' ? 'власник' : 'продавець'}</span>${m.email ? `<span>${esc(m.email)}</span>` : ''}${m.active ? '' : '<span class="chip warn">доступ вимкнено</span>'}</div></div>
+      <div class="sum"><span class="small muted">Змінити</span></div></li>`).join('')}</ul>
+    ${ss.invites && ss.invites.length ? `<div class="pad pt0"><h3>Активні коди запрошення</h3>
+      <ul class="plain">${ss.invites.map(v => `<li class="row-between"><span><b class="code">${esc(fmtCode(v.code))}</b> · ${v.role === 'owner' ? 'власник' : 'продавець'} · діє до ${fmtD(v.expires_at)}</span><button class="btn sm ghost" data-act="revoke-invite" data-code="${esc(v.code)}">Скасувати</button></li>`).join('')}</ul></div>` : ''}
+  </section>
+
+  <section class="sheet pad stack">
+    <h2>Резервна копія</h2>
+    <p class="small muted">Сервер щодня зберігає копію бази. Додатково можна зберегти дані магазину собі на комп’ютер.</p>
+    <div class="actions"><button class="btn sm" data-act="x-clients">Excel: боржники</button><button class="btn sm" data-act="x-ops">Excel: усі записи</button><button class="btn sm" data-act="x-json">Повна копія (JSON)</button></div>
+  </section>` : ''}
+
+  <section class="sheet pad stack">
+    <h2>Мій профіль</h2>
+    <dl class="kv">
+      <dt>Ім’я в цьому магазині</dt><dd>${esc(mine?.display_name || '')} <button class="btn sm ghost" data-act="edit-my-name">змінити</button></dd>
+      <dt>Email</dt><dd>${esc(S.user?.email || S.boot?.email || '')}</dd>
+      <dt>Роль</dt><dd>${owner ? 'власник' : 'продавець'}</dd>
+    </dl>
+    <div class="actions"><button class="btn sm" data-act="change-password">Змінити пароль</button><a class="btn sm" href="#/install">Як встановити програму</a><button class="btn sm bad-outline" data-act="logout">Вийти з акаунта</button></div>
+  </section>
+
+  <section class="pad small muted center">Зошит боржників · версія ${esc(window.ZOSHYT_VERSION || '')} · <a href="terms.html" target="_blank" rel="noopener">Умови</a> · <a href="privacy.html" target="_blank" rel="noopener">Конфіденційність</a></section>`;
+}
+
+function shopModal() {
+  const s = S.shop;
+  openModal(`<form data-form="shop" class="stack" novalidate>
+    <h2>Магазин</h2>
+    <label class="f">Назва магазину<input id="sh-name" required maxlength="100" value="${esc(s.name)}"></label>
+    <label class="f">Ліміт боргу для нових клієнтів, грн<input id="sh-limit" inputmode="decimal" value="${moneyInput(s.default_limit || 0)}"></label>
+    <label class="f">Продавець може скасувати свій запис протягом, хв (0 — не може)<input id="sh-cancel" inputmode="numeric" value="${s.cancel_minutes ?? 15}"></label>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div>
+  </form>`);
+}
+
+function memberModal(id) {
+  const m = S.members.find(x => x.user_id === id); if (!m) return;
+  openModal(`<form data-form="member" data-id="${esc(id)}" class="stack" novalidate>
+    <h2>${esc(m.display_name)}</h2>
+    ${m.email ? `<div class="small muted">${esc(m.email)}</div>` : ''}
+    <label class="f">Ім’я<input id="m-name" required maxlength="60" value="${esc(m.display_name)}"></label>
+    <label class="f">Роль<select id="m-role"><option value="seller" ${m.role === 'seller' ? 'selected' : ''}>Продавець</option><option value="owner" ${m.role === 'owner' ? 'selected' : ''}>Власник (повний доступ)</option></select></label>
+    <label class="check"><input type="checkbox" id="m-active" ${m.active ? 'checked' : ''}> Має доступ до магазину</label>
+    <p class="small muted">Якщо вимкнути доступ, людина одразу перестане бачити магазин, а дані зникнуть з її пристрою. Усі її записи залишаться в історії.</p>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div>
+  </form>`);
+}
+
+const fmtCode = (c) => c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c;
+function inviteModal(inv) {
+  const url = location.origin + location.pathname;
+  const msg = `Запрошую вас у «Зошит боржників» магазину «${S.shop.name}».\n1) Відкрийте ${url}\n2) Зареєструйтеся (або увійдіть)\n3) Оберіть «Я продавець» і введіть код: ${fmtCode(inv.code)}\nКод діє ${inv.role === 'owner' ? '24 години' : '7 днів'}.`;
+  openModal(`<div class="stack">
+    <h2>Код запрошення</h2>
+    <div class="invite-code">${esc(fmtCode(inv.code))}</div>
+    <p class="small muted">Код одноразовий і діє ${inv.role === 'owner' ? '24 години' : '7 днів'}. Роль: ${inv.role === 'owner' ? 'власник' : 'продавець'}. Надішліть працівнику цей текст:</p>
+    <textarea id="inv-text" rows="6" readonly>${esc(msg)}</textarea>
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button><button class="btn ink" data-act="copy-invite">Копіювати текст</button></div>
+  </div>`);
+}
+
+async function quarantineModal() {
+  openModal('<div class="stack"><h2>Записи на перевірку</h2><div class="empty">Завантаження…</div></div>', { wide: true });
+  let items;
+  try { items = await api.rpc('list_quarantine', { p_shop: S.shopId }); }
+  catch (e) { openModal(`<div class="stack"><h2>Записи на перевірку</h2><div class="banner bad">${esc(e.message)}</div><div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div></div>`); return; }
+  const row = (q) => {
+    const p = q.payload;
+    const what = q.kind === 'client' ? `Новий клієнт: <b>${esc(p.name)}</b>${p.phone ? ', ' + esc(p.phone) : ''}`
+      : `${p.type === 'debt' ? 'Борг' : 'Оплата'} <b>${money(+p.amount)}</b> · ${esc(q.client_name || 'клієнт')}${p.note ? ' · ' + esc(p.note) : ''}`;
+    return `<li class="row-between q-item"><span>${what}<br><span class="small muted">${esc(q.member_name || '')} · записано ${fmtD(p.client_at || q.received_at)}</span></span>
+      <span class="actions"><button class="btn sm ok" data-act="q-approve" data-id="${esc(q.id)}">Прийняти</button><button class="btn sm ghost" data-act="q-reject" data-id="${esc(q.id)}">Відхилити</button></span></li>`;
+  };
+  openModal(`<div class="stack">
+    <h2>Записи на перевірку</h2>
+    <p class="small muted">Прийняті записи потраплять у борги від імені працівника. Відхилені не враховуються, але залишаються в журналі. Нових клієнтів приймайте раніше за їхні записи.</p>
+    ${items.length ? `<ul class="plain">${items.map(row).join('')}</ul>` : '<div class="empty">Усе розглянуто.</div>'}
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
+  </div>`, { wide: true });
+}
+async function resolveQ(id, approve) {
+  try { await online('resolve_quarantine', { p_shop: S.shopId, p_id: id, p_approve: approve }); toast(approve ? 'Прийнято' : 'Відхилено', approve ? 'ok' : ''); await quarantineModal(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+
+register({
+  'open-quarantine': () => quarantineModal(),
+  'q-approve': (el) => resolveQ(el.dataset.id, true),
+  'q-reject': (el) => resolveQ(el.dataset.id, false),
+  'edit-shop': () => shopModal(),
+  'edit-member': (el) => memberModal(el.dataset.id),
+  'new-invite': () => {
+    openModal(`<form data-form="invite" class="stack">
+      <h2>Запросити працівника</h2>
+      <label class="f">Роль<select id="inv-role"><option value="seller">Продавець</option><option value="owner">Власник (повний доступ)</option></select></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Створити код</button></div>
+    </form>`);
+  },
+  'copy-invite': async () => { toast(await copyText(document.getElementById('inv-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
+  'revoke-invite': async (el) => {
+    try { await online('revoke_invite', { p_shop: S.shopId, p_code: el.dataset.code }); toast('Код скасовано'); loadInvites(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+  'x-clients': () => exportClients(),
+  'x-ops': () => exportOps(),
+  'x-json': () => exportJson(),
+  'edit-my-name': () => {
+    openModal(`<form data-form="myname" class="stack"><h2>Ваше ім’я</h2>
+      <label class="f">Так вас бачать у журналі<input id="my-name" required maxlength="60" value="${esc(me()?.display_name || '')}" autofocus></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div></form>`);
+  },
+  'change-password': () => {
+    openModal(`<form data-form="password" class="stack"><h2>Новий пароль</h2>
+      <label class="f">Новий пароль (мінімум 6 символів)<input id="pw1" type="password" autocomplete="new-password" required autofocus></label>
+      <label class="f">Повторіть<input id="pw2" type="password" autocomplete="new-password" required></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Змінити</button></div></form>`);
+  },
+  logout: async () => {
+    const n = await pendingForLogout();
+    if (n > 0) {
+      const ok = await confirmBox({ title: 'Є невідправлені записи', text: `${n} ${n === 1 ? 'запис ще не відправлено' : 'записи(ів) ще не відправлено'} на сервер. Якщо вийти зараз, вони загубляться. Спершу підключіться до інтернету й дочекайтесь синхронізації.`, ok: 'Все одно вийти', danger: true });
+      if (!ok) return;
+    }
+    closeModal();
+    await logout();
+    location.hash = '#/login';
+  },
+}, {
+  async shop(form) {
+    const name = document.getElementById('sh-name').value.trim();
+    const lim = parseMoney(document.getElementById('sh-limit').value || '0');
+    const mins = parseInt(document.getElementById('sh-cancel').value, 10);
+    if (!name) return formError(form, 'Вкажіть назву.');
+    if (!(lim >= 0)) return formError(form, 'Ліміт має бути числом.');
+    if (!(mins >= 0 && mins <= 1440)) return formError(form, 'Час на скасування: від 0 до 1440 хвилин.');
+    await busy(form, async () => {
+      try { await online('update_shop', { p_shop: S.shopId, p_name: name, p_default_limit: lim, p_cancel_minutes: mins }); closeModal(); toast('Збережено', 'ok'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async member(form) {
+    const id = form.dataset.id;
+    const name = document.getElementById('m-name').value.trim();
+    if (!name) return formError(form, 'Вкажіть ім’я.');
+    const role = document.getElementById('m-role').value, active = document.getElementById('m-active').checked;
+    await busy(form, async () => {
+      try { await online('set_member', { p_shop: S.shopId, p_user: id, p_display_name: name, p_role: role, p_active: active }); closeModal(); toast('Збережено', 'ok'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async invite(form) {
+    const role = document.getElementById('inv-role').value;
+    await busy(form, async () => {
+      try { const inv = await online('create_invite', { p_shop: S.shopId, p_role: role }); inviteModal(inv); loadInvites(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async myname(form) {
+    const name = document.getElementById('my-name').value.trim();
+    if (!name) return formError(form, 'Вкажіть ім’я.');
+    await busy(form, async () => {
+      try { await online('update_my_name', { p_shop: S.shopId, p_display_name: name }); closeModal(); toast('Збережено', 'ok'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async password(form) {
+    const a = document.getElementById('pw1').value, b = document.getElementById('pw2').value;
+    if (a.length < 6) return formError(form, 'Мінімум 6 символів.');
+    if (a !== b) return formError(form, 'Паролі не збігаються.');
+    await busy(form, async () => {
+      try { await api.updatePassword(a); closeModal(); toast('Пароль змінено', 'ok'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+});
+
+return { subscriptionInfo, subscriptionBanner, settingsView };
+})();
+
+M.views_admin = (function () {
+const { esc, money, parseMoney, fmtD, days, DAY } = M.util;
+const { register, openModal, closeModal, toast, formError, busy } = M.ui;
+const api = M.api;
+const { view } = M.router;
+// Адмін-панель сервісу (для вас як продавця програми): магазини, підписки, оплати
+
+
+
+
+const as = { shops: null, loading: false, error: null, q: '', filter: 'all' };
+
+async function load() {
+  as.loading = true; as.error = null; view.rerender();
+  try { as.shops = await api.rpc('admin_list_shops'); }
+  catch (e) { as.error = e.message; }
+  finally { as.loading = false; view.rerender(); }
+}
+
+function adminView() {
+  if (!as.shops && !as.loading && !as.error) load();
+  if (as.error) return `<div class="banner bad">${esc(as.error)}</div><button class="btn" data-act="admin-reload">Спробувати ще</button>`;
+  if (!as.shops) return '<div class="empty">Завантаження…</div>';
+  const now = Date.now();
+  const q = as.q.trim().toLowerCase();
+  let list = as.shops.filter(s => !q || s.name.toLowerCase().includes(q) || (s.owner_email || '').toLowerCase().includes(q) || (s.owner_name || '').toLowerCase().includes(q));
+  const left = (s) => Math.ceil((new Date(s.access_until) - now) / DAY);
+  if (as.filter === 'trial') list = list.filter(s => !s.paid_until && left(s) > 0);
+  if (as.filter === 'paid') list = list.filter(s => s.paid_until && left(s) > 0);
+  if (as.filter === 'soon') list = list.filter(s => left(s) > 0 && left(s) <= 7);
+  if (as.filter === 'expired') list = list.filter(s => left(s) <= 0);
+  const paying = as.shops.filter(s => s.paid_until && left(s) > 0).length;
+  const trial = as.shops.filter(s => !s.paid_until && left(s) > 0).length;
+  const active7 = as.shops.filter(s => s.last_activity && now - new Date(s.last_activity) < 7 * DAY).length;
+  return `
+  <section class="summary four">
+    <div><div class="k">Магазинів</div><div class="v">${as.shops.length}</div></div>
+    <div><div class="k">Платять</div><div class="v ok">${paying}</div></div>
+    <div><div class="k">Пробний період</div><div class="v">${trial}</div></div>
+    <div><div class="k">Активні за 7 днів</div><div class="v">${active7}</div></div>
+  </section>
+  <div class="toolbar">
+    <input id="adm-q" class="search" type="search" placeholder="Пошук: магазин, email, ім’я" value="${esc(as.q)}">
+    <div class="seg">${[['all', 'Усі'], ['trial', 'Пробні'], ['paid', 'Платні'], ['soon', 'Закінчуються'], ['expired', 'Прострочені']].map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
+    <button class="btn sm ghost" data-act="admin-reload">Оновити</button>
+  </div>
+  <section class="sheet"><div class="tbl-wrap"><table>
+    <thead><tr><th>Магазин</th><th>Власник</th><th class="n">Людей</th><th class="n">Клієнтів</th><th class="n">Записів</th><th>Остання активність</th><th>Доступ до</th><th></th></tr></thead>
+    <tbody>${list.map(s => { const l = left(s); return `<tr>
+      <td><b>${esc(s.name)}</b><div class="small muted">з ${fmtD(s.created_at)}</div></td>
+      <td>${esc(s.owner_name || '')}<div class="small muted">${esc(s.owner_email || '')}</div></td>
+      <td class="n">${s.members}</td><td class="n">${s.clients}</td><td class="n">${s.ops}</td>
+      <td>${s.last_activity ? fmtD(s.last_activity) : '—'}</td>
+      <td><span class="chip ${l <= 0 ? 'bad' : l <= 7 ? 'warn' : s.paid_until ? 'ok' : ''}">${fmtD(s.access_until)}</span><div class="small muted">${l > 0 ? 'ще ' + days(l) : 'закінчився'}${s.paid_until ? '' : ' · пробний'}</div></td>
+      <td><button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">Оплата</button></td>
+    </tr>`; }).join('') || '<tr><td colspan="8" class="muted">Нічого не знайдено</td></tr>'}</tbody>
+  </table></div></section>
+  <p class="small muted">Повне видалення магазину на прохання клієнта — у вікні «Оплата» внизу.</p>`;
+}
+
+async function extendModal(id) {
+  const s = as.shops.find(x => x.id === id); if (!s) return;
+  openModal(`<div class="stack"><form data-form="admin-extend" data-id="${esc(id)}" class="stack" novalidate>
+    <h2>${esc(s.name)}</h2>
+    <div class="small muted">${esc(s.owner_email || '')} · доступ до ${fmtD(s.access_until)}</div>
+    <label class="f">Продовжити на днів<input id="ax-days" inputmode="numeric" value="30"></label>
+    <div class="quick">${[30, 90, 180, 365].map(d => `<button type="button" data-act="ax-days" data-v="${d}">${d}</button>`).join('')}</div>
+    <label class="f">Отримано, грн (для обліку)<input id="ax-amount" inputmode="decimal" value="0"></label>
+    <label class="f">Примітка<input id="ax-note" maxlength="200" placeholder="Оплата за жовтень, картка"></label>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Продовжити доступ</button></div>
+    </form>
+    <details><summary class="small">Історія оплат</summary><div id="ax-history" class="small muted">Завантаження…</div></details>
+    <details><summary class="small txt-bad">Видалити магазин повністю</summary>
+      <p class="small">Незворотно видаляє всі дані магазину (клієнтів, борги, журнал). Лише на письмовий запит власника. Спершу порадьте йому зберегти копію.</p>
+      <label class="f">Введіть точну назву магазину<input id="ax-del-name" autocomplete="off"></label>
+      <button type="button" class="btn bad" data-act="admin-delete" data-id="${esc(id)}">Видалити назавжди</button>
+    </details>
+  </div>`);
+  try {
+    const pays = await api.rpc('admin_payments', { p_shop: id });
+    const h = document.getElementById('ax-history');
+    if (h) h.innerHTML = pays.length ? `<ul class="plain">${pays.map(p => `<li>${fmtD(p.created_at)}: +${p.days} дн., ${money(p.amount_kop)}${p.note ? ' — ' + esc(p.note) : ''} → до ${fmtD(p.paid_until_after)}</li>`).join('')}</ul>` : 'Оплат ще не було.';
+  } catch { /* */ }
+}
+
+register({
+  'admin-reload': () => { as.shops = null; as.error = null; load(); },
+  'admin-filter': (el) => { as.filter = el.dataset.v; view.rerender(); },
+  'admin-extend': (el) => extendModal(el.dataset.id),
+  'ax-days': (el) => { document.getElementById('ax-days').value = el.dataset.v; },
+  'admin-delete': async (el) => {
+    const name = document.getElementById('ax-del-name').value;
+    try { await api.rpc('admin_delete_shop', { p_shop: el.dataset.id, p_confirm_name: name }); closeModal(); toast('Магазин видалено'); as.shops = null; load(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+}, {
+  async 'admin-extend'(form) {
+    const d = parseInt(document.getElementById('ax-days').value, 10);
+    const amount = parseMoney(document.getElementById('ax-amount').value || '0');
+    if (!d) return formError(form, 'Вкажіть кількість днів.');
+    if (!(amount >= 0)) return formError(form, 'Невірна сума.');
+    await busy(form, async () => {
+      try {
+        const r = await api.rpc('admin_extend', { p_shop: form.dataset.id, p_days: d, p_amount_kop: amount, p_note: document.getElementById('ax-note').value });
+        closeModal(); toast('Доступ до ' + fmtD(r.paid_until), 'ok'); as.shops = null; load();
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'adm-q') { as.q = e.target.value; view.rerender(); } });
+
+return { adminView };
+})();
+
+M.views_misc = (function () {
+const { esc, money, fmtDT } = M.util;
+const { register, openModal, closeModal, toast, formError, busy } = M.ui;
+const { S, selectShop, runSync, clearNotices } = M.store;
+const api = M.api;
+const { go } = M.router;
+// Перший вхід (створити магазин / приєднатися), огляд кількох магазинів, встановлення, сповіщення
+
+
+
+
+
+const defaultName = () => (api.getSession()?.user?.user_metadata?.name) || sessionStorage.getItem('zoshyt.name') || '';
+
+function startView() {
+  const n = esc(defaultName());
+  return `<div class="auth"><div class="auth-card wide">
+    <h1 class="h-start">Вітаємо${n ? ', ' + n : ''}!</h1>
+    <p class="muted">Оберіть, що вам потрібно:</p>
+    <div class="choice">
+      <form data-form="create-shop" class="stack sheet pad" novalidate>
+        <h2>Я власник магазину</h2>
+        <p class="small muted">Створіть свій магазин. 30 днів безкоштовно, без картки.</p>
+        <label class="f">Назва магазину<input id="cs-name" required maxlength="100" placeholder="Магазин «Колосок», с. Вишневе"></label>
+        <label class="f">Ваше ім’я<input id="cs-me" required maxlength="60" value="${n}"></label>
+        <div class="err" role="alert"></div>
+        <button class="btn ink" type="submit">Створити магазин</button>
+      </form>
+      <form data-form="join-shop" class="stack sheet pad" novalidate>
+        <h2>Я продавець</h2>
+        <p class="small muted">Власник магазину дасть вам код з 8 символів (напр. ABCD-EFGH).</p>
+        <label class="f">Код запрошення<input id="js-code" required maxlength="12" autocapitalize="characters" autocomplete="off" placeholder="ABCD-EFGH" class="code-in"></label>
+        <label class="f">Ваше ім’я<input id="js-me" required maxlength="60" value="${n}"></label>
+        <div class="err" role="alert"></div>
+        <button class="btn ink" type="submit">Приєднатися</button>
+      </form>
+    </div>
+    <div class="center small"><button class="btn sm ghost" data-act="logout">Вийти з акаунта</button></div>
+  </div></div>`;
+}
+
+function overviewView() {
+  const shops = (S.boot && S.boot.shops) || [];
+  const owned = shops.filter(s => s.role === 'owner');
+  const total = owned.reduce((s, x) => s + (x.total_debt || 0), 0);
+  return `
+  <section class="summary three">
+    <div><div class="k">Загалом винні (усі магазини)</div><div class="v bad">${money(total)}</div></div>
+    <div><div class="k">Боржників</div><div class="v">${owned.reduce((s, x) => s + (x.debtors || 0), 0)}</div></div>
+    <div><div class="k">Магазинів</div><div class="v">${shops.length}</div></div>
+  </section>
+  <section class="sheet"><ul class="rows">
+    ${shops.map(s => `<li class="row" data-act="pick-shop" data-id="${esc(s.id)}" tabindex="0">
+      <div class="who"><div class="name">${esc(s.name)}</div><div class="meta"><span>${s.role === 'owner' ? 'власник' : 'продавець'}</span><span>${s.debtors || 0} боржників</span>${s.writable === false ? '<span class="chip bad">підписка закінчилась</span>' : ''}</div></div>
+      <div class="sum"><span class="amt ${s.total_debt > 0 ? 'bad' : 'zero'}">${money(s.total_debt || 0)}</span></div></li>`).join('')}
+  </ul></section>
+  <div class="actions"><button class="btn" data-act="add-shop">+ Додати магазин</button><button class="btn" data-act="join-another">Приєднатися за кодом</button></div>
+  <p class="small muted">Підсумки оновлюються, коли є інтернет${S.boot?.at ? ' · станом на ' + fmtDT(S.boot.at) : ''}.</p>`;
+}
+
+function installView() {
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  return `
+  <section class="sheet pad stack">
+    <h2>Встановити програму</h2>
+    ${standalone ? '<div class="banner ok">Програму вже встановлено на цьому пристрої.</div>' : ''}
+    ${installPrompt && !standalone ? '<button class="btn ink big" data-act="install">Встановити зараз</button>' : ''}
+    <p>Після встановлення «Зошит» відкривається з іконки, як звичайна програма, і працює без інтернету.</p>
+  </section>
+  <div class="grid2">
+    <section class="sheet pad stack"><h3>Android (Chrome)</h3><ol class="steps">
+      <li>Відкрийте цю сторінку в <b>Chrome</b>.</li><li>Натисніть <b>⋮</b> (три крапки вгорі праворуч).</li><li>Оберіть <b>«Встановити застосунок»</b> або <b>«Додати на головний екран»</b>.</li></ol></section>
+    <section class="sheet pad stack"><h3>iPhone (Safari)</h3><ol class="steps">
+      <li>Відкрийте цю сторінку в <b>Safari</b>.</li><li>Натисніть <b>«Поділитися»</b> (квадрат зі стрілкою).</li><li>Оберіть <b>«На екран “Додому”»</b>.</li></ol></section>
+    <section class="sheet pad stack"><h3>Windows (Chrome або Edge)</h3><ol class="steps">
+      <li>Відкрийте сторінку в <b>Chrome</b> або <b>Edge</b>.</li><li>У рядку адреси праворуч натисніть значок <b>«Встановити»</b> (монітор зі стрілкою).</li><li>Підтвердьте. Іконка з’явиться в меню «Пуск» і на робочому столі.</li></ol></section>
+    <section class="sheet pad stack"><h3>Порада</h3>
+      <p class="small">Перший вхід потребує інтернету. Далі можна записувати борги без зв’язку — записи відправляться самі, щойно інтернет з’явиться. Значок угорі показує стан: <b>✓</b> — усе збережено на сервері.</p></section>
+  </div>`;
+}
+
+function noticesModal() {
+  openModal(`<div class="stack">
+    <h2>Що не вдалося зберегти</h2>
+    <p class="small muted">Сервер не прийняв ці дії. Відкрийте клієнта, щоб повторити або прибрати запис.</p>
+    <ul class="plain notices">${S.notices.map(n => `<li><span class="small muted">${fmtDT(n.at)}</span> ${esc(n.text)}</li>`).join('')}</ul>
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button><button class="btn ink" data-act="clear-notices">Зрозуміло, прибрати</button></div>
+  </div>`);
+}
+
+// подія встановлення (Chrome/Edge/Android)
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+
+function shopForm(kind) {
+  const n = esc(defaultName());
+  openModal(kind === 'create' ? `<form data-form="create-shop" class="stack" novalidate>
+      <h2>Новий магазин</h2>
+      <label class="f">Назва магазину<input id="cs-name" required maxlength="100" autofocus></label>
+      <label class="f">Ваше ім’я<input id="cs-me" required maxlength="60" value="${esc((S.members.find(m => m.user_id === S.user.id) || {}).display_name || n)}"></label>
+      <p class="small muted">Кожен магазин має окремих клієнтів, працівників і підписку.</p>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Створити</button></div></form>`
+    : `<form data-form="join-shop" class="stack" novalidate>
+      <h2>Приєднатися до магазину</h2>
+      <label class="f">Код запрошення<input id="js-code" required maxlength="12" autofocus class="code-in" autocomplete="off"></label>
+      <label class="f">Ваше ім’я<input id="js-me" required maxlength="60" value="${esc((S.members.find(m => m.user_id === S.user.id) || {}).display_name || n)}"></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Приєднатися</button></div></form>`);
+}
+
+async function afterShop(shopId) {
+  await runSync({ forceBoot: true });
+  await selectShop(shopId);
+  closeModal();
+  go('#/list');
+}
+
+register({
+  'pick-shop': async (el) => { await selectShop(el.dataset.id); go('#/list'); },
+  'add-shop': () => shopForm('create'),
+  'join-another': () => shopForm('join'),
+  install: async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; },
+  notices: () => noticesModal(),
+  'clear-notices': async () => { await clearNotices(); closeModal(); },
+}, {
+  async 'create-shop'(form) {
+    const name = document.getElementById('cs-name').value.trim(), me = document.getElementById('cs-me').value.trim();
+    if (!name) return formError(form, 'Вкажіть назву магазину.');
+    if (!me) return formError(form, 'Вкажіть ваше ім’я.');
+    if (!navigator.onLine) return formError(form, 'Для створення магазину потрібен інтернет.');
+    await busy(form, async () => {
+      try { const s = await api.rpc('create_shop', { p_name: name, p_display_name: me }); toast('Магазин створено! 30 днів безкоштовно.', 'ok'); await afterShop(s.id); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'join-shop'(form) {
+    const code = document.getElementById('js-code').value.trim(), me = document.getElementById('js-me').value.trim();
+    if (!code) return formError(form, 'Введіть код.');
+    if (!me) return formError(form, 'Вкажіть ваше ім’я.');
+    if (!navigator.onLine) return formError(form, 'Для приєднання потрібен інтернет.');
+    await busy(form, async () => {
+      try {
+        const r = await api.rpc('join_shop', { p_code: code, p_display_name: me });
+        if (r && r.error) return formError(form, r.message);
+        toast(`Ви приєдналися до «${r.name}»`, 'ok'); await afterShop(r.id);
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+});
+
+return { startView, overviewView, installView, noticesModal, installPrompt };
+})();
+
+M.main = (function () {
+const api = M.api;
+const { $, esc, fmtTime } = M.util;
+const { actions, forms, closeModal, modalOpen, toast, icon, register, confirmBox } = M.ui;
+const { S, subscribe, start, foreignPending, requestSync, runSync, selectShop, isOwner } = M.store;
+const { view, parse, go } = M.router;
+const { loginView, signupView, forgotView, resetView, setupView, reloginModal, setOnSignedIn } = M.views_auth;
+const { listView, clientView, listState } = M.views_shop;
+const { reportsView } = M.views_reports;
+const { journalView } = M.views_journal;
+const { settingsView, subscriptionBanner } = M.views_settings;
+const { adminView } = M.views_admin;
+const { startView, overviewView, installView } = M.views_misc;
+// Точка входу: запуск, маршрути, оболонка, обробка подій
+
+
+
+
+
+
+
+
+
+
+
+
+window.ZOSHYT_VERSION = '1.0.0';
+const root = $('#root');
+let mode = 'loading';   // loading | setup | auth | reset | app
+let reloginShown = false;
+
+// ---------- рендер ----------
+function render() {
+  const focusId = document.activeElement && document.activeElement.id;
+  const sel = focusId && document.activeElement.selectionStart;
+  const scroll = window.scrollY;
+  root.innerHTML = screen();
+  if (focusId && !modalOpen()) {
+    const el = document.getElementById(focusId);
+    if (el && el.tagName === 'INPUT') { el.focus(); try { el.setSelectionRange(sel, sel); } catch { /* */ } }
+  }
+  if (view.keepScroll) window.scrollTo(0, scroll);
+  view.keepScroll = true;
+  if (S.authExpired && !reloginShown && mode === 'app') { reloginShown = true; reloginModal(); }
+  if (!S.authExpired) reloginShown = false;
+}
+view.rerender = render;
+
+function screen() {
+  const r = parse();
+  if (mode === 'loading') return '<div class="auth"><div class="loading">Відкриваю зошит…</div></div>';
+  if (mode === 'setup') return setupView();
+  if (mode === 'reset') return resetView();
+  if (mode === 'auth') return r.name === 'signup' ? signupView() : r.name === 'forgot' ? forgotView() : loginView();
+  // mode === 'app'
+  if (!S.boot) return `<div class="auth"><div class="auth-card"><div class="loading">Завантаження…</div>${navigator.onLine ? '' : '<div class="banner warn">Немає інтернету. Перший запуск на цьому пристрої потребує з’єднання.</div>'}</div></div>`;
+  if (!S.boot.shops.length) return startView();
+  if (r.name === 'admin' && S.boot.is_admin) return shell('admin', adminView(), 'Адмін-панель');
+  if (r.name === 'overview') return shell('overview', overviewView(), 'Усі магазини');
+  if (!S.shop) return shell('overview', overviewView(), 'Усі магазини');
+  view.name = r.name; view.clientId = r.name === 'client' ? r.arg : null;
+  switch (r.name) {
+    case 'client': return shell('list', clientView(r.arg));
+    case 'reports': return isOwner() ? shell('reports', reportsView()) : shell('list', listView());
+    case 'journal': return shell('journal', journalView());
+    case 'settings': return shell('settings', settingsView());
+    case 'install': return shell('settings', installView());
+    default: return shell('list', listView());
+  }
+}
+
+function syncChip() {
+  const s = S.sync;
+  if (!navigator.onLine || s.state === 'offline') return `<button class="sync off" data-act="sync-now" title="Немає інтернету. Записи зберігаються на пристрої.">${icon.off}<span>Офлайн${S.outbox ? ' · ' + S.outbox + ' чекають' : ''}</span></button>`;
+  if (s.state === 'syncing') return `<button class="sync" data-act="sync-now">${icon.sync}<span>Синхронізація…</span></button>`;
+  if (s.state === 'error') return `<button class="sync bad" data-act="sync-now" title="${esc(s.error || '')}">${icon.warn}<span>Помилка${S.outbox ? ' · ' + S.outbox + ' чекають' : ''}</span></button>`;
+  if (S.outbox) return `<button class="sync" data-act="sync-now">${icon.cloud}<span>${S.outbox} чекають</span></button>`;
+  return `<button class="sync ok" data-act="sync-now" title="Усе збережено на сервері">${icon.check}<span>${s.lastOk ? fmtTime(s.lastOk) : 'OK'}</span></button>`;
+}
+
+function shell(tab, content, title) {
+  const shops = S.boot.shops;
+  const owner = isOwner();
+  const tabs = S.shop ? [['list', 'Боржники', '#/list']]
+    .concat(owner ? [['reports', 'Звіти', '#/reports']] : [])
+    .concat([['journal', owner ? 'Журнал' : 'Мої записи', '#/journal'], ['settings', 'Налаштування', '#/settings']]) : [];
+  const showShopSwitch = shops.length > 1 || shops.some(s => s.role === 'owner');
+  return `
+  <header class="top"><div class="top-row">
+    <a class="brand" href="#/list" aria-label="Зошит боржників — на головну"><img src="icon.svg" alt="" width="30" height="30"><span class="brand-name">Зошит</span></a>
+    ${S.shop && showShopSwitch ? `<label class="shop-switch"><span class="sr">Магазин</span><select id="shop-select">
+        ${shops.map(s => `<option value="${esc(s.id)}" ${s.id === S.shopId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}
+        ${shops.length > 1 ? '<option value="__overview">— Усі магазини —</option>' : ''}
+        ${shops.some(s => s.role === 'owner') ? '<option value="__add">+ Додати магазин…</option>' : ''}
+        <option value="__join">Приєднатися за кодом…</option>
+      </select></label>` : `<span class="shop-name">${esc(title || S.shop?.name || '')}</span>`}
+    <div class="top-right">${syncChip()}${S.boot.is_admin ? `<a class="btn sm ghost" href="#/admin">Адмін</a>` : ''}</div>
+  </div>
+  ${tabs.length ? `<nav class="tabs" aria-label="Розділи">${tabs.map(([k, l, h]) => `<a class="tab" href="${h}" ${tab === k ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>` : ''}
+  </header>
+  <main class="wrap">
+    ${!navigator.onLine ? `<div class="banner info">Немає інтернету — працюємо офлайн. ${S.outbox ? `${S.outbox} ${S.outbox === 1 ? 'запис чекає' : 'записи чекають'} відправки.` : 'Нові записи збережуться на пристрої.'}</div>` : ''}
+    ${S.sync.state === 'error' && S.sync.error ? `<div class="banner bad">${esc(S.sync.error)}</div>` : ''}
+    ${S.notices.length ? `<div class="banner bad row-between"><span>${S.notices.length} ${S.notices.length === 1 ? 'дія не збережена' : 'дії не збережено'} на сервері.</span><button class="btn sm" data-act="notices">Переглянути</button></div>` : ''}
+    ${tab !== 'admin' && tab !== 'overview' ? subscriptionBanner() : ''}
+    ${isOwner() && S.shop?.quarantine > 0 && tab !== 'settings' ? `<div class="banner warn row-between"><span>${S.shop.quarantine} ${S.shop.quarantine === 1 ? 'запис' : 'записи(ів)'} від вимкненого працівника чекають вашої перевірки.</span><a class="btn sm" href="#/settings">Переглянути</a></div>` : ''}
+    ${content}
+  </main>`;
+}
+
+// ---------- події ----------
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t) { if (e.target.id === 'modal') closeModal(); return; }
+  const fn = actions[t.dataset.act];
+  if (fn) { e.preventDefault(); fn(t, e); }
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('form[data-form]');
+  if (!f) return;
+  e.preventDefault();
+  const fn = forms[f.dataset.form];
+  if (fn) fn(f);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modalOpen() && !S.authExpired) closeModal();
+  if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-act][tabindex]')) e.target.click();
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'q') { listState.q = e.target.value; render(); } });
+document.addEventListener('change', async (e) => {
+  if (e.target.id !== 'shop-select') return;
+  const v = e.target.value;
+  if (v === '__overview') return go('#/overview');
+  if (v === '__add') { e.target.value = S.shopId; return actions['add-shop'](); }
+  if (v === '__join') { e.target.value = S.shopId; return actions['join-another'](); }
+  await selectShop(v); go('#/list');
+});
+window.addEventListener('hashchange', () => {
+  if (location.hash.includes('access_token=')) { boot(); return; }   // посилання з листа відкрили в уже відкритій вкладці
+  view.keepScroll = false;
+  const r = parse();
+  if (mode === 'app' && ['login', 'signup', 'forgot'].includes(r.name)) { location.hash = '#/list'; return; }
+  if (mode === 'auth' && !['login', 'signup', 'forgot'].includes(r.name)) { location.hash = '#/login'; return; }
+  closeModal(); render(); window.scrollTo(0, 0);
+});
+window.addEventListener('online', () => { render(); requestSync(100); });
+window.addEventListener('offline', () => { S.sync.state = 'offline'; render(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestSync(100); });
+setInterval(() => {
+  if (document.visibilityState !== 'visible' || mode !== 'app') return;
+  // без магазину (напр. чекаємо, поки власник поверне доступ) — перевіряємо список магазинів
+  if (!S.shop) runSync({ forceBoot: true }); else requestSync(0);
+}, 30000);
+
+register({
+  close: () => closeModal(),
+  'sync-now': () => { runSync({ forceBoot: true }).then(() => { if (S.sync.state === 'ok') toast('Синхронізовано'); else if (S.sync.state === 'offline') toast('Немає інтернету — записи збережені на пристрої'); }); },
+});
+
+subscribe(() => { if (mode === 'app') render(); });
+
+// ---------- запуск ----------
+async function signedIn(user) {
+  const foreign = await foreignPending(user);
+  if (foreign) {
+    // не стираємо чужі невідправлені записи мовчки
+    const ok = await confirmBox({ title: 'На пристрої є чужі невідправлені записи',
+      text: `${foreign.count} записів користувача <b>${esc(foreign.email)}</b> ще не відправлено на сервер. Щоб їх зберегти, вийдіть і увійдіть як ${esc(foreign.email)}. Якщо продовжити, ці записи буде видалено з пристрою.`,
+      ok: 'Видалити їх і продовжити', cancel: 'Вийти', danger: true });
+    if (!ok) { await api.signOut(); mode = 'auth'; location.hash = '#/login'; return render(); }
+  }
+  mode = 'app';
+  await start(user);
+  if (['login', 'signup', 'forgot', ''].includes(parse().name) || !location.hash) location.hash = '#/list';
+  render();
+  await runSync({ forceBoot: true });
+}
+setOnSignedIn(signedIn);
+
+async function boot() {
+  if (!api.configured()) { mode = 'setup'; return render(); }
+  const rec = api.takeRecoveryFromUrl();
+  if (rec && rec.error) toast(rec.error, 'bad');
+  if (rec && rec.type === 'recovery') { mode = 'reset'; sessionStorage.setItem('zoshyt.recovery', '1'); return render(); }
+  if (sessionStorage.getItem('zoshyt.recovery') && api.getSession()) { mode = 'reset'; return render(); }
+  let session = api.getSession();
+  if (session && !session.user) { try { await api.fetchUser(); session = api.getSession(); } catch { /* */ } }
+  if (!session || !session.user) {
+    mode = 'auth';
+    if (!['login', 'signup', 'forgot'].includes(parse().name)) location.hash = '#/login';
+    return render();
+  }
+  await signedIn(session.user);
+}
+
+// ---------- оновлення програми (service worker) ----------
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    const offer = (w) => {
+      const b = document.getElementById('update-bar');
+      b.hidden = false;
+      b.querySelector('button').onclick = () => { w.postMessage('skip-waiting'); };
+    };
+    if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+    reg.addEventListener('updatefound', () => {
+      const w = reg.installing;
+      w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); });
+    });
+    setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+  }).catch(() => {});
+  // перезавантажуємо лише при ОНОВЛЕННІ програми, а не при першому встановленні
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+}
+
+boot().catch((e) => { console.error(e); root.innerHTML = `<div class="auth"><div class="auth-card"><div class="banner bad">Помилка запуску: ${esc(e.message)}</div><a class="btn" href="./">Перезавантажити</a></div></div>`; });
+
+return {  };
+})();
+})();
+</script>
+</body>
+</html>
