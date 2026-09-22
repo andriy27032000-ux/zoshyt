@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NkIOpSKMqNldX/UiI1TYFndSvS4U2NeE9u7TJ99D1FA=' 'sha256-n9MGR1c7iXvDLEq7ibTI+jXzcaK5gIVMDR2j+yDSN0s='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NkIOpSKMqNldX/UiI1TYFndSvS4U2NeE9u7TJ99D1FA=' 'sha256-ydZ23VVaraaDKm/E5aD0LMIB/Bda1rKKKU70/TnXTME='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
@@ -692,12 +692,15 @@ function putFormat(M, maskIdx) {
   const bits = ((fmt << 10) | rem) ^ 0b101010000010010;
   const get = (i) => ((bits >> i) & 1) === 1;
   const s = M.size;
-  for (let i = 0; i <= 5; i++) M.m[8][i] = get(i);
-  M.m[8][7] = get(6); M.m[8][8] = get(7); M.m[7][8] = get(8);
-  for (let i = 9; i <= 14; i++) M.m[14 - i][8] = get(i);
-  for (let i = 0; i <= 7; i++) M.m[s - 1 - i][8] = get(i);
-  for (let i = 8; i <= 14; i++) M.m[8][s - 15 + i] = get(i);
-  M.m[s - 8][8] = true;
+  const set = (r, c, v) => { M.m[r][c] = v; };
+  // Копія 1: біти 0–5 — стовпець 8 згори вниз, далі кут, далі рядок 8 справа наліво.
+  for (let i = 0; i <= 5; i++) set(i, 8, get(i));
+  set(7, 8, get(6)); set(8, 8, get(7)); set(8, 7, get(8));
+  for (let i = 9; i <= 14; i++) set(8, 14 - i, get(i));
+  // Копія 2: біти 0–7 — рядок 8 біля правого шукача, біти 8–14 — стовпець 8 знизу.
+  for (let i = 0; i <= 7; i++) set(8, s - 1 - i, get(i));
+  for (let i = 8; i <= 14; i++) set(s - 15 + i, 8, get(i));
+  set(s - 8, 8, true);   // завжди темний модуль
 }
 
 // ---------- оцінка масок (як у стандарті) ----------
