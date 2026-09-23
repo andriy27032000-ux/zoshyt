@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NkIOpSKMqNldX/UiI1TYFndSvS4U2NeE9u7TJ99D1FA=' 'sha256-ydZ23VVaraaDKm/E5aD0LMIB/Bda1rKKKU70/TnXTME='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-mSJ3lWz/lGF+8fe0i3fCP9VsrCf0nmVhNZzydOUra2E='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
@@ -301,19 +301,63 @@ details summary { cursor: pointer; padding: 6px 0; }
 .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .sheet.highlight, form.highlight { outline: 2px solid var(--ink); outline-offset: 2px; }
 
+/* ---------- Фаза 1: нові елементи ---------- */
+.page-head h1 { font-size: 1.25rem; }
+.icon-btn { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px; padding: 0; }
+.icon-btn:hover { border-color: var(--ink); }
+.icon-btn.sm { min-width: 36px; min-height: 36px; border-color: transparent; background: transparent; color: var(--muted); }
+/* фільтри-чіпи: переносяться на новий рядок, текст ніколи не обрізається */
+.seg.chips { flex-wrap: wrap; background: none; padding: 0; gap: 6px; }
+.seg.chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; min-height: 38px; white-space: nowrap; }
+.seg.chips button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-ink); box-shadow: none; }
+/* давність боргу: до 7 днів сірий, 8–30 жовтий, 31+ червоний */
+.age { display: inline-block; font-size: 0.75rem; font-weight: 650; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.age.mute { background: var(--surface-2); color: var(--muted); }
+.age.warn { background: var(--warn-soft); color: var(--warn); }
+.age.bad { background: var(--bad-soft); color: var(--bad); }
+/* кроки підтвердження у вікні запису */
+.confirm-box { border-radius: 10px; padding: 10px 12px; font-size: 0.9375rem; display: grid; gap: 8px; }
+.confirm-box.warn { background: var(--warn-soft); color: var(--text); border: 1px solid var(--warn); }
+.confirm-box.info { background: var(--info-soft); color: var(--text); border: 1px solid var(--ink); }
+.confirm-box.bad { background: var(--bad-soft); color: var(--text); border: 1px solid var(--bad); }
+.confirm-box .check { font-weight: 600; }
+/* підписка: компактно, реквізити з кнопкою копіювання */
+.sub-box { gap: 8px; }
+.price-line { font-size: 0.9375rem; }
+.pay-rows { display: grid; gap: 2px; background: var(--surface-2); border-radius: 10px; padding: 4px 4px 4px 12px; }
+.pay-row { display: grid; grid-template-columns: 6.9em minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 0.875rem; min-height: 40px; }
+.pay-row > span:nth-child(2) { min-width: 0; }
+.pay-row b { overflow-wrap: anywhere; font-weight: 650; }
+.pay-row small { display: block; font-size: 0.75rem; }
+.pay-row .icon-btn.copy { color: var(--ink); min-width: 40px; min-height: 40px; }
+.mono { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.actions.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(9em, 1fr)); gap: 8px; }
+.contact-line a { font-weight: 600; }
+/* повідомлення з кнопкою «Скасувати» */
+.toast { display: flex; align-items: center; gap: 12px; }
+.toast-act { border: 0; background: transparent; color: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; padding: 6px 4px; min-height: 36px; cursor: pointer; white-space: nowrap; }
+/* журнал: службові події — сірим і дрібніше */
+.hist li.tech .t { color: var(--muted); font-size: 0.8125rem; }
+.hist li.tech .chip { opacity: .7; }
+/* банер встановлення */
+.install-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.install-bar .actions { display: flex; align-items: center; gap: 6px; }
+
 </style>
 <script>window.ZOSHYT_CONFIG = {
   "supabaseUrl": "https://bafzvncwbfjqgbuchdkh.supabase.co",
   "supabaseAnonKey": "sb_publishable_YCt2G_UE6KCG9piN0oNtRg_H1NdWShL",
   "googleAuth": false,
-  "priceMonth": "Місяць — 190 грн за магазин, без обмежень на продавців і клієнтів.",
-  "priceYear": "Рік — 1 900 грн (два місяці в подарунок).",
-  "payInfo": "Картка 0000 0000 0000 0000 (ФОП Прізвище І.П.)",
-  "payLink": "",
-  "contact": "Telegram @your_support · +380 00 000 00 00",
-  "supportTelegram": "",
-  "supportPhone": "",
-  "supportEmail": ""
+  "APP_URL": "",
+  "PRICE_MONTH": 149,
+  "PRICE_YEAR": 1490,
+  "PAY_CARD": "",
+  "PAY_RECIPIENT": "",
+  "PAY_IBAN": "",
+  "PAY_LINK": "",
+  "SUPPORT_TG": "",
+  "SUPPORT_PHONE": "",
+  "SUPPORT_EMAIL": ""
 };</script>
 
 </head>
@@ -363,6 +407,17 @@ function plural(n, one, few, many) {
 }
 const days = (n) => `${n} ${plural(n, 'день', 'дні', 'днів')}`;
 
+/** «Як давно не платить» людською мовою: сьогодні / вчора / 5 днів / 3 тижні / 2 місяці без оплати */
+function sinceText(d) {
+  if (d <= 0) return 'сьогодні';
+  if (d === 1) return 'вчора';
+  if (d < 14) return `${days(d)} без оплати`;
+  if (d < 60) { const w = Math.floor(d / 7); return `${w} ${plural(w, 'тиждень', 'тижні', 'тижнів')} без оплати`; }
+  const m = Math.floor(d / 30); return `${m} ${plural(m, 'місяць', 'місяці', 'місяців')} без оплати`;
+}
+/** Колір давності: до 7 днів — сірий, 8–30 — жовтий, 31+ — червоний */
+const ageTone = (d) => d > 30 ? 'bad' : d > 7 ? 'warn' : 'mute';
+
 function uuid() {
   if (crypto.randomUUID) return crypto.randomUUID();
   const b = crypto.getRandomValues(new Uint8Array(16));
@@ -404,7 +459,7 @@ async function copyText(text) {
   }
 }
 
-return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText };
+return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, sinceText, ageTone, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText };
 })();
 
 M.idb = (function () {
@@ -492,6 +547,64 @@ async function persist() {
 }
 
 return { get, put, putMany, del, all, byShop, clearAll, kv, persist };
+})();
+
+M.cfg = (function () {
+
+// Налаштування з config.js в одному місці: реквізити, ціни, контакти, адреса.
+// Порожні поля й заглушки (0000…, @your_support) вважаються «не заповнено» —
+// тоді на екрані просто немає відповідного рядка чи кнопки, замість фальшивих даних.
+const raw = window.ZOSHYT_CONFIG || {};
+
+const PLACEHOLDER = /0000\s?0000|YOUR|your_support|Прізвище І\.?П|\+380\s?00\s?000|example\.com/i;
+const str = (...keys) => {
+  for (const k of keys) {
+    const v = raw[k];
+    if (v !== undefined && v !== null && String(v).trim() !== '' && !PLACEHOLDER.test(String(v))) return String(v).trim();
+  }
+  return '';
+};
+const num = (...keys) => {
+  for (const k of keys) {
+    const v = parseFloat(String(raw[k] ?? '').replace(/\s/g, '').replace(',', '.'));
+    if (v > 0) return v;
+  }
+  return 0;
+};
+
+const CFG = {
+  priceMonth: num('PRICE_MONTH') || 149,
+  priceYear: num('PRICE_YEAR') || 1490,
+  payCard: str('PAY_CARD'),
+  payRecipient: str('PAY_RECIPIENT'),
+  payIban: str('PAY_IBAN'),
+  payLink: str('PAY_LINK', 'payLink'),
+  supportTg: str('SUPPORT_TG', 'supportTelegram').replace(/^@/, '').replace(/^https?:\/\/t\.me\//, ''),
+  supportPhone: str('SUPPORT_PHONE', 'supportPhone').replace(/[^\d+]/g, ''),
+  supportEmail: str('SUPPORT_EMAIL', 'supportEmail'),
+  appUrl: str('APP_URL').replace(/\/+$/, ''),
+  googleAuth: !!raw.googleAuth,
+};
+
+/** Базова адреса програми для посилань і QR-кодів (власний домен, коли він є) */
+function appUrl() {
+  return (CFG.appUrl || (location.origin + location.pathname).replace(/\/index\.html$/, '').replace(/\/+$/, '')) + '/';
+}
+
+/** Номер картки групами по 4 цифри */
+const fmtCard = (s) => String(s || '').replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+
+/** Телефон у міжнародному вигляді для посилань tel:/viber: */
+function intlPhone(p) {
+  const d = String(p || '').replace(/[^\d+]/g, '');
+  if (!d) return '';
+  if (d.startsWith('+')) return d;
+  if (d.startsWith('380')) return '+' + d;
+  if (d.startsWith('0')) return '+38' + d;
+  return d;
+}
+
+return { CFG, appUrl, fmtCard, intlPhone };
 })();
 
 M.prefs = (function () {
@@ -988,10 +1101,13 @@ function closeModal() {
 }
 const modalOpen = () => !$('#modal').hidden;
 
-function toast(msg, tone = '') {
+/** Коротке повідомлення внизу. action: {label, fn} — кнопка (напр. «Скасувати»), ms — скільки показувати */
+function toast(msg, tone = '', { action = null, ms = 3200 } = {}) {
   const t = $('#toast');
-  t.textContent = msg; t.className = 'toast ' + tone; t.hidden = false;
-  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 3200);
+  t.className = 'toast ' + tone; t.hidden = false;
+  t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button" class="toast-act">${esc(action.label)}</button>` : ''}`;
+  if (action) t.querySelector('button').onclick = () => { t.hidden = true; clearTimeout(toast.t); action.fn(); };
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, action ? Math.max(ms, 5000) : ms);
 }
 
 /** Показати помилку у формі (елемент .err усередині) */
@@ -1034,6 +1150,8 @@ const icon = {
   journal: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 0v18M9 8h7M9 12h7M9 16h4"/></svg>',
   gear: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="m19.4 13-.3 1.2 1.6 1.6-1.6 2.8-2.2-.6-1 .6-.6 2.2h-3.2l-.6-2.2-1-.6-2.2.6-1.6-2.8L7 14.2 6.9 13l-.1-1-1.7-1.5 1.6-2.8 2.2.6 1-.6.6-2.2h3.2l.6 2.2 1 .6 2.2-.6 1.6 2.8-1.6 1.5.1 1Z"/></svg>',
   admin: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 3 4.5 6v5.5c0 4.3 3 8.1 7.5 9.5 4.5-1.4 7.5-5.2 7.5-9.5V6L12 3Z"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M9 9h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1Zm-3 6H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>',
   bell: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7M10.3 21a2 2 0 0 0 3.4 0"/></svg>',
   google: '<svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.6Z"/><path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3C3.7 21.4 7.6 24 12 24Z"/><path fill="#FBBC05" d="M5.6 14.7a7.2 7.2 0 0 1 0-4.6v-3H1.8a12 12 0 0 0 0 10.7l3.8-3Z"/><path fill="#EA4335" d="M12 4.8c1.7 0 3.2.6 4.4 1.7l3.3-3.3C17.7 1.3 15.1 0 12 0 7.6 0 3.7 2.6 1.8 6.2l3.8 3C6.5 6.7 9 4.8 12 4.8Z"/></svg>',
   phone: '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1l-2.2 2.2Z"/></svg>',
@@ -1064,7 +1182,7 @@ return { view, parse, go };
 M.store = (function () {
 const api = M.api;
 const idb = M.idb;
-const { uuid } = M.util;
+const { uuid, lsGet, lsSet } = M.util;
 // Дані застосунку: локальна копія (IndexedDB) + черга відправки + синхронізація з сервером.
 // Усі записи спершу зберігаються на пристрої, тому програма працює і без інтернету.
 
@@ -1079,7 +1197,7 @@ const S = {
   clients: new Map(),
   ops: new Map(),
   outbox: 0,           // скільки дій чекає відправки
-  sync: { state: 'idle', lastOk: 0, error: null },
+  sync: { state: 'idle', lastOk: +(lsGet('zoshyt.lastSync') || 0), error: null },
   notices: [],         // повідомлення про дії, які сервер не прийняв
   authExpired: false,
   version: 0,
@@ -1481,6 +1599,7 @@ async function runSync({ forceBoot = false } = {}) {
       if (forceBoot || stopped.size || !S.boot || Date.now() - lastBoot > 60000) { await refreshBoot(); lastBoot = Date.now(); }
       if (S.shopId) await pull(S.shopId);
       S.sync = { state: 'ok', lastOk: Date.now(), error: null };
+      lsSet('zoshyt.lastSync', String(S.sync.lastOk));
       if (stopped.size) {
         const names = [...stopped].map(id => (S.boot?.shops.find(s => s.id === id) || {}).name || 'магазин').join(', ');
         S.sync = { state: 'error', lastOk: Date.now(), error: `Підписка закінчилась (${names}) — записи чекають і відправляться після продовження.` };
@@ -1768,7 +1887,7 @@ return { setOnSignedIn, loginView, signupView, forgotView, resetView, setupView,
 })();
 
 M.views_shop = (function () {
-const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText, sinceText, ageTone } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { S, isOwner, writable, memberName, addOp, cancelOp, createClient, updateClient, retryFailed, discardFailed, markReminded } = M.store;
 const { stats, summary } = M.calc;
@@ -1779,7 +1898,9 @@ const { go, view } = M.router;
 
 
 
-const QUICK_NOTES = ['Хліб', 'Молоко', 'Продукти', 'Цигарки', 'Побутове', 'Пиво', 'Олія', 'Крупи'];
+const DEFAULT_NOTES = ['Продукти', 'Хліб, молоко', 'Цигарки', 'Алкоголь', 'Побутове', 'Інше'];
+const quickNotes = () => { const q = (S.shop?.quick_notes || '').split('\n').map(x => x.trim()).filter(Boolean); return q.length ? q : DEFAULT_NOTES; };
+const confirmOver = () => S.shop?.confirm_amount ?? 500000;   // «Точно така сума?» — понад 5 000 грн за замовчуванням
 
 const listState = { q: '', filter: 'debtors', sort: 'debt' };
 
@@ -1789,7 +1910,7 @@ function listView() {
   const sm = summary();
   const q = listState.q.trim().toLowerCase();
   const qd = digits(q);
-  let list = [...S.clients.values()].filter(c => !c.archived || q);
+  let list = [...S.clients.values()].filter(c => listState.filter === 'archived' ? c.archived : (!c.archived || q));
   if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || (qd.length >= 3 && digits(c.phone).includes(qd)) || (c.address || '').toLowerCase().includes(q));
   else if (listState.filter === 'debtors') list = list.filter(c => st.get(c.id).bal > 0 || c._failed);
   else if (listState.filter === 'overdue') list = list.filter(c => st.get(c.id).bal > 0 && st.get(c.id).days >= 30);
@@ -1809,18 +1930,18 @@ function listView() {
     <div><div class="k">Не платять 30+ днів</div><div class="v ${sm.overdue ? 'warn' : ''}">${sm.overdue}</div></div>
   </section>
   <div class="toolbar">
-    <input id="q" class="search" type="search" placeholder="Пошук: ім’я, телефон, вулиця" value="${esc(listState.q)}" autocomplete="off" aria-label="Пошук клієнта">
+    <input id="q" class="search" type="search" placeholder="Ім’я, телефон, вулиця" value="${esc(listState.q)}" autocomplete="off" aria-label="Пошук клієнта">
     ${writable() ? '<button class="btn ink" data-act="new-client">+ Новий клієнт</button>' : ''}
   </div>
   ${q ? '' : `<div class="toolbar">
-    <div class="seg" role="group" aria-label="Фільтр">${[['debtors', 'Винні'], ['overdue', 'Прострочені'], ['all', 'Усі']].map(([k, l]) => `<button data-act="list-filter" data-v="${k}" aria-pressed="${listState.filter === k}">${l}</button>`).join('')}</div>
+    <div class="seg" role="group" aria-label="Фільтр">${[['debtors', 'Винні'], ['overdue', 'Прострочені'], ['all', 'Усі'], ['archived', 'Архів']].map(([k, l]) => `<button data-act="list-filter" data-v="${k}" aria-pressed="${listState.filter === k}">${l}</button>`).join('')}</div>
     <div class="seg" role="group" aria-label="Сортування">${[['debt', 'Більший борг'], ['days', 'Довше не платять'], ['name', 'За ім’ям']].map(([k, l]) => `<button data-act="list-sort" data-v="${k}" aria-pressed="${listState.sort === k}">${l}</button>`).join('')}</div>
   </div>`}
   <section class="sheet">
     ${shown.length ? `<ul class="rows">${shown.map(c => clientRow(c, st.get(c.id))).join('')}</ul>${list.length > shown.length ? `<div class="empty small">Показано 300 з ${list.length}. Уточніть пошук.</div>` : ''}`
       : `<div class="empty">${q ? `Нікого не знайдено.${writable() ? `<br><button class="btn sm" data-act="new-client" style="margin-top:10px">Додати «${esc(listState.q)}»</button>` : ''}`
         : total === 0 ? `Клієнтів ще немає.${writable() ? '<br><button class="btn ink" data-act="new-client" style="margin-top:10px">+ Додати першого клієнта</button>' : ''}`
-        : listState.filter === 'all' ? 'Клієнтів немає.' : 'Ніхто не винен. Гарний день!'}</div>`}
+        : listState.filter === 'archived' ? 'В архіві нікого немає. Сюди потрапляють клієнти, яких ви сховали — з усією історією.' : listState.filter === 'all' ? 'Клієнтів немає.' : 'Ніхто не винен. Гарний день!'}</div>`}
   </section>`;
 }
 
@@ -1830,7 +1951,7 @@ function clientRow(c, p) {
   return `<li class="row" data-act="open-client" data-id="${esc(c.id)}" tabindex="0">
     <div class="who"><div class="name">${esc(c.name)}${c.archived ? ' <span class="chip">архів</span>' : ''}</div>
       <div class="meta">${c.phone ? `<span>${esc(c.phone)}</span>` : ''}${c.address ? `<span>${esc(c.address)}</span>` : ''}
-      ${p.bal > 0 && p.days >= 30 ? `<span class="chip warn">${days(p.days)} без оплати</span>` : ''}
+      ${p.bal > 0 && p.days > 7 ? `<span class="age ${ageTone(p.days)}">${sinceText(p.days)}</span>` : ''}
       ${lim && p.bal > lim ? '<span class="chip bad">понад ліміт</span>' : ''}
       ${p.pending ? `<span class="chip ink" title="Чекає відправки на сервер">${icon.cloud} не відправлено</span>` : ''}
       ${c._failed ? '<span class="chip bad">не збережено</span>' : ''}</div></div>
@@ -1866,7 +1987,7 @@ function clientView(id) {
         <div class="small muted">${p.bal > 0 ? 'Винен' : p.bal < 0 ? 'Переплата' : 'Боргу немає'}</div>
         <div class="big ${p.bal > 0 ? 'bad' : p.bal < 0 ? 'ok' : 'zero'}">${money(Math.abs(p.bal))}</div>
         ${lim ? `<div class="small muted">ліміт ${money(lim)}${p.bal > 0 ? ' · ' + Math.round(p.bal / lim * 100) + '%' : ''}</div><div class="meter"><i class="${p.bal > lim ? 'over' : ''}" style="width:${Math.min(100, Math.max(0, Math.round(p.bal / lim * 100)))}%"></i></div>` : '<div class="small muted">без ліміту</div>'}
-        ${p.bal > 0 && p.days >= 30 ? `<div><span class="chip warn">${days(p.days)} без оплати</span></div>` : ''}
+        ${p.bal > 0 ? `<div><span class="age ${ageTone(p.days)}">${p.days > 1 ? sinceText(p.days) : 'борг ' + sinceText(p.days)}</span></div>` : ''}
         ${c.last_reminded_at ? `<div><span class="chip ink" title="Дата останнього нагадування">${icon.bell} нагадували ${fmtD(c.last_reminded_at)}</span></div>` : ''}
       </div>
     </div>
@@ -1875,6 +1996,7 @@ function clientView(id) {
       ${w ? '<button class="btn ok" data-act="op" data-type="pay">Прийняти оплату</button>' : ''}
       ${p.bal > 0 ? '<button class="btn" data-act="remind">Нагадати</button>' : ''}
       ${isOwner() && w ? '<button class="btn" data-act="edit-client">Редагувати</button>' : ''}
+      ${isOwner() && w && c.archived ? '<button class="btn ink" data-act="unarchive">Повернути з архіву</button>' : ''}
     </div>
   </section>
   <section class="sheet">
@@ -1920,9 +2042,9 @@ function opModal(type) {
     <h2>${debt ? 'Записати борг' : 'Прийняти оплату'}</h2>
     <div class="muted small">${esc(c.name)} · зараз ${p.bal > 0 ? 'винен ' + money(p.bal) : 'боргу немає'}</div>
     <label class="f">Сума, грн<input id="op-amount" class="money-in" inputmode="decimal" autocomplete="off" required autofocus placeholder="0"></label>
-    ${debt ? `<div class="quick">${QUICK_NOTES.map(n => `<button type="button" data-act="quick-note" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>`
-      : (p.bal > 0 ? `<div class="quick"><button type="button" data-act="fill-amount" data-v="${p.bal}">Весь борг: ${money(p.bal)}</button></div>` : '')}
-    <label class="f">${debt ? 'Що взяв' : 'Коментар'}<input id="op-note" autocomplete="off" maxlength="200" placeholder="${debt ? 'Хліб, молоко…' : 'необов’язково'}"></label>
+    ${debt ? `<div class="quick">${quickNotes().map(n => `<button type="button" data-act="quick-note" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>`
+      : (p.bal > 0 ? `<div class="quick"><button type="button" data-act="fill-amount" data-v="${p.bal}">Весь борг: ${money(p.bal)}</button>${p.bal >= 200 ? `<button type="button" data-act="fill-amount" data-v="${Math.round(p.bal / 2)}">Половина</button>` : ''}${[10000, 20000, 50000].filter(v => v < p.bal).map(v => `<button type="button" data-act="fill-amount" data-v="${v}">${money(v)}</button>`).join('')}</div>` : '')}
+    <label class="f">${debt ? 'Що взяв' : 'Коментар'}<input id="op-note" autocomplete="off" maxlength="200" placeholder="необов’язково"></label>
     ${debt && c.limit_kop ? `<div class="small muted">Ліміт ${money(c.limit_kop)} · можна ще ${money(Math.max(0, c.limit_kop - p.bal))}</div>` : ''}
     <div id="op-extra"></div>
     <div class="err" role="alert"></div>
@@ -1939,7 +2061,7 @@ function clientModal(c) {
     <h2>${edit ? 'Редагувати клієнта' : 'Новий клієнт'}</h2>
     <label class="f">Ім’я та прізвище *<input id="c-name" required value="${esc(c.name)}" autofocus autocomplete="off" maxlength="100"></label>
     <label class="f">Телефон<input id="c-phone" type="tel" inputmode="tel" value="${esc(c.phone)}" placeholder="+380…" autocomplete="off" maxlength="30"></label>
-    <label class="f">Адреса<input id="c-address" value="${esc(c.address)}" placeholder="вул. Шевченка, 12" autocomplete="off" maxlength="150"></label>
+    <label class="f">Адреса <span class="muted small">(необов’язково)</span><input id="c-address" value="${esc(c.address)}" placeholder="вулиця, будинок або орієнтир (напр. біля школи)" autocomplete="off" maxlength="150"></label>
     ${isOwner() ? `<label class="f">Ліміт боргу, грн (0 — без ліміту)<input id="c-limit" inputmode="decimal" value="${moneyInput(c.limit_kop || 0)}"></label>` : `<div class="small muted">Ліміт боргу: ${money(c.limit_kop || 0)} (змінює власник)</div>`}
     <label class="f">Примітка<textarea id="c-note" rows="2" maxlength="300" placeholder="Напр.: платить з пенсії 5-го числа">${esc(c.note)}</textarea></label>
     ${edit ? `<label class="check"><input type="checkbox" id="c-archived" ${c.archived ? 'checked' : ''}> Сховати в архів (історія зберігається, нові борги не записуються)</label>` : ''}
@@ -1990,6 +2112,34 @@ function remindModal() {
   </div>`);
 }
 
+/** Показати крок підтвердження у вікні запису */
+function ask(form, html) {
+  document.getElementById('op-extra').innerHTML = html;
+  const b = form.querySelector('#op-extra button');
+  if (b) b.focus(); else form.querySelector('#op-extra').scrollIntoView({ block: 'nearest' });
+}
+function submitForm(form) {
+  if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+}
+/** Чи можна одразу відкликати щойно зроблений запис (кнопка «Скасувати» в повідомленні) */
+function undoAllowed(op) {
+  if (isOwner()) return true;
+  if ((S.shop?.cancel_minutes ?? 15) <= 0) return false;
+  const c = S.clients.get(op.client_id);
+  if (op.type === 'pay' && c && c.limit_kop && stats().get(c.id).bal + op.amount > c.limit_kop) return false;
+  return true;
+}
+async function undo(id) {
+  try { await cancelOp(id, 'Скасовано одразу після запису'); toast('Запис скасовано — він лишиться закресленим в історії'); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+// будь-яка зміна суми скидає підтвердження
+document.addEventListener('input', (e) => {
+  if (e.target.id !== 'op-amount') return;
+  const x = document.getElementById('op-extra'); if (x) x.innerHTML = '';
+  const f = e.target.closest('form'); if (f) { delete f.dataset.bigOk; delete f.dataset.overOk; delete f.dataset.advOk; }
+});
+
 // ---------------- дії ----------------
 register({
   'list-filter': (el) => { listState.filter = el.dataset.v; view.rerender(); },
@@ -2002,7 +2152,22 @@ register({
   'copy-remind': async () => { toast(await copyText(document.getElementById('r-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте вручну'); },
   'remind-done': async (el) => { await markReminded(el.dataset.id); closeModal(); toast('Позначено: нагадали сьогодні', 'ok'); },
   'cancel-op': (el) => { const o = S.ops.get(el.dataset.id); if (o) cancelModal(o); },
-  'quick-note': (el) => { const n = document.getElementById('op-note'); n.value = n.value ? n.value + ', ' + el.dataset.v.toLowerCase() : el.dataset.v; },
+  'quick-note': (el) => {
+    const n = document.getElementById('op-note');
+    if (/^інше$/i.test(el.dataset.v)) { n.focus(); return; }   // «Інше» — одразу писати своє
+    n.value = n.value ? n.value + ', ' + el.dataset.v.toLowerCase() : el.dataset.v;
+  },
+  'op-confirm': (el) => {
+    const form = el.closest('form'); if (!form) return;
+    if (el.dataset.set) document.getElementById('op-amount').value = el.dataset.set;
+    form.dataset[el.dataset.key] = document.getElementById('op-amount').value.trim();
+    submitForm(form);
+  },
+  unarchive: async () => {
+    const c = S.clients.get(view.clientId); if (!c) return;
+    try { await updateClient(c.id, { name: c.name, phone: c.phone, address: c.address, note: c.note, limit_kop: c.limit_kop, archived: false }); toast('Клієнта повернуто з архіву', 'ok'); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
   'fill-amount': (el) => { document.getElementById('op-amount').value = moneyInput(+el.dataset.v); },
   'retry-op': (el) => retryFailed('op', el.dataset.id),
   'discard-op': (el) => discardFailed('op', el.dataset.id),
@@ -2013,27 +2178,47 @@ register({
     const type = form.dataset.type;
     const c = S.clients.get(view.clientId); if (!c) return closeModal();
     const bal = stats().get(c.id).bal;
-    const amount = parseMoney(document.getElementById('op-amount').value);
+    const raw = document.getElementById('op-amount').value.trim();
+    const amount = parseMoney(raw);
     const note = document.getElementById('op-note').value.trim();
     if (!(amount > 0)) return formError(form, 'Введіть суму більше нуля (напр. 85 або 85,50).');
     if (amount > 10000000) return formError(form, 'Завелика сума — перевірте, чи немає зайвих нулів.');
+    formError(form, '');
+    // 1) велика сума — захист від зайвого нуля
+    const big = confirmOver();
+    if (big > 0 && amount > big && form.dataset.bigOk !== raw) {
+      return ask(form, `<div class="confirm-box warn"><b>Точно ${money(amount)}?</b> Перевірте, чи немає зайвого нуля.
+        <div class="m-actions start"><button type="button" class="btn sm ${type === 'debt' ? 'bad' : 'ok'}" data-act="op-confirm" data-key="bigOk">Так, ${money(amount)}</button></div></div>`);
+    }
+    // 2) ліміт клієнта
     let over = false;
     if (type === 'debt' && c.limit_kop && bal + amount > c.limit_kop) {
-      if (!isOwner()) return formError(form, `Перевищено ліміт ${money(c.limit_kop)}. Можна ще ${money(Math.max(0, c.limit_kop - bal))}. Більше — лише з дозволу власника.`);
-      const box = document.getElementById('op-over');
-      if (!box) { document.getElementById('op-extra').innerHTML = `<label class="check"><input type="checkbox" id="op-over"> Борг стане ${money(bal + amount)} — більше ліміту ${money(c.limit_kop)}. Все одно записати.</label>`; return formError(form, 'Підтвердіть запис понад ліміт.'); }
-      if (!box.checked) return formError(form, 'Поставте позначку, щоб записати понад ліміт.');
+      const excess = bal + amount - c.limit_kop;
+      if (!isOwner()) {
+        return ask(form, `<div class="confirm-box warn">Перевищено ліміт ${money(c.limit_kop)} на <b>${money(excess)}</b>. Можна ще ${money(Math.max(0, c.limit_kop - bal))}. Більше — лише з дозволу власника.</div>`);
+      }
+      if (form.dataset.overOk !== raw) {
+        return ask(form, `<div class="confirm-box warn">Борг стане <b>${money(bal + amount)}</b> — на <b>${money(excess)}</b> більше ліміту ${money(c.limit_kop)}.
+          <div class="m-actions start"><button type="button" class="btn sm bad" data-act="op-confirm" data-key="overOk">Все одно записати</button></div></div>`);
+      }
       over = true;
     }
-    if (type === 'pay' && bal > 0 && amount > bal && !form.dataset.confirmed) {
-      form.dataset.confirmed = '1';
-      return formError(form, `Оплата більша за борг на ${money(amount - bal)} — буде переплата. Натисніть ще раз, щоб підтвердити.`);
+    // 3) оплата більша за борг — аванс або лише борг
+    if (type === 'pay' && bal > 0 && amount > bal && form.dataset.advOk !== raw) {
+      return ask(form, `<div class="confirm-box info">Оплата більша за борг на <b>${money(amount - bal)}</b>.
+        <div class="m-actions start">
+          <button type="button" class="btn sm ok" data-act="op-confirm" data-key="advOk">Записати ${money(amount)} (${money(amount - bal)} — аванс)</button>
+          <button type="button" class="btn sm" data-act="op-confirm" data-key="advOk" data-set="${moneyInput(bal)}">Лише борг: ${money(bal)}</button>
+        </div></div>`);
     }
     await busy(form, async () => {
       try {
-        await addOp({ client_id: c.id, type, amount, note, over_limit: over });
+        const op = await addOp({ client_id: c.id, type, amount, note, over_limit: over });
         closeModal();
-        toast(type === 'debt' ? `Записано борг ${money(amount)}` : `Прийнято ${money(amount)}`, 'ok');
+        if (navigator.vibrate) try { navigator.vibrate(30); } catch { /* */ }
+        const first = c.name.split(/\s+/)[0];
+        toast(type === 'debt' ? `Записано борг ${money(amount)} — ${first}` : `Прийнято ${money(amount)} — ${first}`, 'ok',
+          undoAllowed(op) ? { action: { label: 'Скасувати', fn: () => undo(op.id) }, ms: 5000 } : {});
       } catch (e) { formError(form, e.message); }
     });
   },
@@ -2042,6 +2227,12 @@ register({
     const name = document.getElementById('c-name').value.trim().replace(/\s+/g, ' ');
     const phone = document.getElementById('c-phone').value.trim();
     if (!name) return formError(form, 'Вкажіть ім’я.');
+    const address = document.getElementById('c-address').value.trim().replace(/\s+/g, ' ');
+    if (address) {
+      const bare = address.toLowerCase().replace(/[\s.,-]/g, '');
+      if (address.length < 2) return formError(form, 'Адреса закоротка. Вкажіть вулицю, будинок або орієнтир — або залиште порожнім.');
+      if (/^(.)\1+$/u.test(bare) || !/[\p{L}\d]/u.test(bare)) return formError(form, 'Схоже на випадковий текст. Вкажіть вулицю, будинок або орієнтир (напр. біля школи) — або залиште порожнім.');
+    }
     let limit = id ? S.clients.get(id).limit_kop : (S.shop?.default_limit ?? 0);
     if (isOwner()) {
       limit = parseMoney(document.getElementById('c-limit').value || '0');
@@ -2051,7 +2242,7 @@ register({
       const dup = [...S.clients.values()].find(c => c.name.toLowerCase() === name.toLowerCase() || (phone && digits(c.phone).length >= 9 && digits(c.phone).slice(-9) === digits(phone).slice(-9)));
       if (dup) { form.dataset.dupOk = '1'; return formError(form, `Схожий клієнт уже є: ${dup.name}${dup.phone ? ', ' + dup.phone : ''}. Натисніть ще раз, якщо це інша людина.`); }
     }
-    const data = { name, phone, address: document.getElementById('c-address').value.trim(), note: document.getElementById('c-note').value.trim(), limit_kop: limit };
+    const data = { name, phone, address, note: document.getElementById('c-note').value.trim(), limit_kop: limit };
     await busy(form, async () => {
       try {
         if (id) {
@@ -2078,11 +2269,11 @@ register({
   },
 });
 
-return { listState, listView, balHtml, clientView, DEFAULT_REMIND, fillTemplate };
+return { DEFAULT_NOTES, listState, listView, balHtml, clientView, DEFAULT_REMIND, fillTemplate };
 })();
 
 M.views_reports = (function () {
-const { esc, money, fmtD, isoDate, downloadFile } = M.util;
+const { esc, money, fmtD, isoDate, downloadFile, sinceText, ageTone } = M.util;
 const { register, toast } = M.ui;
 const { S, memberName } = M.store;
 const { report, stats } = M.calc;
@@ -2123,7 +2314,7 @@ function reportsView() {
   <div class="grid2">
     <section class="sheet pad"><h3>Найбільші борги</h3>
       <div class="tbl-wrap"><table><tbody>
-      ${r.top.length ? r.top.map(c => `<tr class="click" data-act="open-client" data-id="${esc(c.id)}"><td>${esc(c.name)}</td><td class="n muted small">${st.get(c.id).days} дн.</td><td class="n"><span class="amt bad sm">${money(st.get(c.id).bal)}</span></td></tr>`).join('') : '<tr><td class="muted">Боржників немає</td></tr>'}
+      ${r.top.length ? r.top.map(c => `<tr class="click" data-act="open-client" data-id="${esc(c.id)}"><td>${esc(c.name)}</td><td class="n"><span class="age ${ageTone(st.get(c.id).days)}">${sinceText(st.get(c.id).days)}</span></td><td class="n"><span class="amt bad sm">${money(st.get(c.id).bal)}</span></td></tr>`).join('') : '<tr><td class="muted">Боржників немає</td></tr>'}
       </tbody></table></div></section>
     <section class="sheet pad"><h3>Останні 7 днів</h3>
       <div class="tbl-wrap"><table><thead><tr><th>День</th><th class="n">У борг</th><th class="n">Повернули</th><th class="n">Різниця</th></tr></thead><tbody>
@@ -2181,7 +2372,7 @@ const { view } = M.router;
 
 
 
-const js = { who: 'all', kind: 'all', audit: null, auditShop: null, loading: false, error: null };
+const js = { who: 'all', kind: 'ops', audit: null, auditShop: null, loading: false, error: null };
 
 async function loadAudit() {
   if (js.loading || !isOwner()) return;
@@ -2217,11 +2408,15 @@ function describe(a) {
     case 'update:members': return `Змінено працівника ${memberName(a.entity_id)}: ${changes(d)}`;
     case 'insert:clients': return `Додав клієнта ${d.name}${d.limit_kop ? ', ліміт ' + money(d.limit_kop) : ''}`;
     case 'update:clients': return `Змінив клієнта ${cname(a.entity_id)}: ${changes(d)}`;
-    case 'insert:invites': return `Створив код запрошення (${d.role === 'owner' ? 'власник' : 'продавець'})`;
-    case 'update:invites': return d.used_by ? 'Код запрошення використано' : d.revoked_at ? 'Код запрошення скасовано' : 'Змінено запрошення';
+    case 'insert:invites': return `Створив код запрошення ${fmtCode(a.entity_id)} (${d.role === 'owner' ? 'власник' : 'продавець'})`;
+    case 'update:invites': return d.used_by ? `${memberName(d.used_by.new)} приєднується за кодом ${fmtCode(a.entity_id)}` : d.revoked_at ? `Код ${fmtCode(a.entity_id)} скасовано` : 'Змінено запрошення';
     default: return null;
   }
 }
+
+const fmtCode = (c) => (c && c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c || '');
+// службові події (коди, налаштування) — показуємо сірим і дрібніше
+const TECH = /^(insert|update):(invites|shops|members|quarantine)$/;
 
 function events() {
   const ev = [];
@@ -2235,7 +2430,7 @@ function events() {
     for (const a of js.audit) {
       if (a.action === 'update:ops') continue;
       const text = describe(a); if (!text) continue;
-      ev.push({ at: a.at, by: a.user_id, kind: 'change', text, cid: a.action.endsWith(':clients') ? a.entity_id : null });
+      ev.push({ at: a.at, by: a.user_id, kind: 'change', text, tech: TECH.test(a.action), cid: a.action.endsWith(':clients') ? a.entity_id : null });
     }
   }
   return ev.sort((a, b) => new Date(b.at) - new Date(a.at));
@@ -2246,19 +2441,19 @@ function journalView() {
   let ev = events();
   if (!isOwner()) ev = ev.filter(e => e.by === S.user.id);
   else if (js.who !== 'all') ev = ev.filter(e => e.by === js.who);
-  if (js.kind !== 'all') ev = ev.filter(e => (js.kind === 'change' ? e.kind === 'change' : js.kind === 'cancel' ? e.kind === 'cancel' : e.kind === 'debt' || e.kind === 'pay'));
+  if (isOwner() && js.kind !== 'all') ev = ev.filter(e => (js.kind === 'change' ? e.kind === 'change' : js.kind === 'cancel' ? e.kind === 'cancel' : e.kind === 'debt' || e.kind === 'pay' || e.kind === 'cancel'));
   const chip = (k) => k === 'debt' ? '<span class="chip bad">борг</span>' : k === 'pay' ? '<span class="chip ok">оплата</span>' : k === 'cancel' ? '<span class="chip warn">скасування</span>' : '<span class="chip ink">зміни</span>';
   return `
   ${isOwner() ? `<div class="toolbar">
       <label class="inline">Хто: <select id="j-who">${['all', ...S.members.map(m => m.user_id)].map(id => `<option value="${esc(id)}" ${js.who === id ? 'selected' : ''}>${id === 'all' ? 'Усі' : esc(memberName(id))}</option>`).join('')}</select></label>
-      <label class="inline">Що: <select id="j-kind">${[['all', 'Усе'], ['ops', 'Борги й оплати'], ['cancel', 'Скасування'], ['change', 'Зміни клієнтів і налаштувань']].map(([k, l]) => `<option value="${k}" ${js.kind === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label class="inline">Що: <select id="j-kind">${[['ops', 'Борги й оплати'], ['cancel', 'Скасування'], ['change', 'Зміни клієнтів і налаштувань'], ['all', 'Усе']].map(([k, l]) => `<option value="${k}" ${js.kind === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
       ${js.loading ? '<span class="small muted">Завантаження змін…</span>' : '<button class="btn sm ghost" data-act="reload-audit">Оновити</button>'}
     </div>
     ${js.error ? `<div class="banner warn">${esc(js.error)}</div>` : ''}
     <p class="small muted">Записи не видаляються: скасовані лишаються в журналі з причиною та іменем.</p>`
     : `<p class="small muted">Тут усе, що записали ви. Свій запис можна скасувати протягом ${S.shop?.cancel_minutes ?? 15} хв.</p>`}
   <section class="sheet">
-    ${ev.length ? `<ul class="hist log">${ev.slice(0, 500).map(e => `<li ${e.cid && S.clients.has(e.cid) ? `class="click" data-act="open-client" data-id="${esc(e.cid)}"` : ''}><div class="d">${fmtDT(e.at)}</div><div class="t">${chip(e.kind)} ${esc(e.text)}<div class="by">${esc(memberName(e.by))}${e.pending ? ' · не відправлено' : ''}</div></div></li>`).join('')}</ul>${ev.length > 500 ? '<div class="empty small">Показано останні 500. Повний список — у вивантаженні Excel.</div>' : ''}`
+    ${ev.length ? `<ul class="hist log">${ev.slice(0, 500).map(e => `<li class="${e.tech ? 'tech' : ''} ${e.cid && S.clients.has(e.cid) ? 'click' : ''}" ${e.cid && S.clients.has(e.cid) ? `data-act="open-client" data-id="${esc(e.cid)}"` : ''}><div class="d">${fmtDT(e.at)}</div><div class="t">${chip(e.kind)} ${esc(e.text)}<div class="by">${esc(memberName(e.by))}${e.pending ? ' · не відправлено' : ''}</div></div></li>`).join('')}</ul>${ev.length > 500 ? '<div class="empty small">Показано останні 500. Повний список — у вивантаженні Excel.</div>' : ''}`
       : '<div class="empty">Записів немає.</div>'}
   </section>`;
 }
@@ -2276,11 +2471,12 @@ return { journalView };
 
 M.views_settings = (function () {
 const { esc, money, moneyInput, parseMoney, fmtD, days, copyText, DAY } = M.util;
-const { register, openModal, closeModal, toast, formError, busy, confirmBox } = M.ui;
+const { register, openModal, closeModal, toast, formError, busy, confirmBox, icon } = M.ui;
 const { S, isOwner, me, online, pendingForLogout, logout } = M.store;
 const { prefs, setPref } = M.prefs;
-const { DEFAULT_REMIND } = M.views_shop;
+const { DEFAULT_REMIND, DEFAULT_NOTES } = M.views_shop;
 const { qrSvg } = M.qr;
+const { CFG, appUrl, fmtCard, intlPhone } = M.cfg;
 const api = M.api;
 const { exportClients, exportOps, exportJson } = M.views_reports;
 const { view } = M.router;
@@ -2294,7 +2490,7 @@ const { view } = M.router;
 
 
 
-const CFG = window.ZOSHYT_CONFIG || {};
+
 const ss = { invites: null, invShop: null };
 
 function subscriptionInfo(shop) {
@@ -2329,21 +2525,7 @@ function settingsView() {
   if (owner && ss.invShop !== key && navigator.onLine) { ss.invShop = key; loadInvites(); }
   const mine = me();
   return `
-  <section class="sheet pad stack">
-    <div class="row-between"><h2>Підписка</h2>${i ? `<span class="chip ${i.writable ? (i.left > 5 ? 'ok' : 'warn') : 'bad'}">${i.writable ? (i.trial ? 'пробний період' : 'активна') : 'закінчилась'}</span>` : ''}</div>
-    ${i ? `<div>${i.trial ? 'Пробний період' : 'Оплачено'} до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` — залишилось ${days(i.left)}` : ''}.</div>` : ''}
-    ${owner ? `<div class="note-box small">
-      ${CFG.priceMonth ? '<div><b>' + esc(CFG.priceMonth) + '</b></div>' : ''}
-      ${CFG.priceYear ? '<div>' + esc(CFG.priceYear) + '</div>' : ''}
-      ${CFG.payInfo ? '<div style="margin-top:6px">Оплата: ' + esc(CFG.payInfo) + '</div>' : ''}
-      <div>У призначенні платежу вкажіть назву магазину: <b>${esc(shop.name || '')}</b></div>
-      ${CFG.contact ? '<div style="margin-top:6px">Питання й допомога: ' + esc(CFG.contact) + '</div>' : ''}
-    </div>
-    <div class="actions">
-      ${CFG.payLink ? `<a class="btn ink" href="${esc(CFG.payLink)}" target="_blank" rel="noopener">Оплатити карткою</a>` : ''}
-      <button class="btn" data-act="paid-tell">Я оплатив(ла) — повідомити</button>
-    </div>` : ''}
-  </section>
+  ${subscriptionSection(shop, i, owner)}
 
   <section class="sheet pad stack">
     <h2>Вигляд</h2>
@@ -2365,6 +2547,8 @@ function settingsView() {
       <dt>Назва</dt><dd>${esc(shop.name)}</dd>
       <dt>Ліміт боргу для нових клієнтів</dt><dd>${money(shop.default_limit || 0)}</dd>
       <dt>Продавець може скасувати свій запис протягом</dt><dd>${shop.cancel_minutes ?? 15} хв</dd>
+      <dt>Перепитувати суму понад</dt><dd>${(shop.confirm_amount ?? 500000) > 0 ? money(shop.confirm_amount ?? 500000) : 'не перепитувати'}</dd>
+      <dt>Швидкі описи боргу</dt><dd class="small">${esc((shop.quick_notes || DEFAULT_NOTES.join('\n')).split('\n').join(' · '))}</dd>
       <dt>Текст нагадування боржнику</dt><dd class="small">${esc(shop.remind_template || DEFAULT_REMIND)}</dd>
     </dl>
   </section>
@@ -2405,6 +2589,8 @@ function shopModal() {
     <label class="f">Назва магазину<input id="sh-name" required maxlength="100" value="${esc(s.name)}"></label>
     <label class="f">Ліміт боргу для нових клієнтів, грн<input id="sh-limit" inputmode="decimal" value="${moneyInput(s.default_limit || 0)}"></label>
     <label class="f">Продавець може скасувати свій запис протягом, хв (0 — не може)<input id="sh-cancel" inputmode="numeric" value="${s.cancel_minutes ?? 15}"></label>
+    <label class="f">Питати «Точно така сума?», якщо більше ніж, грн (0 — не питати)<input id="sh-confirm" inputmode="decimal" value="${moneyInput(s.confirm_amount ?? 500000)}"></label>
+    <label class="f">Швидкі описи боргу — по одному в рядку<textarea id="sh-notes" rows="4" maxlength="400">${esc(s.quick_notes || DEFAULT_NOTES.join('\n'))}</textarea></label>
     <label class="f">Текст нагадування боржнику<textarea id="sh-remind" rows="3" maxlength="400">${esc(s.remind_template || DEFAULT_REMIND)}</textarea></label>
     <p class="small muted">Підстановки: <b>{ім’я}</b> — ім’я клієнта, <b>{магазин}</b> — назва магазину, <b>{сума}</b> — сума боргу.</p>
     <div class="err" role="alert"></div>
@@ -2418,7 +2604,10 @@ function memberModal(id) {
     <h2>${esc(m.display_name)}</h2>
     ${m.email ? `<div class="small muted">${esc(m.email)}</div>` : ''}
     <label class="f">Ім’я<input id="m-name" required maxlength="60" value="${esc(m.display_name)}"></label>
-    <label class="f">Роль<select id="m-role"><option value="seller" ${m.role === 'seller' ? 'selected' : ''}>Продавець</option><option value="owner" ${m.role === 'owner' ? 'selected' : ''}>Власник (повний доступ)</option></select></label>
+    <label class="f">Роль<select id="m-role" data-was="${esc(m.role)}"><option value="seller" ${m.role === 'seller' ? 'selected' : ''}>Продавець</option><option value="owner" ${m.role === 'owner' ? 'selected' : ''}>Власник (повний доступ)</option></select></label>
+    <div id="owner-warn" class="confirm-box bad" hidden>
+        <b>Ця людина зможе видаляти працівників, змінювати підписку й бачити всі дані магазину.</b>
+        <label class="check"><input type="checkbox" id="owner-ok"> Я розумію</label></div>
     <label class="check"><input type="checkbox" id="m-active" ${m.active ? 'checked' : ''}> Має доступ до магазину</label>
     <p class="small muted">Якщо вимкнути доступ, людина одразу перестане бачити магазин, а дані зникнуть з її пристрою. Усі її записи залишаться в історії.</p>
     <div class="err" role="alert"></div>
@@ -2426,12 +2615,45 @@ function memberModal(id) {
   </form>`);
 }
 
+const payPurpose = (shop) => `Зошит боржників, магазин «${shop.name || ''}»`;
+const grn = (n) => Math.round(n).toLocaleString('uk-UA') + ' грн';
+
+/** Блок «Підписка»: компактно, реальні реквізити з config.js, кнопки копіювання й зв'язку */
+function subscriptionSection(shop, i, owner) {
+  const status = i ? `<span class="chip ${i.writable ? (i.left > 5 ? 'ok' : 'warn') : 'bad'}">${i.writable ? (i.trial ? 'пробний період' : 'активна') : 'закінчилась'}</span>` : '';
+  const head = `<div class="row-between"><h2>Підписка</h2>${status}</div>
+    ${i ? `<p>${i.trial ? 'Пробний період' : 'Оплачено'} до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` · ще ${days(i.left)}` : ''}</p>` : ''}`;
+  if (!owner) return `<section class="sheet pad stack">${head}</section>`;
+  const save = CFG.priceMonth * 12 - CFG.priceYear;
+  const copyBtn = (act, what) => `<button class="icon-btn sm copy" data-act="${act}" aria-label="Копіювати ${what}" title="Копіювати">${icon.copy}</button>`;
+  const row = (label, value, act, what, sub = '', cls = '') => `<div class="pay-row"><span class="muted">${label}</span><span><b class="${cls}">${esc(value)}</b>${sub ? `<small class="muted">${esc(sub)}</small>` : ''}</span>${act ? copyBtn(act, what) : '<span></span>'}</div>`;
+  const hasPay = CFG.payCard || CFG.payIban || CFG.payLink;
+  const tel = intlPhone(CFG.supportPhone);
+  const contacts = [CFG.supportTg ? `<a href="https://t.me/${esc(CFG.supportTg)}" target="_blank" rel="noopener">Написати в Telegram</a>` : '',
+    tel ? `<a href="tel:${esc(tel)}">Подзвонити</a>` : ''].filter(Boolean);
+  return `<section class="sheet pad stack sub-box">
+    ${head}
+    <p class="price-line"><b>${grn(CFG.priceMonth)}</b> на місяць · <b>${grn(CFG.priceYear)}</b> на рік${save > 0 ? ` <span class="muted">(−${grn(save)})</span>` : ''}</p>
+    ${hasPay ? `<div class="pay-rows">
+      ${CFG.payCard ? row('Картка', fmtCard(CFG.payCard), 'copy-card', 'номер картки', CFG.payRecipient, 'mono') : ''}
+      ${!CFG.payCard && CFG.payRecipient ? row('Отримувач', CFG.payRecipient) : ''}
+      ${CFG.payIban ? row('IBAN', CFG.payIban, 'copy-iban', 'IBAN', CFG.payCard ? '' : CFG.payRecipient, 'mono') : ''}
+      ${row('Призначення', payPurpose(shop), 'copy-purpose', 'призначення платежу')}
+    </div>` : '<p class="small muted">Щоб оплатити, напишіть або зателефонуйте нам — підкажемо, як зручніше.</p>'}
+    <div class="actions two">
+      ${CFG.payLink ? `<a class="btn ink" href="${esc(CFG.payLink)}" target="_blank" rel="noopener">Оплатити карткою</a>` : ''}
+      <button class="btn ${CFG.payLink ? '' : 'ink'}" data-act="paid-tell">Я оплатив(ла)</button>
+    </div>
+    ${contacts.length ? `<p class="small contact-line">Питання? ${contacts.join(' · ')}</p>` : ''}
+  </section>`;
+}
+
 /** Повідомлення адміністратору сервісу про оплату — щоб він продовжив підписку */
 function paidModal() {
   const i = subscriptionInfo(S.shop);
   const msg = `Вітаю! Я оплатив(ла) підписку «Зошит боржників».\nМагазин: «${S.shop?.name || ''}»\nПошта: ${S.user?.email || ''}\nДоступ зараз до: ${i ? fmtD(i.until) : '—'}`;
-  const tg = String(CFG.supportTelegram || '').replace(/^@/, '');
-  const phone = String(CFG.supportPhone || '').replace(/[^\d+]/g, '');
+  const tg = CFG.supportTg;
+  const phone = intlPhone(CFG.supportPhone);
   openModal(`<div class="stack">
     <h2>Повідомити про оплату</h2>
     <p class="small muted">Надішліть це повідомлення — і ми продовжимо підписку. Зазвичай протягом дня.</p>
@@ -2449,8 +2671,7 @@ function paidModal() {
 
 const fmtCode = (c) => c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c;
 function inviteModal(inv) {
-  const url = location.origin + location.pathname;
-  const link = `${url}#/join/${inv.code}`;
+  const link = `${appUrl()}#/join/${inv.code}`;
   const msg = `Запрошую вас у «Зошит боржників» магазину «${S.shop.name}».\n1) Відкрийте ${link}\n2) Зареєструйтеся (або увійдіть)\n3) Код підставиться сам. Якщо ні — введіть: ${fmtCode(inv.code)}\nКод діє ${inv.role === 'owner' ? '24 години' : '7 днів'}.`;
   let qr = '';
   try { qr = qrSvg(link, { size: 210 }); } catch (e) { qr = ''; }
@@ -2501,10 +2722,16 @@ register({
     openModal(`<form data-form="invite" class="stack">
       <h2>Запросити працівника</h2>
       <label class="f">Роль<select id="inv-role"><option value="seller">Продавець</option><option value="owner">Власник (повний доступ)</option></select></label>
+      <div id="owner-warn" class="confirm-box bad" hidden>
+        <b>Ця людина зможе видаляти працівників, змінювати підписку й бачити всі дані магазину.</b>
+        <label class="check"><input type="checkbox" id="owner-ok"> Я розумію</label></div>
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Створити код</button></div>
     </form>`);
   },
+  'copy-card': async () => { toast(await copyText(CFG.payCard.replace(/\D/g, '')) ? 'Номер картки скопійовано' : 'Не вдалося скопіювати'); },
+  'copy-iban': async () => { toast(await copyText(CFG.payIban.replace(/\s/g, '')) ? 'IBAN скопійовано' : 'Не вдалося скопіювати'); },
+  'copy-purpose': async () => { toast(await copyText(payPurpose(S.shop || {})) ? 'Призначення скопійовано' : 'Не вдалося скопіювати'); },
   'copy-paid': async () => { toast(await copyText(document.getElementById('paid-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
   'copy-invite': async () => { toast(await copyText(document.getElementById('inv-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
   'revoke-invite': async (el) => {
@@ -2545,8 +2772,15 @@ register({
     if (!name) return formError(form, 'Вкажіть назву.');
     if (!(lim >= 0)) return formError(form, 'Ліміт має бути числом.');
     if (!(mins >= 0 && mins <= 1440)) return formError(form, 'Час на скасування: від 0 до 1440 хвилин.');
+    const conf = parseMoney(document.getElementById('sh-confirm').value || '0');
+    if (!(conf >= 0)) return formError(form, 'Сума для підтвердження має бути числом, напр. 5000.');
+    const notes = document.getElementById('sh-notes').value;
     await busy(form, async () => {
-      try { await online('update_shop', { p_shop: S.shopId, p_name: name, p_default_limit: lim, p_cancel_minutes: mins, p_remind_template: document.getElementById('sh-remind').value }); closeModal(); toast('Збережено', 'ok'); }
+      try {
+        await online('update_shop', { p_shop: S.shopId, p_name: name, p_default_limit: lim, p_cancel_minutes: mins,
+          p_remind_template: document.getElementById('sh-remind').value, p_quick_notes: notes, p_confirm_amount: conf });
+        closeModal(); toast('Збережено', 'ok');
+      }
       catch (e) { formError(form, e.message); }
     });
   },
@@ -2555,6 +2789,9 @@ register({
     const name = document.getElementById('m-name').value.trim();
     if (!name) return formError(form, 'Вкажіть ім’я.');
     const role = document.getElementById('m-role').value, active = document.getElementById('m-active').checked;
+    if (role === 'owner' && document.getElementById('m-role').dataset.was !== 'owner' && !document.getElementById('owner-ok').checked) {
+      return formError(form, 'Поставте позначку «Я розумію», щоб зробити цю людину власником.');
+    }
     await busy(form, async () => {
       try { await online('set_member', { p_shop: S.shopId, p_user: id, p_display_name: name, p_role: role, p_active: active }); closeModal(); toast('Збережено', 'ok'); }
       catch (e) { formError(form, e.message); }
@@ -2562,6 +2799,7 @@ register({
   },
   async invite(form) {
     const role = document.getElementById('inv-role').value;
+    if (role === 'owner' && !document.getElementById('owner-ok').checked) return formError(form, 'Поставте позначку «Я розумію», щоб запросити власника.');
     await busy(form, async () => {
       try { const inv = await online('create_invite', { p_shop: S.shopId, p_role: role }); inviteModal(inv); loadInvites(); }
       catch (e) { formError(form, e.message); }
@@ -2586,12 +2824,21 @@ register({
   },
 });
 
+// роль «Власник» — червоне попередження з обов'язковою позначкою
+document.addEventListener('change', (e) => {
+  if (e.target.id !== 'inv-role' && e.target.id !== 'm-role') return;
+  const w = document.getElementById('owner-warn'); if (!w) return;
+  w.hidden = !(e.target.value === 'owner' && e.target.dataset.was !== 'owner');
+  const cb = document.getElementById('owner-ok'); if (cb && w.hidden) cb.checked = false;
+});
+
 return { subscriptionInfo, subscriptionBanner, settingsView };
 })();
 
 M.views_admin = (function () {
-const { esc, money, parseMoney, fmtD, days, copyText, DAY } = M.util;
-const { register, openModal, closeModal, toast, formError, busy } = M.ui;
+const { esc, money, parseMoney, fmtD, days, copyText, downloadFile, isoDate, DAY } = M.util;
+const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
+const { CFG, fmtCard } = M.cfg;
 const api = M.api;
 const { view } = M.router;
 // Адмін-панель сервісу (для вас як продавця програми): магазини, підписки, оплати
@@ -2599,7 +2846,9 @@ const { view } = M.router;
 
 
 
+
 const as = { shops: null, loading: false, error: null, q: '', filter: 'all' };
+const PURGE_DAYS = 30;
 
 async function load() {
   as.loading = true; as.error = null; view.rerender();
@@ -2608,58 +2857,69 @@ async function load() {
   finally { as.loading = false; view.rerender(); }
 }
 
+const FILTERS = [['all', 'Усі'], ['trial', 'Пробні'], ['paid', 'Платні'], ['soon', 'Закінчуються'], ['expired', 'Прострочені'], ['deleted', 'Видалені']];
+
 function adminView() {
   if (!as.shops && !as.loading && !as.error) load();
-  if (as.error) return `<div class="banner bad">${esc(as.error)}</div><button class="btn" data-act="admin-reload">Спробувати ще</button>`;
-  if (!as.shops) return '<div class="empty">Завантаження…</div>';
+  const header = `<div class="row-between page-head"><h1>Магазини</h1>
+    <button class="icon-btn" data-act="admin-reload" aria-label="Оновити список" title="Оновити">${icon.refresh}</button></div>`;
+  if (as.error) return `${header}<div class="banner bad">${esc(as.error)}</div>`;
+  if (!as.shops) return `${header}<div class="empty">Завантаження…</div>`;
   const now = Date.now();
   const q = as.q.trim().toLowerCase();
-  let list = as.shops.filter(s => !q || s.name.toLowerCase().includes(q) || (s.owner_email || '').toLowerCase().includes(q) || (s.owner_name || '').toLowerCase().includes(q));
+  const alive = as.shops.filter(s => !s.deleted_at);
   const left = (s) => Math.ceil((new Date(s.access_until) - now) / DAY);
+  let list = as.filter === 'deleted' ? as.shops.filter(s => s.deleted_at) : alive;
+  list = list.filter(s => !q || s.name.toLowerCase().includes(q) || (s.owner_email || '').toLowerCase().includes(q) || (s.owner_name || '').toLowerCase().includes(q));
   if (as.filter === 'trial') list = list.filter(s => !s.paid_until && left(s) > 0);
   if (as.filter === 'paid') list = list.filter(s => s.paid_until && left(s) > 0);
   if (as.filter === 'soon') list = list.filter(s => left(s) > 0 && left(s) <= 7);
   if (as.filter === 'expired') list = list.filter(s => left(s) <= 0);
-  const paying = as.shops.filter(s => s.paid_until && left(s) > 0).length;
-  const trial = as.shops.filter(s => !s.paid_until && left(s) > 0).length;
-  const active7 = as.shops.filter(s => s.last_activity && now - new Date(s.last_activity) < 7 * DAY).length;
+  const paying = alive.filter(s => s.paid_until && left(s) > 0).length;
+  const trial = alive.filter(s => !s.paid_until && left(s) > 0).length;
+  const active7 = alive.filter(s => s.last_activity && now - new Date(s.last_activity) < 7 * DAY).length;
+  const chip = (s) => {
+    if (s.deleted_at) return '<span class="chip bad">видалено</span>';
+    const l = left(s);
+    return `<span class="chip ${l <= 0 ? 'bad' : l <= 7 ? 'warn' : s.paid_until ? 'ok' : ''}">${l > 0 ? 'ще ' + days(l) : 'закінчився'}</span>`;
+  };
   return `
+  ${header}
   <section class="summary four">
-    <div><div class="k">Магазинів</div><div class="v">${as.shops.length}</div></div>
+    <div><div class="k">Магазинів</div><div class="v">${alive.length}</div></div>
     <div><div class="k">Платять</div><div class="v ok">${paying}</div></div>
     <div><div class="k">Пробний період</div><div class="v">${trial}</div></div>
     <div><div class="k">Активні за 7 днів</div><div class="v">${active7}</div></div>
   </section>
-  <div class="toolbar">
-    <input id="adm-q" class="search" type="search" placeholder="Пошук: магазин, email, ім’я" value="${esc(as.q)}">
-    <div class="seg scroll">${[['all', 'Усі'], ['trial', 'Пробні'], ['paid', 'Платні'], ['soon', 'Закінчуються'], ['expired', 'Прострочені']].map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
-    <button class="btn sm ghost" data-act="admin-reload">Оновити</button>
-  </div>
+  <input id="adm-q" class="search" type="search" placeholder="Магазин, email, ім’я" value="${esc(as.q)}" aria-label="Пошук магазину">
+  <div class="seg chips" role="group" aria-label="Фільтр">${FILTERS.map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
   <section class="sheet">
-    <div class="adm-cards">${list.map(s => { const l = left(s); return `<div class="adm-card">
-      <div class="row-between"><div><b>${esc(s.name)}</b><div class="small muted">${esc(s.owner_name || '')} · ${esc(s.owner_email || '')}</div></div>
-        <span class="chip ${l <= 0 ? 'bad' : l <= 7 ? 'warn' : s.paid_until ? 'ok' : ''}">${l > 0 ? 'ще ' + days(l) : 'закінчився'}</span></div>
+    <div class="adm-cards">${list.map(s => `<div class="adm-card">
+      <div class="row-between"><div><b>${esc(s.name)}</b><div class="small muted">${esc(s.owner_name || '')} · ${esc(s.owner_email || '')}</div></div>${chip(s)}</div>
       <div class="nums"><span>клієнтів <b>${s.clients}</b></span><span>записів <b>${s.ops}</b></span><span>людей <b>${s.members}</b></span>
         <span>доступ до <b>${fmtD(s.access_until)}</b></span>${s.paid_until ? '' : '<span>пробний</span>'}
         <span>активність ${s.last_activity ? fmtD(s.last_activity) : '—'}</span></div>
-      <button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">Оплата / продовжити</button>
-    </div>`; }).join('') || '<div class="empty">Нічого не знайдено</div>'}</div>
+      <button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">${s.deleted_at ? 'Відновити / видалити' : 'Оплата / продовжити'}</button>
+    </div>`).join('') || '<div class="empty">Нічого не знайдено</div>'}</div>
     <div class="adm-table tbl-wrap"><table>
     <thead><tr><th>Магазин</th><th>Власник</th><th class="n">Людей</th><th class="n">Клієнтів</th><th class="n">Записів</th><th>Остання активність</th><th>Доступ до</th><th></th></tr></thead>
-    <tbody>${list.map(s => { const l = left(s); return `<tr>
+    <tbody>${list.map(s => `<tr>
       <td><b>${esc(s.name)}</b><div class="small muted">з ${fmtD(s.created_at)}</div></td>
       <td>${esc(s.owner_name || '')}<div class="small muted">${esc(s.owner_email || '')}</div></td>
       <td class="n">${s.members}</td><td class="n">${s.clients}</td><td class="n">${s.ops}</td>
       <td>${s.last_activity ? fmtD(s.last_activity) : '—'}</td>
-      <td><span class="chip ${l <= 0 ? 'bad' : l <= 7 ? 'warn' : s.paid_until ? 'ok' : ''}">${fmtD(s.access_until)}</span><div class="small muted">${l > 0 ? 'ще ' + days(l) : 'закінчився'}${s.paid_until ? '' : ' · пробний'}</div></td>
-      <td><button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">Оплата</button></td>
-    </tr>`; }).join('') || '<tr><td colspan="8" class="muted">Нічого не знайдено</td></tr>'}</tbody>
+      <td>${chip(s)}<div class="small muted">${fmtD(s.access_until)}${s.paid_until ? '' : ' · пробний'}</div></td>
+      <td><button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">${s.deleted_at ? 'Відновити' : 'Оплата'}</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" class="muted">Нічого не знайдено</td></tr>'}</tbody>
   </table></div></section>
-  <p class="small muted">Повне видалення магазину на прохання клієнта — у вікні «Оплата» внизу.</p>`;
+  <p class="small muted">Видалення магазину — у вікні «Оплата» внизу: спершу копія, потім 30 днів можна відновити.</p>`;
 }
+
+const purgeFrom = (s) => new Date(new Date(s.deleted_at).getTime() + PURGE_DAYS * DAY);
 
 async function extendModal(id) {
   const s = as.shops.find(x => x.id === id); if (!s) return;
+  if (s.deleted_at) return deletedModal(s);
   openModal(`<div class="stack"><form data-form="admin-extend" data-id="${esc(id)}" class="stack" novalidate>
     <h2>${esc(s.name)}</h2>
     <div class="small muted">${esc(s.owner_email || '')} · доступ до ${fmtD(s.access_until)}</div>
@@ -2672,10 +2932,15 @@ async function extendModal(id) {
     </form>
     <div class="m-actions start"><button type="button" class="btn sm" data-act="admin-remind" data-id="${esc(id)}">Нагадати про оплату</button></div>
     <details><summary class="small">Історія оплат</summary><div id="ax-history" class="small muted">Завантаження…</div></details>
-    <details><summary class="small txt-bad">Видалити магазин повністю</summary>
-      <p class="small">Незворотно видаляє всі дані магазину (клієнтів, борги, журнал). Лише на письмовий запит власника. Спершу порадьте йому зберегти копію.</p>
-      <label class="f">Введіть точну назву магазину<input id="ax-del-name" autocomplete="off"></label>
-      <button type="button" class="btn bad" data-act="admin-delete" data-id="${esc(id)}">Видалити назавжди</button>
+    <details><summary class="small txt-bad">Видалити магазин</summary>
+      <div class="stack">
+        <p class="small">Лише на письмовий запит власника. Магазин зникне в усіх працівників, але <b>${PURGE_DAYS} днів його можна відновити</b>. Остаточно — лише після цього.</p>
+        <p class="small"><b>Крок 1.</b> Збережіть повну копію — її можна віддати власнику.</p>
+        <button type="button" class="btn sm" data-act="admin-export" data-id="${esc(id)}">Вивантажити копію</button>
+        <p class="small"><b>Крок 2.</b> Введіть точну назву магазину.</p>
+        <label class="f">Назва магазину<input id="ax-del-name" autocomplete="off" disabled placeholder="спершу крок 1"></label>
+        <button type="button" class="btn bad" data-act="admin-delete" data-id="${esc(id)}" disabled>Видалити (можна відновити ${PURGE_DAYS} днів)</button>
+      </div>
     </details>
   </div>`);
   try {
@@ -2685,6 +2950,41 @@ async function extendModal(id) {
   } catch { /* */ }
 }
 
+function deletedModal(s) {
+  const from = purgeFrom(s);
+  const canPurge = Date.now() >= from.getTime();
+  openModal(`<div class="stack">
+    <h2>${esc(s.name)}</h2>
+    <div class="banner warn">Видалено ${fmtD(s.deleted_at)}. Працівники магазин не бачать, але дані на місці.</div>
+    <div class="actions">
+      <button class="btn ok" data-act="admin-restore" data-id="${esc(s.id)}">Відновити магазин</button>
+      <button class="btn" data-act="admin-export" data-id="${esc(s.id)}">Вивантажити копію</button>
+    </div>
+    <details><summary class="small txt-bad">Видалити остаточно</summary>
+      <div class="stack">
+        ${canPurge ? '<p class="small">Незворотно: клієнти, борги й журнал зникнуть назавжди.</p>'
+          : `<p class="small">Остаточно видалити можна з <b>${fmtD(from)}</b>. До того магазин можна відновити.</p>`}
+        <label class="f">Назва магазину<input id="ax-purge-name" autocomplete="off" ${canPurge ? '' : 'disabled'}></label>
+        <button type="button" class="btn bad" data-act="admin-purge" data-id="${esc(s.id)}" ${canPurge ? '' : 'disabled'}>Видалити назавжди</button>
+      </div>
+    </details>
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
+  </div>`);
+}
+
+function remindText(s) {
+  const l = Math.ceil((new Date(s.access_until) - Date.now()) / DAY);
+  const lines = [`Вітаю${s.owner_name ? ', ' + s.owner_name : ''}!`,
+    l > 0 ? `Підписка «Зошит боржників» для магазину «${s.name}» закінчується ${fmtD(s.access_until)} — через ${days(l)}.`
+          : `Підписка «Зошит боржників» для магазину «${s.name}» закінчилась ${fmtD(s.access_until)}. Дані збережені, записувати нові можна після оплати.`,
+    `Вартість: ${CFG.priceMonth} грн на місяць або ${CFG.priceYear} грн на рік.`];
+  if (CFG.payLink) lines.push(`Оплатити карткою: ${CFG.payLink}`);
+  if (CFG.payCard) lines.push(`Картка: ${fmtCard(CFG.payCard)}${CFG.payRecipient ? ' (' + CFG.payRecipient + ')' : ''}`);
+  if (CFG.payIban) lines.push(`IBAN: ${CFG.payIban}`);
+  lines.push(`Призначення: Зошит боржників, магазин «${s.name}».`);
+  return lines.join('\n');
+}
+
 register({
   'admin-reload': () => { as.shops = null; as.error = null; load(); },
   'admin-filter': (el) => { as.filter = el.dataset.v; view.rerender(); },
@@ -2692,16 +2992,11 @@ register({
   'ax-days': (el) => { document.getElementById('ax-days').value = el.dataset.v; },
   'admin-remind': (el) => {
     const s = as.shops.find(x => x.id === el.dataset.id); if (!s) return;
-    const l = Math.ceil((new Date(s.access_until) - Date.now()) / DAY);
-    const CFG = window.ZOSHYT_CONFIG || {};
-    const body = `Вітаю${s.owner_name ? ', ' + s.owner_name : ''}!\n`
-      + (l > 0 ? `Підписка «Зошит боржників» для магазину «${s.name}» закінчується ${fmtD(s.access_until)} — через ${days(l)}.`
-               : `Підписка «Зошит боржників» для магазину «${s.name}» закінчилась ${fmtD(s.access_until)}.`)
-      + `\n${CFG.priceMonth || ''}\n${CFG.payInfo ? 'Оплата: ' + CFG.payInfo : ''}\nУ призначенні платежу вкажіть назву магазину.`;
+    const body = remindText(s);
     openModal(`<div class="stack">
       <h2>Нагадування про оплату</h2>
       <div class="small muted">${esc(s.owner_email || '')}</div>
-      <label class="f">Текст<textarea id="rem-text" rows="6">${esc(body)}</textarea></label>
+      <label class="f">Текст<textarea id="rem-text" rows="7">${esc(body)}</textarea></label>
       <div class="m-actions start">
         <button class="btn ink" data-act="copy-remind-admin">Копіювати</button>
         ${s.owner_email ? `<a class="btn" href="mailto:${esc(s.owner_email)}?subject=${encodeURIComponent('Підписка «Зошит боржників»')}&body=${encodeURIComponent(body)}">Написати листа</a>` : ''}
@@ -2710,9 +3005,30 @@ register({
     </div>`);
   },
   'copy-remind-admin': async () => { toast(await copyText(document.getElementById('rem-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
+  'admin-export': async (el) => {
+    try {
+      const data = await api.rpc('admin_export_shop', { p_shop: el.dataset.id });
+      const slug = (data.shop?.name || 'magazyn').replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 30);
+      downloadFile(`kopiya-${slug}-${isoDate()}.json`, JSON.stringify(data, null, 1), 'application/json');
+      toast('Копію збережено', 'ok');
+      const inp = document.getElementById('ax-del-name');
+      if (inp) { inp.disabled = false; inp.placeholder = ''; inp.focus(); document.querySelector('[data-act=admin-delete]').disabled = false; }
+    } catch (e) { toast(e.message, 'bad'); }
+  },
   'admin-delete': async (el) => {
     const name = document.getElementById('ax-del-name').value;
-    try { await api.rpc('admin_delete_shop', { p_shop: el.dataset.id, p_confirm_name: name }); closeModal(); toast('Магазин видалено'); as.shops = null; load(); }
+    try {
+      const r = await api.rpc('admin_delete_shop', { p_shop: el.dataset.id, p_confirm_name: name });
+      closeModal(); toast(`Магазин сховано. Відновити можна до ${fmtD(r.purge_after)}`); as.shops = null; load();
+    } catch (e) { toast(e.message, 'bad'); }
+  },
+  'admin-restore': async (el) => {
+    try { await api.rpc('admin_restore_shop', { p_shop: el.dataset.id }); closeModal(); toast('Магазин відновлено', 'ok'); as.filter = 'all'; as.shops = null; load(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+  'admin-purge': async (el) => {
+    const name = document.getElementById('ax-purge-name').value;
+    try { await api.rpc('admin_purge_shop', { p_shop: el.dataset.id, p_confirm_name: name }); closeModal(); toast('Магазин видалено остаточно'); as.shops = null; load(); }
     catch (e) { toast(e.message, 'bad'); }
   },
 }, {
@@ -2739,8 +3055,10 @@ const { esc, money, fmtDT } = M.util;
 const { register, openModal, closeModal, toast, formError, busy } = M.ui;
 const { S, selectShop, runSync, clearNotices } = M.store;
 const api = M.api;
-const { go } = M.router;
+const { go, view } = M.router;
+const { lsGet, lsSet } = M.util;
 // Перший вхід (створити магазин / приєднатися), огляд кількох магазинів, встановлення, сповіщення
+
 
 
 
@@ -2831,7 +3149,23 @@ function noticesModal() {
 
 // подія встановлення (Chrome/Edge/Android)
 let installPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; view.rerender && view.rerender(); });
+window.addEventListener('appinstalled', () => { installPrompt = null; lsSet('zoshyt.installed', '1'); view.rerender && view.rerender(); });
+
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/** Банер «Встановити на головний екран» (Android/Chrome — одна кнопка, iPhone — коротка підказка) */
+function installBanner() {
+  if (isStandalone() || lsGet('zoshyt.installed')) return '';
+  const hid = +(lsGet('zoshyt.installHidden') || 0);
+  if (hid && Date.now() - hid < 14 * 86400000) return '';
+  const close = '<button class="icon-btn sm" data-act="install-hide" aria-label="Сховати">✕</button>';
+  if (installPrompt) return `<div class="banner info install-bar"><span><b>Встановіть «Зошит» на телефон</b> — відкриватиметься з іконки й працюватиме без інтернету.</span>
+    <span class="actions"><button class="btn sm ink" data-act="install">Встановити</button>${close}</span></div>`;
+  if (isIos()) return `<div class="banner info install-bar"><span><b>Додайте «Зошит» на екран «Додому»:</b> натисніть <b>Поділитися</b> <span aria-hidden="true">⎋</span> унизу Safari → <b>«На екран “Додому”»</b>.</span>${close}</div>`;
+  return '';
+}
 
 function shopForm(kind) {
   const n = esc(defaultName());
@@ -2861,7 +3195,8 @@ register({
   'pick-shop': async (el) => { await selectShop(el.dataset.id); go('#/list'); },
   'add-shop': () => shopForm('create'),
   'join-another': () => shopForm('join'),
-  install: async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; },
+  install: async () => { if (!installPrompt) return; installPrompt.prompt(); const r = await installPrompt.userChoice; installPrompt = null; if (r && r.outcome === 'accepted') lsSet('zoshyt.installed', '1'); view.rerender(); },
+  'install-hide': () => { lsSet('zoshyt.installHidden', String(Date.now())); view.rerender(); },
   notices: () => noticesModal(),
   'clear-notices': async () => { await clearNotices(); closeModal(); },
 }, {
@@ -2891,12 +3226,12 @@ register({
   },
 });
 
-return { startView, overviewView, installView, noticesModal, installPrompt };
+return { startView, overviewView, installView, noticesModal, installPrompt, installBanner };
 })();
 
 M.main = (function () {
 const api = M.api;
-const { $, esc, fmtTime } = M.util;
+const { $, esc, fmtTime, fmtDT } = M.util;
 const { actions, forms, closeModal, modalOpen, toast, icon, register, confirmBox } = M.ui;
 const { S, subscribe, start, foreignPending, requestSync, runSync, selectShop, isOwner } = M.store;
 const { view, parse, go } = M.router;
@@ -2907,7 +3242,7 @@ const { reportsView } = M.views_reports;
 const { journalView } = M.views_journal;
 const { settingsView, subscriptionBanner } = M.views_settings;
 const { adminView } = M.views_admin;
-const { startView, overviewView, installView } = M.views_misc;
+const { startView, overviewView, installView, installBanner } = M.views_misc;
 // Точка входу: запуск, маршрути, оболонка, обробка подій
 
 
@@ -2922,7 +3257,7 @@ const { startView, overviewView, installView } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.0.0';
+window.ZOSHYT_VERSION = '1.1.0';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
@@ -2977,6 +3312,12 @@ function syncChip() {
   return `<button class="sync ok" data-act="sync-now" title="Усе збережено на сервері">${icon.check}<span>${s.lastOk ? fmtTime(s.lastOk) : 'OK'}</span></button>`;
 }
 
+/** Понад добу без зв'язку, а записи чекають — окреме помітне попередження */
+function longOffline() {
+  const last = S.sync.lastOk;
+  return S.outbox > 0 && last > 0 && Date.now() - last > 24 * 3600 * 1000 && S.sync.state !== 'syncing';
+}
+
 function shell(tab, content, title) {
   const shops = S.boot.shops;
   const owner = isOwner();
@@ -2998,10 +3339,12 @@ function shell(tab, content, title) {
   ${tabs.length ? `<nav class="tabs" aria-label="Розділи">${tabs.map(([k, l, h, ic]) => `<a class="tab" href="${h}" ${tab === k ? 'aria-current="page"' : ''}>${ic || ''}<span>${l}</span></a>`).join('')}</nav>` : ''}
   </header>
   <main class="wrap">
-    ${!navigator.onLine ? `<div class="banner info">Немає інтернету — працюємо офлайн. ${S.outbox ? `${S.outbox} ${S.outbox === 1 ? 'запис чекає' : 'записи чекають'} відправки.` : 'Нові записи збережуться на пристрої.'}</div>` : ''}
+    ${longOffline() ? `<div class="banner warn">Записи збережені на цьому телефоні. Підключіться до інтернету, щоб вони потрапили в хмару${S.sync.lastOk ? ` (востаннє — ${fmtDT(S.sync.lastOk)})` : ''}.</div>`
+      : !navigator.onLine ? `<div class="banner info">Немає інтернету — працюємо офлайн. ${S.outbox ? `${S.outbox} ${S.outbox === 1 ? 'запис чекає' : 'записи чекають'} відправки.` : 'Нові записи збережуться на пристрої.'}</div>` : ''}
     ${S.sync.state === 'error' && S.sync.error ? `<div class="banner bad">${esc(S.sync.error)}</div>` : ''}
     ${S.notices.length ? `<div class="banner bad row-between"><span>${S.notices.length} ${S.notices.length === 1 ? 'дія не збережена' : 'дії не збережено'} на сервері.</span><button class="btn sm" data-act="notices">Переглянути</button></div>` : ''}
     ${tab !== 'admin' && tab !== 'overview' ? subscriptionBanner() : ''}
+    ${tab === 'list' && !view.clientId ? installBanner() : ''}
     ${isOwner() && S.shop?.quarantine > 0 && tab !== 'settings' ? `<div class="banner warn row-between"><span>${S.shop.quarantine} ${S.shop.quarantine === 1 ? 'запис' : 'записи(ів)'} від вимкненого працівника чекають вашої перевірки.</span><a class="btn sm" href="#/settings">Переглянути</a></div>` : ''}
     ${content}
   </main>`;
