@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-mSJ3lWz/lGF+8fe0i3fCP9VsrCf0nmVhNZzydOUra2E='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-DO145L4FRpfllNg1P27UJuAEypPGzneutCOH0St/+Ws='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
@@ -343,6 +343,37 @@ details summary { cursor: pointer; padding: 6px 0; }
 .install-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .install-bar .actions { display: flex; align-items: center; gap: 6px; }
 
+/* головні дії: «Новий борг» і «Прийняти оплату» — великі, на всю ширину */
+.main-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.main-actions .btn { font-size: 1.0625rem; font-weight: 700; min-height: 3.4em; }
+/* пошук з кнопкою «за номером» */
+.search-box { position: relative; display: flex; flex: 1 1 220px; min-width: 0; }
+.search-box .search { flex: 1 1 auto; padding-right: 52px; }
+.search-box .phone-toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); min-width: 40px; min-height: 40px; border-color: transparent; background: transparent; color: var(--muted); }
+.search-box .phone-toggle.on { background: var(--ink); color: var(--on-ink); }
+.search-box .phone-toggle svg { width: 20px; height: 20px; }
+/* телефон: незмінне «+38» і поле для 10 цифр */
+.phone-in { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); overflow: hidden; margin-top: 4px; }
+.phone-in:focus-within { outline: 2px solid var(--ink); outline-offset: 1px; }
+.phone-in .pfx { display: grid; place-items: center; padding: 0 10px 0 12px; background: var(--surface-2); color: var(--text); font-weight: 650; border-right: 1px solid var(--line); }
+.phone-in input { border: 0 !important; outline: none; background: transparent !important; flex: 1; min-width: 0; margin: 0 !important; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+/* вибір клієнта */
+.pick .rows { max-height: 46vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 10px; }
+.pick h3 { margin-top: 2px; }
+
+/* звіти людською мовою */
+.story { display: grid; gap: 8px; }
+.story p { font-size: 1rem; }
+.hero-sum { white-space: nowrap; font-size: clamp(1.7rem, 9vw, 2.2rem); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.mid-sum { font-size: clamp(1.1rem, 5.5vw, 1.5rem); font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero-sum.bad, .mid-sum.bad { color: var(--bad); } .mid-sum.ok { color: var(--ok); }
+.two-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ul.days li, ul.staff li { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-top: 1px solid var(--line); }
+ul.days li:first-child, ul.staff li:first-child { border-top: 0; }
+ul.staff li { display: block; }
+/* повідомлення внизу: ширина за текстом, а не половина екрана */
+.toast { left: 16px; right: 16px; transform: none; margin: 0 auto; width: fit-content; max-width: min(520px, calc(100% - 32px)); }
+
 </style>
 <script>window.ZOSHYT_CONFIG = {
   "supabaseUrl": "https://bafzvncwbfjqgbuchdkh.supabase.co",
@@ -459,7 +490,47 @@ async function copyText(text) {
   }
 }
 
-return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, sinceText, ageTone, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText };
+// ---------- телефони (Україна: +38 0XX XXX XX XX) ----------
+/** 10 цифр місцевого номера «0671234567» або '' якщо з рядка його не вийшло */
+function localPhone(s) {
+  let d = digits(s);
+  if (d.length === 12 && d.startsWith('380')) d = d.slice(2);
+  else if (d.length === 11 && d.startsWith('80')) d = d.slice(1);
+  else if (d.length === 9 && !d.startsWith('0')) d = '0' + d;
+  return /^0\d{9}$/.test(d) ? d : '';
+}
+/** Для поля введення після «+38»: «067 123 45 67» (частковий номер теж) */
+function phoneMask(d) {
+  d = String(d || '').replace(/\D/g, '').slice(0, 10);
+  return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 8), d.slice(8, 10)].filter(Boolean).join(' ');
+}
+/** Як показувати номер: «+38 067 123 45 67»; незвичний старий запис — як є */
+function fmtPhone(s) {
+  const l = localPhone(s);
+  return l ? '+38 ' + phoneMask(l) : String(s || '');
+}
+/** Номер для збереження: «+380671234567» */
+const storePhone = (local) => (local ? '+38' + local : '');
+
+/** Пошук без урахування регістру й і/ї/й/є/ґ та апострофів */
+const fold = (s) => String(s || '').toLowerCase().replace(/[ʼ’'`]/g, '')
+  .replace(/i/g, 'і').replace(/ї/g, 'і').replace(/й/g, 'и').replace(/є/g, 'е').replace(/ґ/g, 'г').replace(/ё/g, 'е').replace(/ы/g, 'и').replace(/ъ/g, '');
+
+/** Чи підходить клієнт під пошук: ім’я, адреса або будь-яка частина номера (з +38 чи без) */
+function matchClient(c, q) {
+  const t = String(q || '').trim();
+  if (!t) return true;
+  let qd = digits(t);
+  if (qd.length >= 2 && qd.length >= t.replace(/[\s()+-]/g, '').length) {   // введено лише цифри
+    if (qd.startsWith('380')) qd = qd.slice(2);
+    const full = digits(c.phone), loc = localPhone(c.phone);
+    return full.includes(qd) || (!!loc && loc.includes(qd));
+  }
+  const f = fold(t);
+  return fold(c.name).includes(f) || fold(c.address).includes(f) || fold(c.note).includes(f);
+}
+
+return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, sinceText, ageTone, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText, localPhone, phoneMask, fmtPhone, storePhone, fold, matchClient };
 })();
 
 M.idb = (function () {
@@ -1706,7 +1777,10 @@ function report(period) {
     r[o.type] += o.amount; r.n++;
     byStaff.set(o.created_by, r);
   }
-  const top = debtors.sort((a, b) => st.get(b.id).bal - st.get(a.id).bal).slice(0, 10);
+  const top = [...debtors].sort((a, b) => st.get(b.id).bal - st.get(a.id).bal).slice(0, 10);
+  const longest = debtors.filter(c => st.get(c.id).days > 7).sort((a, b) => st.get(b.id).days - st.get(a.id).days || st.get(b.id).bal - st.get(a.id).bal).slice(0, 10);
+  const newDebtors = new Set(inP.filter(o => o.type === 'debt').map(o => o.client_id)).size;
+  const payers = new Set(inP.filter(o => o.type === 'pay').map(o => o.client_id)).size;
   const daily = [];
   for (let i = 0; i < 7; i++) {
     const d0 = startOfDay(Date.now() - i * DAY), d1 = d0 + DAY;
@@ -1714,7 +1788,7 @@ function report(period) {
     daily.push({ d: d0, debt: os.filter(o => o.type === 'debt').reduce((s, o) => s + o.amount, 0), pay: os.filter(o => o.type === 'pay').reduce((s, o) => s + o.amount, 0) });
   }
   const sm = summary();
-  return { ...sm, given, taken, cancelled, buckets, byStaff: [...byStaff.values()], top, daily };
+  return { ...sm, given, taken, cancelled, buckets, byStaff: [...byStaff.values()], top, longest, newDebtors, payers, daily };
 }
 
 return { stats, balanceOf, summary, periodStart, report };
@@ -1887,7 +1961,7 @@ return { setOnSignedIn, loginView, signupView, forgotView, resetView, setupView,
 })();
 
 M.views_shop = (function () {
-const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText, sinceText, ageTone } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText, sinceText, ageTone, localPhone, phoneMask, fmtPhone, storePhone, matchClient } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { S, isOwner, writable, memberName, addOp, cancelOp, createClient, updateClient, retryFailed, discardFailed, markReminded } = M.store;
 const { stats, summary } = M.calc;
@@ -1902,16 +1976,16 @@ const DEFAULT_NOTES = ['Продукти', 'Хліб, молоко', 'Цигар
 const quickNotes = () => { const q = (S.shop?.quick_notes || '').split('\n').map(x => x.trim()).filter(Boolean); return q.length ? q : DEFAULT_NOTES; };
 const confirmOver = () => S.shop?.confirm_amount ?? 500000;   // «Точно така сума?» — понад 5 000 грн за замовчуванням
 
-const listState = { q: '', filter: 'debtors', sort: 'debt' };
+const listState = { q: '', filter: 'debtors', sort: 'debt', byPhone: false };
+const pick = { type: 'debt', q: '', byPhone: false };
 
 // ---------------- список ----------------
 function listView() {
   const st = stats();
   const sm = summary();
-  const q = listState.q.trim().toLowerCase();
-  const qd = digits(q);
+  const q = listState.q.trim();
   let list = [...S.clients.values()].filter(c => listState.filter === 'archived' ? c.archived : (!c.archived || q));
-  if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || (qd.length >= 3 && digits(c.phone).includes(qd)) || (c.address || '').toLowerCase().includes(q));
+  if (q) list = list.filter(c => matchClient(c, q));
   else if (listState.filter === 'debtors') list = list.filter(c => st.get(c.id).bal > 0 || c._failed);
   else if (listState.filter === 'overdue') list = list.filter(c => st.get(c.id).bal > 0 && st.get(c.id).days >= 30);
   const sorters = {
@@ -1929,9 +2003,13 @@ function listView() {
     <div><div class="k">Боржників</div><div class="v">${sm.debtors}</div></div>
     <div><div class="k">Не платять 30+ днів</div><div class="v ${sm.overdue ? 'warn' : ''}">${sm.overdue}</div></div>
   </section>
+  ${writable() ? `<div class="main-actions">
+    <button class="btn bad" data-act="pick" data-type="debt">+ Новий борг</button>
+    <button class="btn ok" data-act="pick" data-type="pay">Прийняти оплату</button>
+  </div>` : ''}
   <div class="toolbar">
-    <input id="q" class="search" type="search" placeholder="Ім’я, телефон, вулиця" value="${esc(listState.q)}" autocomplete="off" aria-label="Пошук клієнта">
-    ${writable() ? '<button class="btn ink" data-act="new-client">+ Новий клієнт</button>' : ''}
+    ${searchBox('q', listState.q, listState.byPhone, 'list-phone')}
+    ${writable() ? '<button class="btn" data-act="new-client">+ Клієнт</button>' : ''}
   </div>
   ${q ? '' : `<div class="toolbar">
     <div class="seg" role="group" aria-label="Фільтр">${[['debtors', 'Винні'], ['overdue', 'Прострочені'], ['all', 'Усі'], ['archived', 'Архів']].map(([k, l]) => `<button data-act="list-filter" data-v="${k}" aria-pressed="${listState.filter === k}">${l}</button>`).join('')}</div>
@@ -1950,7 +2028,7 @@ function clientRow(c, p) {
   const pct = lim ? Math.min(100, Math.round(p.bal / lim * 100)) : 0;
   return `<li class="row" data-act="open-client" data-id="${esc(c.id)}" tabindex="0">
     <div class="who"><div class="name">${esc(c.name)}${c.archived ? ' <span class="chip">архів</span>' : ''}</div>
-      <div class="meta">${c.phone ? `<span>${esc(c.phone)}</span>` : ''}${c.address ? `<span>${esc(c.address)}</span>` : ''}
+      <div class="meta">${c.phone ? `<span>${esc(fmtPhone(c.phone))}</span>` : ''}${c.address ? `<span>${esc(c.address)}</span>` : ''}
       ${p.bal > 0 && p.days > 7 ? `<span class="age ${ageTone(p.days)}">${sinceText(p.days)}</span>` : ''}
       ${lim && p.bal > lim ? '<span class="chip bad">понад ліміт</span>' : ''}
       ${p.pending ? `<span class="chip ink" title="Чекає відправки на сервер">${icon.cloud} не відправлено</span>` : ''}
@@ -1980,7 +2058,7 @@ function clientView(id) {
     <div class="client-head">
       <div>
         <h1 class="client-name">${esc(c.name)} ${c.archived ? '<span class="chip">в архіві</span>' : ''}</h1>
-        <div class="facts">${c.phone ? `<a href="tel:${esc(cleanPhone(c.phone))}">${icon.phone} ${esc(c.phone)}</a>` : '<span>телефон не вказано</span>'}${c.address ? `<span>${esc(c.address)}</span>` : ''}<span>клієнт з ${fmtD(c.created_at)}</span></div>
+        <div class="facts">${c.phone ? `<a href="tel:${esc(cleanPhone(c.phone))}">${icon.phone} ${esc(fmtPhone(c.phone))}</a>` : '<span>телефон не вказано</span>'}${c.address ? `<span>${esc(c.address)}</span>` : ''}<span>клієнт з ${fmtD(c.created_at)}</span></div>
         ${c.note ? `<div class="note-box">${esc(c.note)}</div>` : ''}
       </div>
       <div class="balance-box">
@@ -2052,15 +2130,20 @@ function opModal(type) {
   </form>`);
 }
 
-function clientModal(c) {
+function clientModal(c, { then = '', q: seed = null } = {}) {
   const edit = !!c;
-  const q = listState.q.trim();
-  const phoneLike = /^\+?[\d\s()-]{5,}$/.test(q);
+  const q = (seed ?? listState.q).trim();
+  const phoneLike = /^\+?[\d\s()-]{3,}$/.test(q);
   c = c || { name: phoneLike ? '' : q, phone: phoneLike ? q : '', address: '', note: '', limit_kop: S.shop?.default_limit ?? 200000 };
-  openModal(`<form data-form="client" data-id="${edit ? esc(c.id) : ''}" class="stack" novalidate>
+  let ph = localPhone(c.phone);
+  if (!ph && !edit) { ph = digits(c.phone); if (ph.startsWith('380')) ph = ph.slice(2); if (ph && ph[0] !== '0') ph = '0' + ph; ph = ph.slice(0, 10); }
+  const odd = edit && c.phone && !localPhone(c.phone);   // старий запис у незвичному форматі
+  openModal(`<form data-form="client" data-id="${edit ? esc(c.id) : ''}" data-then="${esc(then)}" class="stack" novalidate>
     <h2>${edit ? 'Редагувати клієнта' : 'Новий клієнт'}</h2>
     <label class="f">Ім’я та прізвище *<input id="c-name" required value="${esc(c.name)}" autofocus autocomplete="off" maxlength="100"></label>
-    <label class="f">Телефон<input id="c-phone" type="tel" inputmode="tel" value="${esc(c.phone)}" placeholder="+380…" autocomplete="off" maxlength="30"></label>
+    <label class="f">Телефон <span class="muted small">(необов’язково)</span>
+      <span class="phone-in"><span class="pfx" aria-hidden="true">+38</span><input id="c-phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="0XX XXX XX XX" value="${esc(phoneMask(ph))}" aria-label="Номер телефону після +38"></span></label>
+    ${odd ? `<div class="small muted">Було записано: ${esc(c.phone)}</div>` : ''}
     <label class="f">Адреса <span class="muted small">(необов’язково)</span><input id="c-address" value="${esc(c.address)}" placeholder="вулиця, будинок або орієнтир (напр. біля школи)" autocomplete="off" maxlength="150"></label>
     ${isOwner() ? `<label class="f">Ліміт боргу, грн (0 — без ліміту)<input id="c-limit" inputmode="decimal" value="${moneyInput(c.limit_kop || 0)}"></label>` : `<div class="small muted">Ліміт боргу: ${money(c.limit_kop || 0)} (змінює власник)</div>`}
     <label class="f">Примітка<textarea id="c-note" rows="2" maxlength="300" placeholder="Напр.: платить з пенсії 5-го числа">${esc(c.note)}</textarea></label>
@@ -2112,6 +2195,63 @@ function remindModal() {
   </div>`);
 }
 
+/** Поле пошуку з перемикачем «за номером» — тоді відкривається цифрова клавіатура */
+function searchBox(id, value, byPhone, act) {
+  return `<span class="search-box">
+    <input id="${id}" class="search" type="search" value="${esc(value)}" autocomplete="off"
+      ${byPhone ? 'inputmode="tel" placeholder="Номер телефону"' : 'inputmode="search" placeholder="Ім’я або номер"'} aria-label="Пошук клієнта">
+    <button type="button" class="icon-btn phone-toggle ${byPhone ? 'on' : ''}" data-act="${act}" aria-pressed="${byPhone}" aria-label="Шукати за номером телефону" title="Шукати за номером">${icon.phone}</button>
+  </span>`;
+}
+
+function pickList() {
+  const st = stats();
+  const q = pick.q.trim();
+  let cs = [...S.clients.values()].filter(c => !c.archived || pick.type === 'pay');
+  if (q) cs = cs.filter(c => matchClient(c, q));
+  else if (pick.type === 'pay') cs = cs.filter(c => st.get(c.id).bal > 0);
+  // без пошуку — спершу ті, з ким працювали нещодавно
+  cs.sort(q ? (a, b) => a.name.localeCompare(b.name, 'uk') : (a, b) => (st.get(b.id).lastAt || 0) - (st.get(a.id).lastAt || 0));
+  const rows = cs.slice(0, 30).map(c => { const b = st.get(c.id).bal; return `<li class="row" data-act="pick-client" data-id="${esc(c.id)}" tabindex="0">
+      <div class="who"><div class="name">${esc(c.name)}</div><div class="meta">${c.phone ? `<span>${esc(fmtPhone(c.phone))}</span>` : ''}${c.address ? `<span>${esc(c.address)}</span>` : ''}</div></div>
+      <div class="sum">${b > 0 ? `<span class="amt bad">${money(b)}</span>` : '<span class="small muted">не винен</span>'}</div></li>`; }).join('');
+  const add = pick.type === 'debt' && writable()
+    ? `<button type="button" class="btn wide-btn" data-act="pick-new">+ Новий клієнт${q && !/^\+?[\d\s()-]+$/.test(q) ? ` «${esc(q)}»` : q ? ` з номером ${esc(q)}` : ''}</button>` : '';
+  return `${!q && cs.length ? `<h3>${pick.type === 'pay' ? 'Хто винен' : 'Нещодавні'}</h3>` : ''}
+    ${rows ? `<ul class="rows pick-rows">${rows}</ul>` : `<div class="empty small">${q ? 'Нікого не знайдено.' : pick.type === 'pay' ? 'Ніхто не винен.' : 'Клієнтів ще немає.'}</div>`}
+    ${add}`;
+}
+
+function pickModal(type) {
+  pick.type = type; pick.q = '';
+  openModal(`<div class="stack pick">
+    <h2>${type === 'debt' ? 'Новий борг — хто бере?' : 'Прийняти оплату — від кого?'}</h2>
+    ${searchBox('pick-q', '', pick.byPhone, 'pick-phone')}
+    <div id="pick-list">${pickList()}</div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button></div>
+  </div>`);
+}
+
+/** Відкрити картку клієнта і одразу вікно боргу чи оплати */
+function openClientOp(id, type) {
+  const target = '#/client/' + id;
+  if (location.hash === target) { opModal(type); return; }
+  window.addEventListener('hashchange', () => setTimeout(() => opModal(type), 0), { once: true });
+  go(target);
+}
+
+function togglePhone(state, inputId) {
+  state.byPhone = !state.byPhone;
+  const inp = document.getElementById(inputId);
+  if (inp) {
+    inp.setAttribute('inputmode', state.byPhone ? 'tel' : 'search');
+    inp.placeholder = state.byPhone ? 'Номер телефону' : 'Ім’я або номер';
+    inp.blur(); inp.focus();   // клавіатура перемикається лише після нового фокуса
+  }
+  const b = inp && inp.parentElement.querySelector('.phone-toggle');
+  if (b) { b.classList.toggle('on', state.byPhone); b.setAttribute('aria-pressed', state.byPhone); }
+}
+
 /** Показати крок підтвердження у вікні запису */
 function ask(form, html) {
   document.getElementById('op-extra').innerHTML = html;
@@ -2133,6 +2273,26 @@ async function undo(id) {
   try { await cancelOp(id, 'Скасовано одразу після запису'); toast('Запис скасовано — він лишиться закресленим в історії'); }
   catch (e) { toast(e.message, 'bad'); }
 }
+// пошук у вікні вибору клієнта — оновлюємо лише список, щоб не збивати клавіатуру
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'pick-q') { pick.q = e.target.value; const l = document.getElementById('pick-list'); if (l) l.innerHTML = pickList(); }
+  if (e.target.id === 'c-phone') {   // лише цифри, не більше 10, пробіли самі
+    let d = digits(e.target.value);
+    if (d.startsWith('380')) d = d.slice(2);   // набрали чи вставили номер разом з «+38» — він уже стоїть зліва
+    e.target.value = phoneMask(d.slice(0, 10));
+  }
+});
+document.addEventListener('keydown', (e) => {   // Enter у пошуку — вибрати, якщо знайшовся один
+  if (e.key !== 'Enter' || e.target.id !== 'pick-q') return;
+  const rows = document.querySelectorAll('#pick-list [data-act=pick-client]');
+  if (rows.length === 1) { e.preventDefault(); rows[0].click(); }
+});
+// номер без нуля на початку (67 123 45 67) — доставляємо 0, коли людина закінчила вводити
+document.addEventListener('focusout', (e) => {
+  if (e.target.id !== 'c-phone') return;
+  const d = digits(e.target.value);
+  if (d.length === 9 && d[0] !== '0') e.target.value = phoneMask('0' + d);
+});
 // будь-яка зміна суми скидає підтвердження
 document.addEventListener('input', (e) => {
   if (e.target.id !== 'op-amount') return;
@@ -2146,6 +2306,11 @@ register({
   'list-sort': (el) => { listState.sort = el.dataset.v; view.rerender(); },
   'open-client': (el) => go('#/client/' + el.dataset.id),
   'new-client': () => clientModal(null),
+  pick: (el) => pickModal(el.dataset.type),
+  'pick-client': (el) => { closeModal(); openClientOp(el.dataset.id, pick.type); },
+  'pick-new': () => { const q = pick.q; closeModal(); clientModal(null, { then: 'debt', q }); },
+  'pick-phone': () => togglePhone(pick, 'pick-q'),
+  'list-phone': () => togglePhone(listState, 'q'),
   'edit-client': () => clientModal(S.clients.get(view.clientId)),
   op: (el) => opModal(el.dataset.type),
   remind: () => remindModal(),
@@ -2225,8 +2390,11 @@ register({
   async client(form) {
     const id = form.dataset.id;
     const name = document.getElementById('c-name').value.trim().replace(/\s+/g, ' ');
-    const phone = document.getElementById('c-phone').value.trim();
     if (!name) return formError(form, 'Вкажіть ім’я.');
+    let typed = digits(document.getElementById('c-phone').value);
+    if (typed.length === 9 && typed[0] !== '0') typed = '0' + typed;
+    if (typed && !/^0\d{9}$/.test(typed)) return formError(form, 'Номер телефону — 10 цифр після +38, напр. 067 123 45 67. Або залиште поле порожнім.');
+    const phone = storePhone(typed);
     const address = document.getElementById('c-address').value.trim().replace(/\s+/g, ' ');
     if (address) {
       const bare = address.toLowerCase().replace(/[\s.,-]/g, '');
@@ -2240,7 +2408,7 @@ register({
     }
     if (!id && !form.dataset.dupOk) {
       const dup = [...S.clients.values()].find(c => c.name.toLowerCase() === name.toLowerCase() || (phone && digits(c.phone).length >= 9 && digits(c.phone).slice(-9) === digits(phone).slice(-9)));
-      if (dup) { form.dataset.dupOk = '1'; return formError(form, `Схожий клієнт уже є: ${dup.name}${dup.phone ? ', ' + dup.phone : ''}. Натисніть ще раз, якщо це інша людина.`); }
+      if (dup) { form.dataset.dupOk = '1'; return formError(form, `Схожий клієнт уже є: ${dup.name}${dup.phone ? ', ' + fmtPhone(dup.phone) : ''}. Натисніть ще раз, якщо це інша людина.`); }
     }
     const data = { name, phone, address, note: document.getElementById('c-note').value.trim(), limit_kop: limit };
     await busy(form, async () => {
@@ -2249,7 +2417,9 @@ register({
           data.archived = document.getElementById('c-archived').checked;
           await updateClient(id, data); closeModal(); toast('Збережено', 'ok');
         } else {
-          const c = await createClient(data); closeModal(); listState.q = ''; go('#/client/' + c.id); toast('Клієнта додано', 'ok');
+          const c = await createClient(data); closeModal(); listState.q = ''; pick.q = '';
+          toast('Клієнта додано', 'ok');
+          if (form.dataset.then) openClientOp(c.id, form.dataset.then); else go('#/client/' + c.id);
         }
       } catch (e) { formError(form, e.message); }
     });
@@ -2273,7 +2443,7 @@ return { DEFAULT_NOTES, listState, listView, balHtml, clientView, DEFAULT_REMIND
 })();
 
 M.views_reports = (function () {
-const { esc, money, fmtD, isoDate, downloadFile, sinceText, ageTone } = M.util;
+const { esc, money, fmtD, isoDate, downloadFile, sinceText, ageTone, plural } = M.util;
 const { register, toast } = M.ui;
 const { S, memberName } = M.store;
 const { report, stats } = M.calc;
@@ -2285,42 +2455,76 @@ const { view } = M.router;
 
 
 const rs = { period: 'today' };
-const PL = { today: 'сьогодні', week: 'за 7 днів', month: 'за 30 днів' };
+const PERIODS = [['today', 'Сьогодні'], ['week', 'За тиждень'], ['month', 'За місяць']];
+const people = (n) => `${n} ${plural(n, 'людина', 'людини', 'людей')}`;
+const DOW = ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'Пʼятниця', 'Субота'];
+
+function clientLine(c, st, right) {
+  return `<li class="row" data-act="open-client" data-id="${esc(c.id)}" tabindex="0">
+    <div class="who"><div class="name">${esc(c.name)}</div>${right.meta ? `<div class="meta">${right.meta}</div>` : ''}</div>
+    <div class="sum"><span class="amt bad">${money(st.get(c.id).bal)}</span></div></li>`;
+}
 
 function reportsView() {
   const r = report(rs.period);
   const st = stats();
-  const pl = PL[rs.period];
-  const maxB = Math.max(1, ...r.buckets.map(b => b.sum));
+  const title = PERIODS.find(p => p[0] === rs.period)[1];
+  const diff = r.given - r.taken;
+  const verdict = !r.given && !r.taken ? 'Записів не було.'
+    : diff > 0 ? `Боргів стало більше на <b class="txt-bad">${money(diff)}</b>.`
+    : diff < 0 ? `Боргів стало менше на <b class="txt-ok">${money(-diff)}</b> — добре!`
+    : 'Скільки дали, стільки й повернули.';
+  const days = r.daily.map((d, i) => {
+    const name = i === 0 ? 'Сьогодні' : i === 1 ? 'Вчора' : DOW[new Date(d.d).getDay()];
+    const empty = !d.debt && !d.pay;
+    return `<li><span class="day">${name} <span class="muted small">${fmtD(d.d).slice(0, 5)}</span></span>
+      ${empty ? '<span class="muted small">без записів</span>' : `<span class="small"><span class="txt-bad">дали ${money(d.debt)}</span> · <span class="txt-ok">повернули ${money(d.pay)}</span></span>`}</li>`;
+  }).join('');
   return `
-  <div class="toolbar between">
-    <div class="seg" role="group" aria-label="Період">${[['today', 'Сьогодні'], ['week', '7 днів'], ['month', '30 днів']].map(([k, l]) => `<button data-act="period" data-v="${k}" aria-pressed="${rs.period === k}">${l}</button>`).join('')}</div>
-    <div class="actions"><button class="btn sm" data-act="csv-clients">Excel: боржники</button><button class="btn sm" data-act="csv-ops">Excel: усі записи</button><button class="btn sm" data-act="backup-json">Повна копія</button></div>
-  </div>
-  <section class="summary four">
-    <div><div class="k">Загальний борг</div><div class="v bad">${money(r.total)}</div></div>
-    <div><div class="k">Дали в борг ${pl}</div><div class="v">${money(r.given)}</div></div>
-    <div><div class="k">Повернули ${pl}</div><div class="v ok">${money(r.taken)}</div></div>
-    <div><div class="k">Скасовано записів ${pl}</div><div class="v ${r.cancelled ? 'warn' : ''}">${r.cancelled}</div></div>
+  <div class="seg chips" role="group" aria-label="Період">${PERIODS.map(([k, l]) => `<button data-act="period" data-v="${k}" aria-pressed="${rs.period === k}">${l}</button>`).join('')}</div>
+
+  <section class="sheet pad story">
+    <div class="small muted">Зараз вам винні</div>
+    <div class="hero-sum bad" data-total>${money(r.total)}</div>
+    <p>${r.debtors ? people(r.debtors) : 'Ніхто не винен. Гарний день!'}${r.overdue ? `, з них <b>${people(r.overdue)}</b> не платять понад місяць — ${money(r.overdueSum)}.` : r.debtors ? '.' : ''}</p>
   </section>
-  <div class="grid2">
-    <section class="sheet pad"><h3>Працівники ${pl}</h3>
-      <div class="tbl-wrap"><table><thead><tr><th>Хто</th><th class="n">Дав у борг</th><th class="n">Прийняв</th><th class="n">Записів</th></tr></thead><tbody>
-      ${r.byStaff.length ? r.byStaff.map(x => `<tr><td>${esc(memberName(x.id))}</td><td class="n">${money(x.debt)}</td><td class="n">${money(x.pay)}</td><td class="n">${x.n}</td></tr>`).join('') : '<tr><td colspan="4" class="muted">Записів за період немає</td></tr>'}
-      </tbody></table></div></section>
-    <section class="sheet pad"><h3>Як давно не платять</h3>
-      <div class="buckets">${r.buckets.map(b => `<div class="bucket"><span>${b.label}</span><div class="bar"><i class="t-${b.tone}" style="width:${Math.round(b.sum / maxB * 100)}%"></i></div><span class="small"><b>${money(b.sum)}</b> · ${b.n}</span></div>`).join('')}</div></section>
-  </div>
-  <div class="grid2">
-    <section class="sheet pad"><h3>Найбільші борги</h3>
-      <div class="tbl-wrap"><table><tbody>
-      ${r.top.length ? r.top.map(c => `<tr class="click" data-act="open-client" data-id="${esc(c.id)}"><td>${esc(c.name)}</td><td class="n"><span class="age ${ageTone(st.get(c.id).days)}">${sinceText(st.get(c.id).days)}</span></td><td class="n"><span class="amt bad sm">${money(st.get(c.id).bal)}</span></td></tr>`).join('') : '<tr><td class="muted">Боржників немає</td></tr>'}
-      </tbody></table></div></section>
-    <section class="sheet pad"><h3>Останні 7 днів</h3>
-      <div class="tbl-wrap"><table><thead><tr><th>День</th><th class="n">У борг</th><th class="n">Повернули</th><th class="n">Різниця</th></tr></thead><tbody>
-      ${r.daily.map(d => { const diff = d.debt - d.pay; return `<tr><td>${fmtD(d.d).slice(0, 5)}</td><td class="n">${money(d.debt)}</td><td class="n">${money(d.pay)}</td><td class="n ${diff > 0 ? 'txt-bad' : diff < 0 ? 'txt-ok' : ''}">${diff > 0 ? '+' : diff < 0 ? '−' : ''}${money(Math.abs(diff))}</td></tr>`; }).join('')}
-      </tbody></table></div></section>
-  </div>`;
+
+  <section class="sheet pad story">
+    <h2>${title}</h2>
+    <div class="two-nums">
+      <div><div class="small muted">Дали в борг</div><div class="mid-sum bad" data-given>${money(r.given)}</div>${r.newDebtors ? `<div class="small muted">${r.newDebtors} ${plural(r.newDebtors, 'людині', 'людям', 'людям')}</div>` : ''}</div>
+      <div><div class="small muted">Повернули</div><div class="mid-sum ok" data-taken>${money(r.taken)}</div>${r.payers ? `<div class="small muted">${people(r.payers)}</div>` : ''}</div>
+    </div>
+    <p>${verdict}${r.cancelled ? ` <span class="muted small">Скасовано записів: ${r.cancelled}.</span>` : ''}</p>
+  </section>
+
+  <section class="sheet">
+    <div class="pad pb0"><h2>Кому варто нагадати</h2><p class="small muted">Давно нічого не платили — спершу найдовше.</p></div>
+    ${r.longest.length ? `<ul class="rows">${r.longest.map(c => clientLine(c, st, { meta: `<span class="age ${ageTone(st.get(c.id).days)}">${sinceText(st.get(c.id).days)}</span>` })).join('')}</ul>`
+      : '<div class="empty small">Ніхто не затягує з оплатою понад тиждень.</div>'}
+  </section>
+
+  <section class="sheet">
+    <div class="pad pb0"><h2>Хто винен найбільше</h2></div>
+    ${r.top.length ? `<ul class="rows">${r.top.slice(0, 5).map(c => clientLine(c, st, { meta: c.limit_kop && st.get(c.id).bal > c.limit_kop ? '<span class="chip bad">понад ліміт</span>' : '' })).join('')}</ul>`
+      : '<div class="empty small">Боржників немає.</div>'}
+  </section>
+
+  ${r.byStaff.length ? `<section class="sheet pad story">
+    <h2>Хто що записав — ${title.toLowerCase()}</h2>
+    <ul class="plain staff">${r.byStaff.map(x => `<li><b>${esc(memberName(x.id))}</b> — ${x.debt ? `в борг <span class="txt-bad">${money(x.debt)}</span>` : 'боргів не записувала(в)'}${x.pay ? `, прийнято <span class="txt-ok">${money(x.pay)}</span>` : ''} <span class="muted small">(${x.n} ${plural(x.n, 'запис', 'записи', 'записів')})</span></li>`).join('')}</ul>
+  </section>` : ''}
+
+  <section class="sheet pad story">
+    <h2>Останній тиждень по днях</h2>
+    <ul class="plain days">${days}</ul>
+  </section>
+
+  <section class="sheet pad stack">
+    <h2>Зберегти собі</h2>
+    <p class="small muted">Файли відкриваються в Excel або Google Таблицях.</p>
+    <div class="actions"><button class="btn sm" data-act="csv-clients">Список боржників</button><button class="btn sm" data-act="csv-ops">Усі записи</button><button class="btn sm" data-act="backup-json">Повна копія</button></div>
+  </section>`;
 }
 
 const csvCell = (v) => { v = String(v ?? ''); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
@@ -3257,7 +3461,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.1.0';
+window.ZOSHYT_VERSION = '1.2.0';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
