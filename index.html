@@ -7,8 +7,9 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-85MDv0/vXGDU25NKOLd4D4SjZ57EB3w8WfaSorHtazg='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-7EeflQlfMl03in5XLGUwazTPp9tqKcFq9mTR0Zi+3G4='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzIxNDBhOCIvPgogIDxyZWN0IHg9IjEyNiIgeT0iOTIiIHdpZHRoPSIyNzYiIGhlaWdodD0iMzM2IiByeD0iMjYiIGZpbGw9IiNmZmZmZmYiLz4KICA8ZyBzdHJva2U9IiNjOWQ0ZjIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMTcwIiB4Mj0iMzYwIiB5Mj0iMTcwIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjI2IiB4Mj0iMzYwIiB5Mj0iMjI2Ii8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMjgyIiB4Mj0iMzMwIiB5Mj0iMjgyIi8+CiAgICA8bGluZSB4MT0iMjEwIiB5MT0iMzM4IiB4Mj0iMzAwIiB5Mj0iMzM4Ii8+CiAgPC9nPgogIDxsaW5lIHgxPSIxODYiIHkxPSI5MiIgeDI9IjE4NiIgeTI9IjQyOCIgc3Ryb2tlPSIjZTA1ODRiIiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgPGcgZmlsbD0iIzIxNDBhOCI+CiAgICA8Y2lyY2xlIGN4PSIxMjYiIGN5PSIxNTAiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iMTI2IiBjeT0iMjU2IiByPSIxNyIvPjxjaXJjbGUgY3g9IjEyNiIgY3k9IjM2MiIgcj0iMTciLz4KICA8L2c+CiAgPHBhdGggZD0iTTI5MiAzMTggbDMwIDMwIDU4IC03MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWM3YTRhIiBzdHJva2Utd2lkdGg9IjI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==" type="image/svg+xml">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
@@ -420,6 +421,88 @@ body.is-admin { background-image: none; background-color: #f3f2f7; padding: 0; }
 .sub-box .actions.two .btn { padding: 0.6em 0.6em; line-height: 1.2; }
 .contact-line { gap: 6px; }
 .contact-line .btn { flex: 1 1 0; }
+
+/* ---- адмінка, фаза B ---- */
+.mob-only { display: none; }
+.more-btn { border: 0; background: transparent; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+.more-btn.on { background: var(--adm); color: #fff; }
+@media (max-width: 860px) {
+  .adm-nav .desk-only { display: none; }
+  .adm-nav .mob-only { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; font-size: 0.6875rem; border-radius: 10px; }
+}
+.more-list li { margin-bottom: 6px; }
+.more-list .btn { justify-content: flex-start; gap: 10px; }
+.shop-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.shop-head h1 { font-size: 1.35rem; }
+.shop-head-st { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs-h { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin: 0 -2px; }
+.tabs-h::-webkit-scrollbar { display: none; }
+.tabs-h a { white-space: nowrap; padding: 10px 12px; text-decoration: none; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; }
+.tabs-h a[aria-current="page"] { color: var(--text); border-bottom-color: var(--adm); }
+.act-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 8px; }
+.act-form { border: 2px solid var(--adm); }
+.chip-radio { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; min-height: 38px; background: var(--surface); cursor: pointer; font-size: 0.875rem; }
+.chip-radio:has(input:checked) { background: var(--adm); border-color: var(--adm); color: #fff; }
+.chip-radio input { accent-color: var(--adm); }
+.calm { font-size: 1.05rem; color: var(--ok); font-weight: 650; margin-top: 6px; }
+.note-form { display: flex; gap: 8px; align-items: center; }
+.note-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 0.6em 0.8em; min-height: 2.8em; background: var(--paper); color: var(--text); font: inherit; }
+ul.notes li { padding: 8px 0; border-top: 1px solid var(--line); }
+ul.notes li:first-child { border-top: 0; }
+.chip.lbl-vip { background: #f5e6b8; color: #6b4e00; } .chip.lbl-partner { background: var(--ink-soft); color: var(--ink); }
+.chip.lbl-test { background: var(--surface-2); color: var(--muted); } .chip.lbl-problem { background: var(--bad-soft); color: var(--bad); }
+/* графік записів по днях: одна серія, тонкі стовпчики з проміжком, заокруглений верх */
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 120px; padding-top: 6px; border-bottom: 1px solid var(--line); }
+.spark .bar { flex: 1; background: var(--adm); border-radius: 4px 4px 0 0; min-width: 3px; position: relative; }
+.spark .bar:hover { background: var(--ink); }
+:root[data-theme="dark"] .spark .bar { background: var(--adm-accent); }
+s { text-decoration-thickness: 1px; }
+.promo-link { justify-self: start; padding-left: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+ul.hist-mini li { padding: 4px 0; }
+/* банер iPhone: 2 рядки, хрестик угорі праворуч */
+.ios-bar { position: relative; padding-right: 44px; line-height: 1.45; }
+.ios-bar .x { position: absolute; top: 4px; right: 4px; }
+.ios-share { display: inline-block; width: 1.05em; height: 1.2em; vertical-align: -0.2em; color: var(--ink); }
+
+/* ---- Відвідування: списки зі смужками ---- */
+.meters { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.meters .m-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.meters .row-between { gap: 10px; }
+.meters .meter { height: 6px; border-radius: 3px; display: block; }
+.meters .meter i { background: var(--adm); border-radius: 3px; }
+:root[data-theme="dark"] .meters .meter i { background: var(--adm-accent); }
+.funnel .meter { height: 10px; border-radius: 5px; }
+
+/* ---- виписка клієнта ---- */
+.stmt-wrap { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--surface); max-height: 46vh; overflow: auto; }
+.stmt header { display: grid; gap: 2px; margin-bottom: 10px; }
+.stmt h2 { margin: 2px 0; font-size: 1.15rem; }
+.stmt-shop { font-size: .8125rem; color: var(--muted); font-weight: 600; }
+.stmt table { width: 100%; border-collapse: collapse; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.stmt th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.stmt td { padding: 7px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.stmt td:first-child { white-space: nowrap; color: var(--muted); }
+.stmt .n { text-align: right; white-space: nowrap; }
+.stmt .bad { color: var(--bad); font-weight: 700; } .stmt .ok { color: var(--ok); font-weight: 700; }
+.stmt tr.open td { color: var(--muted); font-style: italic; }
+.stmt-total { font-size: 1.15rem; font-weight: 800; margin: 12px 0 2px; }
+.stmt-total.bad { color: var(--bad); } .stmt-total.ok { color: var(--ok); }
+.stmt-actions .btn { flex: 1 1 auto; }
+#print-area { display: none; }
+@media print {
+  body.printing > *:not(#print-area) { display: none !important; }
+  body.printing { background: #fff !important; }
+  body.printing #print-area { display: block; color: #000; background: #fff; font-size: 12pt; padding: 0; }
+  body.printing #print-area .stmt td, body.printing #print-area .stmt th { border-color: #999; }
+  body.printing #print-area .muted, body.printing #print-area .stmt-shop, body.printing #print-area th { color: #444; }
+  body.printing #print-area .bad { color: #000; } body.printing #print-area .ok { color: #000; }
+  body.printing #print-area .stmt-foot { margin-top: 16px; }
+  @page { margin: 14mm; }
+}
+.stmt td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+@media screen and (max-width: 480px) { .stmt-wrap .stmt th:nth-child(4), .stmt-wrap .stmt td:nth-child(4) { display: none; } .stmt-wrap { padding: 10px; } }
+.stmt table { table-layout: fixed; }
+.stmt th:nth-child(1) { width: 3.4rem; } .stmt th:nth-child(3) { width: 6.6rem; } .stmt th:nth-child(4) { width: 7.4rem; }
 
 </style>
 <script>window.ZOSHYT_CONFIG = {
@@ -1230,7 +1313,49 @@ async function mfaVerify(factorId, code) {
   }
 }
 
-return { configured, ApiError, getSession, clearSession, onAuthExpired, signUp, signIn, signOut, recoverPassword, googleSignInUrl, takeSessionFromUrl, updatePassword, fetchUser, accessToken, rpc, currentAal, mfaFactors, mfaEnroll, mfaUnenroll, mfaVerify };
+// ---------- лічильник відвідувань (без cookies, без сторонніх сервісів) ----------
+const SRC_KEY = 'zoshyt.utm';
+const deviceType = () => /iPad|Tablet/i.test(navigator.userAgent) ? 'tablet' : /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+
+/** Звідки людина прийшла вперше (UTM-мітки / сайт-джерело) — пам'ятаємо 60 днів */
+function firstSource() {
+  let s = null;
+  try { s = JSON.parse(lsGet(SRC_KEY) || 'null'); } catch { s = null; }
+  if (s && s.at && Date.now() - s.at > 60 * 864e5) s = null;
+  if (!s) {
+    const q = new URLSearchParams(location.search);
+    const ref = document.referrer && !document.referrer.startsWith(location.origin) ? document.referrer : '';
+    const n = {};
+    for (const k of ['utm_source', 'utm_medium', 'utm_campaign']) if (q.get(k)) n[k] = q.get(k).slice(0, 60);
+    if (ref) { try { n.ref = new URL(ref).hostname; } catch { /* */ } }
+    if (Object.keys(n).length) { s = { ...n, at: Date.now() }; lsSet(SRC_KEY, JSON.stringify(s)); }
+  }
+  return s;
+}
+/** Джерело для create_shop: лише дозволені поля */
+function sourceForSignup() {
+  const s = firstSource();
+  if (!s) return null;
+  const o = {};
+  for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'ref']) if (s[k]) o[k] = s[k];
+  if (s.landing) o.landing = true;
+  return Object.keys(o).length ? o : null;
+}
+const tracked = new Set();
+/** Одна позначка «переглянуто» на сторінку за відкриття застосунку. Помилки ігноруються. */
+function trackView(page) {
+  if (!configured() || tracked.has(page)) return;
+  tracked.add(page);
+  const s = firstSource();
+  const utm = s ? { utm_source: s.utm_source, utm_medium: s.utm_medium, utm_campaign: s.utm_campaign } : null;
+  try {
+    fetch(BASE + '/rest/v1/rpc/track_visit', { method: 'POST', keepalive: true, cache: 'no-store',
+      headers: { apikey: KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({ p_event: 'view', p_page: page, p_ref: s && s.ref ? 'https://' + s.ref : null, p_utm: utm, p_device: deviceType() }) }).catch(() => {});
+  } catch { /* */ }
+}
+
+return { configured, ApiError, getSession, clearSession, onAuthExpired, signUp, signIn, signOut, recoverPassword, googleSignInUrl, takeSessionFromUrl, updatePassword, fetchUser, accessToken, rpc, currentAal, mfaFactors, mfaEnroll, mfaUnenroll, mfaVerify, firstSource, sourceForSignup, trackView };
 })();
 
 M.ui = (function () {
@@ -1275,6 +1400,14 @@ function toast(msg, tone = '', { action = null, ms = 3200 } = {}) {
 function formError(form, msg) {
   const e = form.querySelector('.err');
   if (e) { e.textContent = msg || ''; if (msg) e.scrollIntoView({ block: 'nearest' }); }
+  // помилка — введене не збережено, тож фонове оновлення екрана має його зберегти
+  if (msg) for (const el of form.querySelectorAll('input, textarea, select')) {
+    if (el._orig === undefined) continue;
+    if (el.type === 'checkbox') el.defaultChecked = el._orig;
+    else if (el.tagName === 'SELECT') [...el.options].forEach(o => { o.defaultSelected = o.value === el._orig; });
+    else el.defaultValue = el._orig;
+    el._orig = undefined;
+  }
   else if (msg) toast(msg, 'bad');
 }
 
@@ -2055,13 +2188,189 @@ register({
 return { setOnSignedIn, loginView, signupView, forgotView, resetView, setupView, reloginModal, CFG };
 })();
 
+M.views_statement = (function () {
+const { esc, money, fmtD, fmtPhone, copyText, downloadFile, isoDate, DAY } = M.util;
+const { openModal, toast } = M.ui;
+const { S } = M.store;
+// Виписка боргу одного клієнта: показати, надіслати картинкою чи текстом, роздрукувати / зберегти в PDF.
+// У виписці немає імен продавців і службових позначок — лише те, що стосується покупця.
+
+
+
+const MAX_ROWS = 60;           // довша історія — «на початок» переноситься в залишок
+const st = { period: 'open', clientId: null };
+
+const PERIODS = [['open', 'Поточний борг'], ['30', '30 днів'], ['90', '3 місяці'], ['all', 'Уся історія']];
+
+/** Записи клієнта для виписки: залишок на початок, рядки з поточним залишком, підсумок */
+function buildStatement(clientId, period = 'open', now = Date.now()) {
+  const c = S.clients.get(clientId);
+  const ops = [...S.ops.values()]
+    .filter(o => o.client_id === clientId && !o.cancelled_at && !o._failed)
+    .sort((a, b) => new Date(a.client_at) - new Date(b.client_at) || String(a.id).localeCompare(String(b.id)));
+  let run = 0;
+  const all = ops.map(o => { run += o.type === 'debt' ? o.amount : -o.amount; return { o, after: run }; });
+  const total = run;
+  let start = 0;
+  if (period === 'open') {
+    // від моменту, коли борг востаннє був нульовим (або переплатою)
+    for (let i = all.length - 1; i >= 0; i--) if (all[i].after <= 0) { start = i + 1; break; }
+    if (total <= 0) start = all.findIndex(x => now - new Date(x.o.client_at) < 30 * DAY);
+  } else if (period !== 'all') {
+    const from = now - (+period) * DAY;
+    start = all.findIndex(x => new Date(x.o.client_at).getTime() >= from);
+  }
+  if (start < 0) start = all.length;
+  if (all.length - start > MAX_ROWS) start = all.length - MAX_ROWS;
+  const rows = all.slice(start);
+  const opening = start > 0 ? all[start - 1].after : 0;
+  const debts = rows.filter(r => r.o.type === 'debt').reduce((s, r) => s + r.o.amount, 0);
+  const pays = rows.filter(r => r.o.type === 'pay').reduce((s, r) => s + r.o.amount, 0);
+  return {
+    shop: S.shop?.name || '', client: c?.name || '', phone: c?.phone ? fmtPhone(c.phone) : '',
+    date: now, from: rows.length ? rows[0].o.client_at : null, opening, rows, debts, pays, total, period,
+  };
+}
+
+const balText = (b) => b > 0 ? money(b) : b < 0 ? 'переплата ' + money(-b) : '0 грн';
+const totalLine = (s) => s.total > 0 ? `Разом винен: ${money(s.total)}` : s.total < 0 ? `Переплата: ${money(-s.total)}` : 'Боргу немає';
+const opText = (o) => o.type === 'debt' ? (o.note || 'Борг') : 'Оплата' + (o.note ? ' · ' + o.note : '');
+
+/** Текст для Viber/SMS */
+function statementText(s) {
+  const lines = [`Виписка${s.shop ? ' · магазин «' + s.shop + '»' : ''}`, `${s.client} · станом на ${fmtD(s.date)}`, ''];
+  if (s.opening) lines.push(`Залишок на початок: ${balText(s.opening)}`);
+  for (const { o } of s.rows) lines.push(`${fmtD(o.client_at).slice(0, 5)}  ${o.type === 'debt' ? '+' : '−'}${money(o.amount)}${o.note ? '  ' + o.note : o.type === 'pay' ? '  оплата' : ''}`);
+  if (!s.rows.length) lines.push('За цей період записів немає.');
+  lines.push('', totalLine(s));
+  return lines.join('\n');
+}
+
+/** Виписка як сторінка (для перегляду і друку) */
+function statementHtml(s) {
+  return `<article class="stmt">
+    <header><div class="stmt-shop">${esc(s.shop)}</div><h2>Виписка боргу</h2>
+      <div class="stmt-who"><b>${esc(s.client)}</b>${s.phone ? ` · ${esc(s.phone)}` : ''}</div>
+      <div class="small muted">станом на ${fmtD(s.date)}</div></header>
+    <table><thead><tr><th>Дата</th><th>Що</th><th class="n">Сума</th><th class="n">Залишок</th></tr></thead><tbody>
+      ${s.opening ? `<tr class="open"><td>${s.from ? fmtD(s.from).slice(0, 5) : ''}</td><td>Залишок на початок</td><td class="n"></td><td class="n">${esc(balText(s.opening))}</td></tr>` : ''}
+      ${s.rows.map(({ o, after }) => `<tr><td>${fmtD(o.client_at).slice(0, 5)}</td><td>${esc(opText(o))}</td>
+        <td class="n ${o.type === 'debt' ? 'bad' : 'ok'}">${o.type === 'debt' ? '+' : '−'}${money(o.amount)}</td><td class="n">${esc(balText(after))}</td></tr>`).join('')}
+      ${s.rows.length ? '' : '<tr><td colspan="4" class="muted">За цей період записів немає.</td></tr>'}
+    </tbody></table>
+    <div class="stmt-total ${s.total > 0 ? 'bad' : 'ok'}">${esc(totalLine(s))}</div>
+    ${s.rows.length ? `<div class="small muted">За період: взяв ${money(s.debts)}, оплатив ${money(s.pays)}</div>` : ''}
+  </article>`;
+}
+
+/** Виписка картинкою (PNG): добре читається у Viber/Telegram */
+async function statementPng(s) {
+  const W = 720, P = 36, scale = 2, rowH = 46;
+  const font = (w, px) => `${w} ${px}px system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
+  const H = 230 + (s.opening ? rowH : 0) + Math.max(1, s.rows.length) * rowH + 100;
+  const cv = document.createElement('canvas');
+  cv.width = W * scale; cv.height = H * scale;
+  const x = cv.getContext('2d'); x.scale(scale, scale);
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#2140a8'; x.fillRect(0, 0, W, 8);
+  const fit = (t, max) => { t = String(t); if (x.measureText(t).width <= max) return t; while (t && x.measureText(t + '…').width > max) t = t.slice(0, -1); return t + '…'; };
+  let y = P + 22;
+  x.fillStyle = '#5a6480'; x.font = font(600, 20); x.fillText(fit(s.shop, W - 2 * P), P, y);
+  y += 40; x.fillStyle = '#17203a'; x.font = font(800, 32); x.fillText('Виписка боргу', P, y);
+  y += 36; x.font = font(700, 22); x.fillText(fit(s.client + (s.phone ? ' · ' + s.phone : ''), W - 2 * P), P, y);
+  y += 28; x.fillStyle = '#5a6480'; x.font = font(400, 18); x.fillText('станом на ' + fmtD(s.date), P, y);
+  y += 34;
+  const cols = { d: P, t: P + 80, a: W - P - 180, b: W - P };
+  x.strokeStyle = '#d7deed'; x.lineWidth = 1;
+  const line = (yy) => { x.beginPath(); x.moveTo(P, yy); x.lineTo(W - P, yy); x.stroke(); };
+  x.font = font(700, 15); x.fillStyle = '#5a6480';
+  x.fillText('ДАТА', cols.d, y); x.fillText('ЩО', cols.t, y);
+  x.textAlign = 'right'; x.fillText('СУМА', cols.a, y); x.fillText('ЗАЛИШОК', cols.b, y); x.textAlign = 'left';
+  y += 14; line(y);
+  const row = (d, t, a, aColor, b) => {
+    y += rowH - 14;
+    x.font = font(400, 19); x.fillStyle = '#5a6480'; x.fillText(d, cols.d, y);
+    x.fillStyle = '#17203a'; x.fillText(fit(t, cols.a - 150 - cols.t), cols.t, y);
+    x.textAlign = 'right'; x.font = font(700, 19); x.fillStyle = aColor; if (a) x.fillText(a, cols.a, y);
+    x.font = font(400, 19); x.fillStyle = '#17203a'; x.fillText(b, cols.b, y); x.textAlign = 'left';
+    y += 14; line(y);
+  };
+  if (s.opening) row(s.from ? fmtD(s.from).slice(0, 5) : '', 'Залишок на початок', '', '#17203a', balText(s.opening));
+  for (const { o, after } of s.rows) row(fmtD(o.client_at).slice(0, 5), opText(o), (o.type === 'debt' ? '+' : '−') + money(o.amount), o.type === 'debt' ? '#c0392b' : '#157347', balText(after));
+  if (!s.rows.length) row('', 'За цей період записів немає.', '', '#17203a', '');
+  y += 52; x.font = font(800, 28); x.fillStyle = s.total > 0 ? '#c0392b' : '#157347'; x.fillText(totalLine(s), P, y);
+  y += 34; x.font = font(400, 16); x.fillStyle = '#8a93ab'; x.fillText('Зошит боржників', P, y);
+  return new Promise(r => cv.toBlob(r, 'image/png'));
+}
+
+// латиницею: частина браузерів відкидає кириличні назви файлів
+const TR = { а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e', є: 'ie', ж: 'zh', з: 'z', и: 'y', і: 'i', ї: 'i', й: 'i', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ь: '', ю: 'iu', я: 'ia', ы: 'y', э: 'e', ё: 'io', ъ: '' };
+const latin = (t) => String(t).toLowerCase().replace(/[а-яєіїґёыэъ]/g, ch => TR[ch] ?? '');
+const fileName = (s, ext) => `vyp-${latin(s.client || 'klient').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30)}-${isoDate(s.date)}.${ext}`;
+
+function statementModal(clientId) {
+  st.clientId = clientId;
+  const c = S.clients.get(clientId); if (!c) return;
+  const s = buildStatement(clientId, st.period);
+  openModal(`<div class="stack" id="stmt-modal">
+    <h2>Виписка</h2>
+    <div class="seg chips" role="group" aria-label="Період">${PERIODS.map(([k, l]) => `<button type="button" data-act="stmt-period" data-v="${k}" aria-pressed="${st.period === k}">${l}</button>`).join('')}</div>
+    <div class="stmt-wrap">${statementHtml(s)}</div>
+    <div class="m-actions start stmt-actions">
+      <button class="btn ink" data-act="stmt-image">Надіслати картинкою</button>
+      <button class="btn" data-act="stmt-text">Надіслати текстом</button>
+      <button class="btn" data-act="stmt-print">Друк / PDF</button>
+    </div>
+    <p class="small muted">Картинку зручно відправити у Viber чи Telegram. «Друк / PDF» відкриває друк — там можна обрати принтер або «Зберегти як PDF».</p>
+    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
+  </div>`, { wide: true });
+}
+
+/** Поділитися файлом або текстом; якщо телефон не вміє — завантажити / скопіювати */
+async function shareOr(data, fallback) {
+  try {
+    if (navigator.share && (!data.files || (navigator.canShare && navigator.canShare(data)))) { await navigator.share(data); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  await fallback();
+}
+
+const statementActions = {
+  'stmt-period': (el) => { st.period = el.dataset.v; statementModal(st.clientId); },
+  'stmt-image': async () => {
+    const s = buildStatement(st.clientId, st.period);
+    const blob = await statementPng(s);
+    if (!blob) { toast('Не вдалося створити картинку', 'bad'); return; }
+    const file = new File([blob], fileName(s, 'png'), { type: 'image/png' });
+    await shareOr({ files: [file], title: 'Виписка боргу' }, async () => { downloadFile(file.name, blob); toast('Картинку збережено — надішліть її у Viber'); });
+  },
+  'stmt-text': async () => {
+    const text = statementText(buildStatement(st.clientId, st.period));
+    await shareOr({ text, title: 'Виписка боргу' }, async () => { toast(await copyText(text) ? 'Текст скопійовано — вставте в чат' : 'Не вдалося скопіювати', 'ok'); });
+  },
+  'stmt-print': () => {
+    const s = buildStatement(st.clientId, st.period);
+    let area = document.getElementById('print-area');
+    if (!area) { area = document.createElement('div'); area.id = 'print-area'; document.body.appendChild(area); }
+    area.innerHTML = statementHtml(s) + '<div class="stmt-foot small muted">Зошит боржників</div>';
+    document.body.classList.add('printing');
+    const done = () => { document.body.classList.remove('printing'); area.innerHTML = ''; window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    setTimeout(() => window.print(), 50);
+  },
+};
+
+return { st, buildStatement, statementText, statementHtml, statementPng, statementModal, statementActions };
+})();
+
 M.views_shop = (function () {
 const { esc, money, moneyInput, parseMoney, fmtDT, fmtD, days, plural, digits, cleanPhone, copyText, sinceText, ageTone, localPhone, phoneMask, fmtPhone, storePhone, matchClient } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { S, isOwner, writable, memberName, addOp, cancelOp, createClient, updateClient, retryFailed, discardFailed, markReminded } = M.store;
 const { stats, summary } = M.calc;
 const { go, view } = M.router;
+const { statementModal, statementActions } = M.views_statement;
 // Список боржників, картка клієнта, запис боргу/оплати, скасування, нагадування
+
 
 
 
@@ -2168,6 +2477,7 @@ function clientView(id) {
       ${w && !c.archived ? '<button class="btn bad" data-act="op" data-type="debt">+ Записати борг</button>' : ''}
       ${w ? '<button class="btn ok" data-act="op" data-type="pay">Прийняти оплату</button>' : ''}
       ${p.bal > 0 ? '<button class="btn" data-act="remind">Нагадати</button>' : ''}
+      ${ops.some(o => !o.cancelled_at && !o._failed) ? '<button class="btn" data-act="statement">Виписка</button>' : ''}
       ${isOwner() && w ? '<button class="btn" data-act="edit-client">Редагувати</button>' : ''}
       ${isOwner() && w && c.archived ? '<button class="btn ink" data-act="unarchive">Повернути з архіву</button>' : ''}
     </div>
@@ -2419,6 +2729,8 @@ register({
   op: (el) => opModal(el.dataset.type),
   remind: () => remindModal(),
   'copy-remind': async () => { toast(await copyText(document.getElementById('r-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте вручну'); },
+  ...statementActions,
+  statement: () => statementModal(view.clientId),
   'remind-done': async (el) => { await markReminded(el.dataset.id); closeModal(); toast('Позначено: нагадали сьогодні', 'ok'); },
   'cancel-op': (el) => { const o = S.ops.get(el.dataset.id); if (o) cancelModal(o); },
   'quick-note': (el) => {
@@ -2783,7 +3095,7 @@ return { journalView };
 })();
 
 M.views_settings = (function () {
-const { esc, money, moneyInput, parseMoney, fmtD, days, copyText, DAY } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtD, days, copyText, plural, DAY } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, confirmBox, icon } = M.ui;
 const { S, isOwner, me, online, pendingForLogout, logout } = M.store;
 const { prefs, setPref } = M.prefs;
@@ -2932,34 +3244,80 @@ const payPurpose = (shop) => `Зошит боржників, магазин «${
 const grn = (n) => Math.round(n).toLocaleString('uk-UA') + ' грн';
 
 /** Блок «Підписка»: компактно, реальні реквізити з config.js, кнопки копіювання й зв'язку */
+// Дані підписки з сервера (ціна зі знижками, історія). Без інтернету — ціни з налаштувань.
+const bill = { shop: null, data: null, loading: null, promoOpen: false, promoErr: '' };
+async function loadBilling(force = false) {
+  const id = S.shopId;                       // для якого магазину просимо — під ним і зберігаємо відповідь
+  if (!navigator.onLine || !id || !isOwner() || bill.loading === id) return;
+  if (!force && bill.shop === id && bill.data) return;
+  if (bill.shop !== id) { bill.promoOpen = false; bill.promoErr = ''; }
+  bill.loading = id;
+  let data = null;
+  try { data = await api.rpc('my_billing', { p_shop: id }); } catch { data = null; }
+  if (bill.loading === id) bill.loading = null;
+  if (S.shopId !== id) return;               // поки чекали — перемкнули магазин: ця відповідь уже не потрібна
+  bill.data = data; bill.shop = id;
+  view.rerender();
+}
+
+const STATUS_TXT = { paid: ['оплачено', 'ok'], bonus: ['бонус', 'ok'], trial: ['пробний період', ''], free: ['безкоштовно', 'ok'], expired: ['закінчилась', 'bad'], suspended: ['призупинено', 'warn'] };
+function discountBadge(c) {
+  const d = c.discount; if (!d) return '';
+  const v = d.type === 'percent' ? `−${d.value}%` : d.type === 'fixed' ? `−${money(d.value)}` : d.type === 'price' ? 'особлива ціна' : d.type === 'free_months' ? `${d.uses_left} ${plural(d.uses_left, 'місяць', 'місяці', 'місяців')} безкоштовно` : '';
+  return `<span class="chip ok">${esc(d.message || ('Ваша знижка ' + v))}${d.ends_at ? ' до ' + fmtD(d.ends_at) : ''}</span>`;
+}
+const priceCell = (c, per) => c.discount && c.final !== c.base
+  ? `<s class="muted">${money(c.base)}</s> <b>${money(c.final)}</b>/${per}` : `<b>${money(c.final)}</b>/${per}`;
+function histLine(h) {
+  const d = fmtD(h.at);
+  if (h.kind === 'payment') return `<li><span class="muted">${d}</span> оплата <b>${money(h.amount_kop)}</b> → до ${fmtD(h.until)}</li>`;
+  if (h.kind === 'bonus') return `<li><span class="muted">${d}</span> <span class="txt-ok">Бонус від «Зошит боржників»: +${h.days} ${plural(h.days, 'день', 'дні', 'днів')}</span>${h.reason ? ` (${esc(h.reason)})` : ''}</li>`;
+  if (h.kind === 'trial') return `<li><span class="muted">${d}</span> пробний період продовжено на ${h.days} ${plural(h.days, 'день', 'дні', 'днів')}</li>`;
+  if (h.kind === 'free') return `<li><span class="muted">${d}</span> ${new Date(h.until).getFullYear() > 2090 ? 'безкоштовно назавжди' : h.days === 0 && new Date(h.until) <= new Date(h.at) ? 'безкоштовний режим завершено' : 'безкоштовно до ' + fmtD(h.until)}</li>`;
+  return '';
+}
+
+/** Блок «Підписка»: ціна з урахуванням знижки (рахує сервер), реквізити, промокод, історія */
 function subscriptionSection(shop, i, owner) {
-  const status = i ? `<span class="chip ${i.writable ? (i.left > 5 ? 'ok' : 'warn') : 'bad'}">${i.writable ? (i.trial ? 'пробний період' : 'активна') : 'закінчилась'}</span>` : '';
-  const head = `<div class="row-between"><h2>Підписка</h2>${status}</div>
-    ${i ? `<p>${i.trial ? 'Пробний період' : 'Оплачено'} до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` · ще ${days(i.left)}` : ''}</p>` : ''}`;
+  if (owner) loadBilling();
+  const b = owner && bill.shop === S.shopId ? bill.data : null;
+  const st = b ? b.status : shop.free_until && new Date(shop.free_until) > Date.now() ? 'free' : i && !i.writable ? 'expired' : i && i.trial ? 'trial' : 'paid';
+  const [stTxt, stCls] = STATUS_TXT[st] || ['', ''];
+  const forever = shop.free_until && new Date(shop.free_until).getFullYear() > 2090;
+  const head = `<div class="row-between"><h2>Підписка</h2><span class="chip ${stCls}">${stTxt}</span></div>
+    ${i ? `<p>${forever ? 'Безкоштовно назавжди' : `Доступ до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` · ще ${days(i.left)}` : ''}`}</p>` : ''}`;
   if (!owner) return `<section class="sheet pad stack">${head}</section>`;
-  const save = CFG.priceMonth * 12 - CFG.priceYear;
   const copyBtn = (act, what) => `<button class="icon-btn sm copy" data-act="${act}" aria-label="Копіювати ${what}" title="Копіювати">${icon.copy}</button>`;
   const row = (label, value, act, what, sub = '', cls = '') => `<div class="pay-row"><span class="muted">${label}</span><span><b class="${cls}">${esc(value)}</b>${sub ? `<small class="muted">${esc(sub)}</small>` : ''}</span>${act ? copyBtn(act, what) : '<span></span>'}</div>`;
-  const hasPay = CFG.payCard || CFG.payIban || CFG.payLink;
+  const hasPay = !!(CFG.payCard || CFG.payIban || CFG.payLink);
   const tel = intlPhone(CFG.supportPhone);
   const viber = intlPhone(CFG.supportViber || CFG.supportPhone);
   const contacts = [CFG.supportTg ? `<a class="btn sm" href="https://t.me/${esc(CFG.supportTg)}" target="_blank" rel="noopener">Telegram</a>` : '',
     viber ? `<a class="btn sm" href="viber://chat?number=${encodeURIComponent(viber)}">Viber</a>` : '',
     tel ? `<a class="btn sm" href="tel:${esc(tel)}">Подзвонити</a>` : ''].filter(Boolean);
+  const m = b ? b.month : { base: CFG.priceMonth * 100, final: CFG.priceMonth * 100 };
+  const y = b ? b.year : { base: CFG.priceYear * 100, final: CFG.priceYear * 100 };
+  const freeMonth = b && m.final === 0 && m.discount && m.discount.type === 'free_months';
+  const badge = b ? (discountBadge(m) || discountBadge(y)) : '';
+  const hist = b ? b.history.map(histLine).filter(Boolean).slice(0, 5) : [];
   return `<section class="sheet pad stack sub-box">
     ${head}
-    <p class="price-line"><b>${grn(CFG.priceMonth)}</b>/міс · <b>${grn(CFG.priceYear)}</b>/рік${save > 0 ? ` <span class="muted">(−${grn(save)})</span>` : ''}</p>
-    ${hasPay ? `<div class="pay-rows">
+    ${forever ? '' : `<p class="price-line">${priceCell(m, 'міс')} · ${priceCell(y, 'рік')}</p>${badge ? `<div>${badge}</div>` : ''}`}
+    ${freeMonth ? '<button class="btn ok" data-act="claim-free">Взяти безкоштовний місяць</button>' : ''}
+    ${!forever && hasPay ? `<div class="pay-rows">
       ${CFG.payCard ? row('Картка', fmtCard(CFG.payCard), 'copy-card', 'номер картки', CFG.payRecipient, 'mono') : ''}
       ${!CFG.payCard && CFG.payRecipient ? row('Отримувач', CFG.payRecipient) : ''}
       ${CFG.payIban ? row('IBAN', CFG.payIban, 'copy-iban', 'IBAN', CFG.payCard ? '' : CFG.payRecipient, 'mono iban') : ''}
       ${row('Коментар', payPurpose(shop), 'copy-purpose', 'коментар до платежу')}
-    </div>` : contacts.length ? '<p class="small muted">Щоб оплатити, напишіть або зателефонуйте нам — підкажемо, як зручніше.</p>' : '<p class="small muted">Реквізити для оплати з’являться тут найближчим часом.</p>'}
+    </div>
     <div class="actions two">
       ${CFG.payLink ? `<a class="btn ink" href="${esc(CFG.payLink)}" target="_blank" rel="noopener">Оплатити карткою</a>` : ''}
       <button class="btn ${CFG.payLink ? '' : 'ink'}" data-act="paid-tell">Я оплатив(ла)</button>
-    </div>
+    </div>` : !forever && contacts.length ? '<p class="small muted">Щоб оплатити, напишіть або зателефонуйте нам — підкажемо, як зручніше.</p>' : ''}
     ${contacts.length ? `<div class="contact-line" aria-label="Зв’язатися з нами">${contacts.join('')}</div>` : ''}
+    ${b && !forever ? (bill.promoOpen ? `<form data-form="promo-apply" class="note-form"><input id="promo-code" autocapitalize="characters" autocomplete="off" placeholder="Промокод" aria-label="Промокод"><button class="btn sm ink" type="submit">Застосувати</button></form><div class="err small" id="promo-err" role="alert">${esc(bill.promoErr)}</div>`
+      : '<button class="btn sm ghost promo-link" data-act="promo-open">Маю промокод</button>') : ''}
+    ${hist.length ? `<details class="small"><summary>Історія</summary><ul class="plain hist-mini">${hist.join('')}</ul></details>` : ''}
   </section>`;
 }
 
@@ -3028,6 +3386,11 @@ register({
   'set-theme': (el) => { setPref('theme', el.dataset.v); view.rerender(); },
   'set-size': (el) => { setPref('size', el.dataset.v); view.rerender(); },
   'paid-tell': () => paidModal(),
+  'promo-open': () => { bill.promoOpen = true; view.rerender(); setTimeout(() => document.getElementById('promo-code')?.focus(), 0); },
+  'claim-free': async () => {
+    try { const r = await online('claim_free_month', { p_shop: S.shopId }); toast('Безкоштовний місяць додано. Доступ до ' + fmtD(r.paid_until), 'ok'); await loadBilling(true); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
   'open-quarantine': () => quarantineModal(),
   'q-approve': (el) => resolveQ(el.dataset.id, true),
   'q-reject': (el) => resolveQ(el.dataset.id, false),
@@ -3080,6 +3443,20 @@ register({
     location.hash = '#/login';
   },
 }, {
+  async 'promo-apply'(form) {
+    const code = document.getElementById('promo-code').value.trim();
+    const err = document.getElementById('promo-err');
+    if (!code) { bill.promoErr = err.textContent = 'Введіть промокод.'; return; }
+    bill.promoErr = '';
+    await busy(form, async () => {
+      try {
+        const r = await online('apply_promo', { p_shop: S.shopId, p_code: code });
+        bill.promoOpen = false;
+        toast(r.bonus_days ? `Промокод прийнято: +${r.bonus_days} ${plural(r.bonus_days, 'день', 'дні', 'днів')}` : 'Промокод прийнято — знижка діятиме на наступну оплату', 'ok');
+        await loadBilling(true);
+      } catch (e) { bill.promoErr = err.textContent = e.message; }
+    });
+  },
   async shop(form) {
     const name = document.getElementById('sh-name').value.trim();
     const lim = parseMoney(document.getElementById('sh-limit').value || '0');
@@ -3151,18 +3528,19 @@ return { subscriptionInfo, subscriptionBanner, settingsView };
 })();
 
 M.views_admin = (function () {
-const { esc, money, parseMoney, fmtD, days, copyText, downloadFile, isoDate, DAY } = M.util;
+const { esc, money, parseMoney, fmtD, fmtDT, days, plural, copyText, downloadFile, isoDate, DAY } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { CFG, fmtCard } = M.cfg;
 const api = M.api;
-const { view } = M.router;
-// Адмін-панель сервісу (для вас як продавця програми): магазини, підписки, оплати
+const { view, go } = M.router;
+// Адмінка: список магазинів і сторінка магазину з вкладками (#/admin/shop/<id>/<вкладка>)
 
 
 
 
 
-const as = { shops: null, loading: false, error: null, q: '', filter: 'all' };
+const as = { shops: null, loading: false, error: null, q: '', filter: 'all', sort: 'new' };
+const sp = { id: null, data: null, loading: false, error: null, form: null };
 const PURGE_DAYS = 30;
 
 async function load() {
@@ -3171,211 +3549,454 @@ async function load() {
   catch (e) { as.error = e.message; }
   finally { as.loading = false; view.rerender(); }
 }
-
-const FILTERS = [['all', 'Усі'], ['trial', 'Пробні'], ['paid', 'Платні'], ['soon', 'Закінчуються'], ['expired', 'Прострочені'], ['deleted', 'Видалені']];
-
 function ensureShops() { if (!as.shops && !as.loading && !as.error) load(); }
+function refreshAll() { as.shops = null; as.error = null; sp.data = null; }
 
+// ---------------- статуси ----------------
+const STATUS = {
+  paid: ['платний', 'ok'], bonus: ['бонус', 'ink'], trial: ['пробний', ''], free: ['безкоштовно', 'ok'],
+  expired: ['прострочений', 'bad'], suspended: ['призупинено', 'warn'], deleted: ['видалено', 'bad'],
+};
+const statusChip = (st) => { const [l, c] = STATUS[st] || [st, '']; return `<span class="chip ${c}">${l}</span>`; };
+const LABELS = { vip: 'VIP', partner: 'партнер', test: 'тестовий', problem: 'проблемний' };
+const labelChips = (ls) => (ls || []).map(l => `<span class="chip lbl-${esc(l)}">${esc(LABELS[l] || l)}</span>`).join('');
+const METHOD = { card: 'картка', iban: 'IBAN', cash: 'готівка', online: 'онлайн', other: 'інше' };
+const leftDays = (s) => Math.ceil((new Date(s.access_until) - Date.now()) / DAY);
+
+const FILTERS = [['all', 'Усі'], ['trial', 'Пробні'], ['paid', 'Платні'], ['bonus', 'Бонус'], ['soon', 'Закінчуються'], ['expired', 'Прострочені'],
+  ['free', 'Безкоштовні'], ['discount', 'Зі знижкою'], ['suspended', 'Призупинені'], ['deleted', 'Видалені']];
+const SORTS = [['new', 'Нові'], ['ending', 'Закінчуються раніше'], ['active', 'Найактивніші'], ['revenue', 'Найбільший дохід']];
+
+function filtered() {
+  const q = as.q.trim().toLowerCase();
+  let list = as.shops.filter(s => as.filter === 'deleted' ? s.deleted_at : !s.deleted_at);
+  if (q) list = list.filter(s => [s.name, s.owner_email, s.owner_name, s.id].some(v => String(v || '').toLowerCase().includes(q)));
+  const f = as.filter;
+  if (['trial', 'paid', 'bonus', 'expired', 'free', 'suspended'].includes(f)) list = list.filter(s => s.status === f);
+  if (f === 'soon') list = list.filter(s => leftDays(s) > 0 && leftDays(s) <= 7 && s.status !== 'free');
+  if (f === 'discount') list = list.filter(s => s.has_discount);
+  const by = { new: (a, b) => new Date(b.created_at) - new Date(a.created_at), ending: (a, b) => new Date(a.access_until) - new Date(b.access_until),
+    active: (a, b) => b.ops7 - a.ops7, revenue: (a, b) => b.revenue_kop - a.revenue_kop };
+  return list.sort(by[as.sort] || by.new);
+}
+
+// ---------------- список ----------------
 function adminView() {
   ensureShops();
-  const header = `<div class="row-between page-head"><h1>Магазини</h1>
-    <button class="icon-btn" data-act="admin-reload" aria-label="Оновити список" title="Оновити">${icon.refresh}</button></div>`;
+  const header = `<div class="row-between page-head"><h1>Магазини</h1><span class="actions">
+    ${as.shops ? '<button class="btn sm" data-act="admin-export-list">Excel</button>' : ''}
+    <button class="icon-btn" data-act="admin-reload" aria-label="Оновити список" title="Оновити">${icon.refresh}</button></span></div>`;
   if (as.error) return `${header}<div class="banner bad">${esc(as.error)}</div>`;
   if (!as.shops) return `${header}<div class="empty">Завантаження…</div>`;
-  const now = Date.now();
-  const q = as.q.trim().toLowerCase();
-  const alive = as.shops.filter(s => !s.deleted_at);
-  const left = (s) => Math.ceil((new Date(s.access_until) - now) / DAY);
-  let list = as.filter === 'deleted' ? as.shops.filter(s => s.deleted_at) : alive;
-  list = list.filter(s => !q || s.name.toLowerCase().includes(q) || (s.owner_email || '').toLowerCase().includes(q) || (s.owner_name || '').toLowerCase().includes(q));
-  if (as.filter === 'trial') list = list.filter(s => !s.paid_until && left(s) > 0);
-  if (as.filter === 'paid') list = list.filter(s => s.paid_until && left(s) > 0);
-  if (as.filter === 'soon') list = list.filter(s => left(s) > 0 && left(s) <= 7);
-  if (as.filter === 'expired') list = list.filter(s => left(s) <= 0);
-  const paying = alive.filter(s => s.paid_until && left(s) > 0).length;
-  const trial = alive.filter(s => !s.paid_until && left(s) > 0).length;
-  const active7 = alive.filter(s => s.last_activity && now - new Date(s.last_activity) < 7 * DAY).length;
-  const chip = (s) => {
-    if (s.deleted_at) return '<span class="chip bad">видалено</span>';
-    const l = left(s);
-    return `<span class="chip ${l <= 0 ? 'bad' : l <= 7 ? 'warn' : s.paid_until ? 'ok' : ''}">${l > 0 ? 'ще ' + days(l) : 'закінчився'}</span>`;
-  };
-  return `
-  ${header}
-  <section class="summary four">
-    <div><div class="k">Магазинів</div><div class="v">${alive.length}</div></div>
-    <div><div class="k">Платять</div><div class="v ok">${paying}</div></div>
-    <div><div class="k">Пробний період</div><div class="v">${trial}</div></div>
-    <div><div class="k">Активні за 7 днів</div><div class="v">${active7}</div></div>
-  </section>
-  <input id="adm-q" class="search" type="search" placeholder="Магазин, email, ім’я" value="${esc(as.q)}" aria-label="Пошук магазину">
+  const list = filtered();
+  return `${header}
+  <input id="adm-q" class="search" type="search" placeholder="Назва, email, ім’я або ID" value="${esc(as.q)}" aria-label="Пошук магазину">
   <div class="seg chips" role="group" aria-label="Фільтр">${FILTERS.map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
-  <section class="sheet">
-    <div class="adm-cards">${list.map(s => `<div class="adm-card">
-      <div class="row-between"><div><b>${esc(s.name)}</b><div class="small muted">${esc(s.owner_name || '')} · ${esc(s.owner_email || '')}</div></div>${chip(s)}</div>
-      <div class="nums"><span>клієнтів <b>${s.clients}</b></span><span>записів <b>${s.ops}</b></span><span>людей <b>${s.members}</b></span>
-        <span>доступ до <b>${fmtD(s.access_until)}</b></span>${s.paid_until ? '' : '<span>пробний</span>'}
-        <span>активність ${s.last_activity ? fmtD(s.last_activity) : '—'}</span></div>
-      <button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">${s.deleted_at ? 'Відновити / видалити' : 'Оплата / продовжити'}</button>
-    </div>`).join('') || '<div class="empty">Нічого не знайдено</div>'}</div>
-    <div class="adm-table tbl-wrap"><table>
-    <thead><tr><th>Магазин</th><th>Власник</th><th class="n">Людей</th><th class="n">Клієнтів</th><th class="n">Записів</th><th>Остання активність</th><th>Доступ до</th><th></th></tr></thead>
-    <tbody>${list.map(s => `<tr>
-      <td><b>${esc(s.name)}</b><div class="small muted">з ${fmtD(s.created_at)}</div></td>
-      <td>${esc(s.owner_name || '')}<div class="small muted">${esc(s.owner_email || '')}</div></td>
-      <td class="n">${s.members}</td><td class="n">${s.clients}</td><td class="n">${s.ops}</td>
-      <td>${s.last_activity ? fmtD(s.last_activity) : '—'}</td>
-      <td>${chip(s)}<div class="small muted">${fmtD(s.access_until)}${s.paid_until ? '' : ' · пробний'}</div></td>
-      <td><button class="btn sm ink" data-act="admin-extend" data-id="${esc(s.id)}">${s.deleted_at ? 'Відновити' : 'Оплата'}</button></td>
-    </tr>`).join('') || '<tr><td colspan="8" class="muted">Нічого не знайдено</td></tr>'}</tbody>
-  </table></div></section>
-  <p class="small muted">Видалення магазину — у вікні «Оплата» внизу: спершу копія, потім 30 днів можна відновити.</p>`;
+  <label class="inline small">Сортування: <select id="adm-sort">${SORTS.map(([k, l]) => `<option value="${k}" ${as.sort === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+  <section class="sheet">${list.length ? `<ul class="rows">${list.map(s => `<li class="row" data-act="admin-open" data-id="${esc(s.id)}" tabindex="0">
+      <div class="who"><div class="name">${esc(s.name)} ${labelChips(s.labels)}</div>
+        <div class="meta"><span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div>
+        <div class="meta"><span>${esc(s.plan_name || '')}</span>${s.has_discount ? '<span class="chip ok">знижка</span>' : ''}<span>${s.ops7} ${plural(s.ops7, 'запис', 'записи', 'записів')} за 7 дн.</span>${s.revenue_kop ? `<span>дохід ${money(s.revenue_kop)}</span>` : ''}</div></div>
+      <div class="sum">${statusChip(s.status)}<span class="small muted">${s.status === 'free' ? (new Date(s.free_until).getFullYear() > 2090 ? 'назавжди' : 'до ' + fmtD(s.free_until)) : 'до ' + fmtD(s.access_until)}</span></div></li>`).join('')}</ul>`
+    : '<div class="empty">Нічого не знайдено</div>'}</section>`;
 }
 
-const purgeFrom = (s) => new Date(new Date(s.deleted_at).getTime() + PURGE_DAYS * DAY);
+// ---------------- сторінка магазину ----------------
+const TABS = [['general', 'Загальне'], ['billing', 'Підписка'], ['payments', 'Оплати'], ['discounts', 'Знижки і бонуси'], ['activity', 'Активність'], ['staff', 'Працівники'], ['danger', 'Небезпечна зона']];
 
-async function extendModal(id) {
-  const s = as.shops.find(x => x.id === id); if (!s) return;
-  if (s.deleted_at) return deletedModal(s);
-  openModal(`<div class="stack"><form data-form="admin-extend" data-id="${esc(id)}" class="stack" novalidate>
-    <h2>${esc(s.name)}</h2>
-    <div class="small muted">${esc(s.owner_email || '')} · доступ до ${fmtD(s.access_until)}</div>
-    <label class="f">Продовжити на днів<input id="ax-days" inputmode="numeric" value="30"></label>
-    <div class="quick">${[30, 90, 180, 365].map(d => `<button type="button" data-act="ax-days" data-v="${d}">${d}</button>`).join('')}</div>
-    <label class="f">Отримано, грн (для обліку)<input id="ax-amount" inputmode="decimal" value="0"></label>
-    <label class="f">Примітка<input id="ax-note" maxlength="200" placeholder="Оплата за жовтень, картка"></label>
-    <div class="err" role="alert"></div>
-    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Продовжити доступ</button></div>
-    </form>
-    <div class="m-actions start"><button type="button" class="btn sm" data-act="admin-remind" data-id="${esc(id)}">Нагадати про оплату</button></div>
-    <details><summary class="small">Історія оплат</summary><div id="ax-history" class="small muted">Завантаження…</div></details>
-    <details><summary class="small txt-bad">Видалити магазин</summary>
-      <div class="stack">
-        <p class="small">Лише на письмовий запит власника. Магазин зникне в усіх працівників, але <b>${PURGE_DAYS} днів його можна відновити</b>. Остаточно — лише після цього.</p>
-        <p class="small"><b>Крок 1.</b> Збережіть повну копію — її можна віддати власнику.</p>
-        <button type="button" class="btn sm" data-act="admin-export" data-id="${esc(id)}">Вивантажити копію</button>
-        <p class="small"><b>Крок 2.</b> Введіть точну назву магазину.</p>
-        <label class="f">Назва магазину<input id="ax-del-name" autocomplete="off" disabled placeholder="спершу крок 1"></label>
-        <button type="button" class="btn bad" data-act="admin-delete" data-id="${esc(id)}" disabled>Видалити (можна відновити ${PURGE_DAYS} днів)</button>
-      </div>
-    </details>
-  </div>`);
-  try {
-    const pays = await api.rpc('admin_payments', { p_shop: id });
-    const h = document.getElementById('ax-history');
-    if (h) h.innerHTML = pays.length ? `<ul class="plain">${pays.map(p => `<li>${fmtD(p.created_at)}: +${p.days} дн., ${money(p.amount_kop)}${p.note ? ' — ' + esc(p.note) : ''} → до ${fmtD(p.paid_until_after)}</li>`).join('')}</ul>` : 'Оплат ще не було.';
-  } catch { /* */ }
+async function loadShop(id) {
+  sp.loading = true; sp.error = null;
+  try { sp.data = await api.rpc('admin_shop', { p_shop: id }); sp.id = id; }
+  catch (e) { sp.error = e.message; }
+  finally { sp.loading = false; view.rerender(); }
 }
 
-function deletedModal(s) {
-  const from = purgeFrom(s);
-  const canPurge = Date.now() >= from.getTime();
-  openModal(`<div class="stack">
-    <h2>${esc(s.name)}</h2>
-    <div class="banner warn">Видалено ${fmtD(s.deleted_at)}. Працівники магазин не бачать, але дані на місці.</div>
+function shopPage(id, tab = 'general') {
+  if (sp.id !== id) { sp.id = id; sp.data = null; sp.form = null; }
+  if (!sp.data && !sp.loading && !sp.error) loadShop(id);
+  const back = '<a class="btn sm ghost" href="#/admin/shops">← Усі магазини</a>';
+  if (sp.error) return `${back}<div class="banner bad">${esc(sp.error)}</div>`;
+  if (!sp.data) return `${back}<div class="empty">Завантаження…</div>`;
+  const d = sp.data, s = d.shop;
+  const owner = d.members.find(m => m.role === 'owner') || {};
+  return `${back}
+  <div class="shop-head"><div><h1>${esc(s.name)}</h1><div class="small muted">${esc(owner.name || '')} · ${esc(owner.email || '')}</div></div>
+    <div class="shop-head-st">${statusChip(s.status)} ${labelChips(s.labels)}</div></div>
+  <nav class="tabs-h" aria-label="Вкладки магазину">${TABS.map(([k, l]) => `<a href="#/admin/shop/${esc(id)}/${k}" ${tab === k ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>
+  ${({ general, billing, payments, discounts, activity, staff, danger }[tab] || general)(d)}`;
+}
+
+/** Зрозуміла назва джерела: google.com → Google, порожньо → «Напряму» */
+const SRC_NAMES = [[/google\./, 'Google'], [/facebook|^fb$/, 'Facebook'], [/instagram|^ig$/, 'Instagram'], [/t\.me|telegram|^tg$/, 'Telegram'],
+  [/viber/, 'Viber'], [/youtube|youtu\.be/, 'YouTube'], [/tiktok/, 'TikTok'], [/olx/, 'OLX'], [/bing\./, 'Bing'], [/duckduckgo/, 'DuckDuckGo'], [/prom\.ua/, 'Prom'], [/^qr$/, 'QR-код']];
+function srcName(v) {
+  const x = String(v || '').toLowerCase();
+  if (!x) return 'Напряму';
+  if (x === 'сайт') return 'Сайт (без мітки)';
+  for (const [re, n] of SRC_NAMES) if (re.test(x)) return n;
+  return x.replace(/^www\./, '');
+}
+function sourceText(src) {
+  if (!src) return '—';
+  const parts = [];
+  if (src.utm_source || src.ref) parts.push(srcName(src.utm_source || src.ref));
+  if (src.utm_campaign) parts.push('кампанія «' + src.utm_campaign + '»');
+  if (src.landing) parts.push('через сайт');
+  return parts.length ? parts.join(' · ') : '—';
+}
+
+function general(d) {
+  const s = d.shop, owner = d.members.find(m => m.role === 'owner') || {};
+  return `<section class="sheet pad stack">
+    <dl class="kv">
+      <dt>Власник</dt><dd>${esc(owner.name || '—')}</dd>
+      <dt>Email</dt><dd>${esc(owner.email || '—')}</dd>
+      <dt>Зареєстровано</dt><dd>${fmtD(s.created_at)}</dd>
+      <dt>Останній вхід власника</dt><dd>${owner.last_sign_in ? fmtDT(owner.last_sign_in) : '—'}</dd>
+      <dt>Звідки прийшов</dt><dd>${esc(sourceText(s.source))}</dd>
+      <dt>Промокоди</dt><dd>${d.promos.length ? d.promos.map(esc).join(', ') : '—'}</dd>
+      <dt>ID</dt><dd class="small mono">${esc(s.id)}</dd>
+    </dl>
     <div class="actions">
-      <button class="btn ok" data-act="admin-restore" data-id="${esc(s.id)}">Відновити магазин</button>
-      <button class="btn" data-act="admin-export" data-id="${esc(s.id)}">Вивантажити копію</button>
+      ${owner.email ? `<a class="btn sm" href="mailto:${esc(owner.email)}">Написати</a><button class="btn sm" data-act="adm-copy" data-v="${esc(owner.email)}">Скопіювати email</button>` : ''}
+      <button class="btn sm" data-act="admin-remind">Нагадати про оплату</button>
     </div>
-    <details><summary class="small txt-bad">Видалити остаточно</summary>
-      <div class="stack">
-        ${canPurge ? '<p class="small">Незворотно: клієнти, борги й журнал зникнуть назавжди.</p>'
-          : `<p class="small">Остаточно видалити можна з <b>${fmtD(from)}</b>. До того магазин можна відновити.</p>`}
-        <label class="f">Назва магазину<input id="ax-purge-name" autocomplete="off" ${canPurge ? '' : 'disabled'}></label>
-        <button type="button" class="btn bad" data-act="admin-purge" data-id="${esc(s.id)}" ${canPurge ? '' : 'disabled'}>Видалити назавжди</button>
-      </div>
-    </details>
-    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
-  </div>`);
+  </section>
+  <section class="sheet pad stack"><h2>Мітки</h2>
+    <div class="seg chips">${Object.entries(LABELS).map(([k, l]) => `<button data-act="adm-label" data-v="${k}" aria-pressed="${(s.labels || []).includes(k)}">${l}</button>`).join('')}</div>
+  </section>
+  <section class="sheet pad stack"><h2>Примітки</h2>
+    <form data-form="adm-note" class="note-form"><input id="adm-note" placeholder="напр. дзвонив 12.10, думає" autocomplete="off"><button class="btn sm ink" type="submit">Додати</button></form>
+    ${d.notes.length ? `<ul class="plain notes">${d.notes.map(n => `<li><span class="small muted">${fmtDT(n.at)} · ${esc(n.by || '')}</span><br>${esc(n.text)}</li>`).join('')}</ul>` : '<p class="small muted">Приміток ще немає.</p>'}
+  </section>`;
 }
 
-function remindText(s) {
-  const l = Math.ceil((new Date(s.access_until) - Date.now()) / DAY);
-  const lines = [`Вітаю${s.owner_name ? ', ' + s.owner_name : ''}!`,
+const priceLine = (c) => c.discount
+  ? `<s class="muted">${money(c.base)}</s> <b>${money(c.final)}</b> <span class="chip ok">${discText(c.discount)}</span>`
+  : `<b>${money(c.final)}</b>`;
+function discText(x) {
+  const v = x.type === 'percent' ? `−${x.value}%` : x.type === 'fixed' ? `−${money(x.value)}` : x.type === 'price' ? `ціна ${money(x.value)}`
+    : x.type === 'free_months' ? `безкоштовно (${x.uses_left ?? x.value} міс.)` : x.type === 'bonus_days' ? `+${x.value} днів` : '';
+  return v + (x.ends_at ? ` до ${fmtD(x.ends_at)}` : '') + (x.uses_left != null && x.type !== 'free_months' ? `, ${x.uses_left} ${plural(x.uses_left, 'оплата', 'оплати', 'оплат')}` : '');
+}
+
+function billing(d) {
+  const s = d.shop;
+  const forms = {
+    pay: `<form data-form="adm-pay" class="stack sheet pad act-form">
+      <h3>Зарахувати оплату</h3>
+      <div class="seg chips">${[['month', 'Місяць'], ['year', 'Рік'], ['custom', 'Інший термін']].map(([k, l], i) => `<label class="chip-radio"><input type="radio" name="pay-period" value="${k}" ${i === 0 ? 'checked' : ''}> ${l}</label>`).join('')}</div>
+      <label class="f" id="pay-days-l" hidden>Днів<input id="pay-days" inputmode="numeric" placeholder="напр. 60"></label>
+      <label class="f">Сума, грн<input id="pay-amount" inputmode="decimal" value="${(d.month.final / 100).toString().replace('.', ',')}" data-month="${d.month.final}" data-year="${d.year.final}"></label>
+      <label class="f">Спосіб<select id="pay-method">${Object.entries(METHOD).map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select></label>
+      <label class="f">Примітка<input id="pay-note" maxlength="200" placeholder="напр. рахунок №12"></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ok" type="submit">Зарахувати</button></div></form>`,
+    bonus: `<form data-form="adm-bonus" class="stack sheet pad act-form">
+      <h3>Дати бонус</h3><p class="small muted">Безкоштовні дні. Не рахуються як оплата і не йдуть у дохід.</p>
+      <label class="f">Днів<input id="bonus-days" inputmode="numeric" value="30"></label>
+      <div class="quick">${[7, 14, 30, 45, 90].map(n => `<button type="button" data-act="adm-fill" data-t="bonus-days" data-v="${n}">+${n}</button>`).join('')}</div>
+      <label class="f">Причина *<input id="bonus-reason" maxlength="200" placeholder="напр. компенсація за збій"></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ink" type="submit">Дати бонус</button></div></form>`,
+    discount: discountForm('adm-discount'),
+    trial: `<form data-form="adm-trial" class="stack sheet pad act-form"><h3>Продовжити пробний</h3>
+      <label class="f">Днів<input id="trial-days" inputmode="numeric" value="14"></label>
+      <label class="f">Причина *<input id="trial-reason" maxlength="200" placeholder="напр. реферал"></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ink" type="submit">Продовжити</button></div></form>`,
+    free: `<form data-form="adm-free" class="stack sheet pad act-form"><h3>Безкоштовно</h3>
+      <div class="seg chips">${[['forever', 'Назавжди'], ['until', 'До дати'], ['off', 'Вимкнути']].map(([k, l], i) => `<label class="chip-radio"><input type="radio" name="free-mode" value="${k}" ${i === 0 ? 'checked' : ''}> ${l}</label>`).join('')}</div>
+      <label class="f">Дата<input id="free-until" type="date"></label>
+      <label class="f">Причина *<input id="free-reason" maxlength="200" placeholder="напр. партнер, друг"></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div></form>`,
+    suspend: `<form data-form="adm-suspend" class="stack sheet pad act-form"><h3>${s.suspended_at ? 'Відновити доступ' : 'Призупинити доступ'}</h3>
+      <p class="small muted">${s.suspended_at ? `Призупинено ${fmtD(s.suspended_at)}: ${esc(s.suspended_reason || '')}` : 'Магазин лишиться в режимі «лише перегляд»: дані видно й вивантажуються, нові записи — ні.'}</p>
+      ${s.suspended_at ? '' : '<label class="f">Причина *<input id="susp-reason" maxlength="200"></label>'}
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ${s.suspended_at ? 'ok' : 'bad'}" type="submit">${s.suspended_at ? 'Відновити' : 'Призупинити'}</button></div></form>`,
+  };
+  return `<section class="sheet pad stack">
+    <dl class="kv">
+      <dt>Статус</dt><dd>${statusChip(s.status)}</dd>
+      <dt>Доступ до</dt><dd><b>${s.status === 'free' && new Date(s.free_until).getFullYear() > 2090 ? 'назавжди' : fmtD(s.access_until)}</b>${s.status !== 'free' && leftDays(s) > 0 ? ` · ще ${days(leftDays(s))}` : ''}</dd>
+      <dt>Пробний до</dt><dd>${fmtD(s.trial_until)}</dd>
+      <dt>Тариф</dt><dd><select id="adm-plan">${d.plans.map(p => `<option value="${esc(p.id)}" ${p.id === s.plan_id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
+        ${s.locked_month ? `<div class="small muted">Ціна зафіксована: ${money(s.locked_month)}/міс, ${money(s.locked_year)}/рік</div>` : ''}</dd>
+      <dt>Місяць</dt><dd>${priceLine(d.month)}</dd>
+      <dt>Рік</dt><dd>${priceLine(d.year)}</dd>
+    </dl>
+    <div class="act-grid">
+      <button class="btn ok" data-act="adm-form" data-v="pay">Зарахувати оплату</button>
+      <button class="btn ink" data-act="adm-form" data-v="bonus">Дати бонус</button>
+      <button class="btn" data-act="adm-form" data-v="discount">Дати знижку</button>
+      <button class="btn" data-act="adm-form" data-v="trial">Продовжити пробний</button>
+      <button class="btn" data-act="adm-form" data-v="free">Безкоштовно…</button>
+      <button class="btn ${s.suspended_at ? 'ok' : 'bad-outline'}" data-act="adm-form" data-v="suspend">${s.suspended_at ? 'Відновити доступ' : 'Призупинити'}</button>
+    </div>
+  </section>
+  ${sp.form ? forms[sp.form] || '' : ''}`;
+}
+
+/** Форма знижки: одна на сторінку магазину й на масові дії */
+function discountForm(name, extra = '') {
+  return `<form data-form="${name}" class="stack sheet pad act-form">
+    <h3>Знижка</h3>
+    <label class="f">Тип<select id="d-type">
+      <option value="percent">Відсоток (−30%)</option><option value="fixed">Фіксована (−50 грн)</option>
+      <option value="price">Індивідуальна ціна (99 грн)</option><option value="free_months">Безкоштовні місяці</option></select></label>
+    <label class="f">Значення<input id="d-value" inputmode="decimal" placeholder="напр. 30"></label>
+    <label class="f">Діє на<select id="d-applies"><option value="both">місяць і рік</option><option value="month">лише місяць</option><option value="year">лише рік</option></select></label>
+    <div class="grid2"><label class="f">До дати<input id="d-ends" type="date"></label><label class="f">На скільки оплат<input id="d-uses" inputmode="numeric" placeholder="без обмежень"></label></div>
+    <label class="f">Причина *<input id="d-reason" maxlength="200" placeholder="перший клієнт, компенсація, партнер, акція"></label>
+    <label class="f">Текст для власника<input id="d-message" maxlength="200" placeholder="напр. Дякуємо, що ви з нами!"></label>
+    ${extra}
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ink" type="submit">Дати знижку</button></div></form>`;
+}
+function readDiscount() {
+  const v = (id) => document.getElementById(id).value.trim();
+  return { type: v('d-type'), value: v('d-value').replace(',', '.'), applies_to: v('d-applies'), ends_at: v('d-ends') ? new Date(v('d-ends') + 'T23:59:59').toISOString() : '',
+    uses: v('d-uses'), reason: v('d-reason'), message: v('d-message') };
+}
+
+function payRow(p) {
+  const kinds = { payment: ['оплата', 'ok'], bonus: ['бонус', 'ink'], trial: ['пробний', ''], free: ['безкоштовно', 'ok'], refund: ['повернення', 'bad'] };
+  const [l, c] = kinds[p.kind] || [p.kind, ''];
+  const what = p.kind === 'payment' ? `<b>${money(+p.amount_kop)}</b> · ${METHOD[p.method] || 'спосіб не вказано'}${p.period === 'year' ? ' · рік' : p.period === 'month' ? ' · місяць' : ''}`
+    : p.kind === 'free' ? (p.note || (new Date(p.paid_until_after).getFullYear() > 2090 ? 'назавжди' : 'до ' + fmtD(p.paid_until_after)))
+    : `+${p.days} ${plural(p.days, 'день', 'дні', 'днів')}`;
+  return `<li class="row"><div class="who"><div class="name"><span class="chip ${c}">${l}</span> ${what}</div>
+    <div class="meta"><span>${fmtDT(p.created_at)}</span>${p.reason ? `<span>${esc(p.reason)}</span>` : ''}${p.note && p.kind !== 'free' ? `<span>${esc(p.note)}</span>` : ''}${p.shop_name ? `<span>${esc(p.shop_name)}</span>` : ''}<span>${esc(p.by_email || '')}</span></div></div>
+    <div class="sum"><span class="small muted">${p.kind === 'free' ? '' : 'до ' + fmtD(p.paid_until_after)}</span></div></li>`;
+}
+
+function payments(d) {
+  const real = d.payments.filter(p => p.kind === 'payment');
+  return `<p>Отримано всього: <b class="txt-ok">${money(real.reduce((x, p) => x + +p.amount_kop, 0))}</b> · оплат: ${real.length}</p>
+  <section class="sheet">${d.payments.length ? `<ul class="rows">${d.payments.map(payRow).join('')}</ul>` : '<div class="empty">Ще нічого не було.</div>'}</section>`;
+}
+
+function discRow(x, withShop = false) {
+  const st = x.active ? '<span class="chip ok">діє</span>' : x.cancelled_at ? '<span class="chip">скасовано</span>' : '<span class="chip">закінчилась</span>';
+  return `<li class="row"><div class="who"><div class="name">${discText(x)} ${st}${withShop ? ` · ${esc(x.shop_name)}` : ''}</div>
+    <div class="meta"><span>${fmtD(x.created_at)}</span><span>${esc(x.reason)}</span>${x.message ? `<span>«${esc(x.message)}»</span>` : ''}<span>${x.applies_to === 'both' ? 'місяць і рік' : x.applies_to === 'month' ? 'місяць' : 'рік'}</span><span>${esc(x.by_email || (x.source === 'promo' ? 'промокод' : ''))}</span></div></div>
+    <div class="sum">${x.active ? `<button class="btn sm" data-act="adm-cancel-disc" data-id="${x.id}">Скасувати</button>` : ''}</div></li>`;
+}
+
+function discounts(d) {
+  const bon = d.payments.filter(p => p.kind !== 'payment');
+  return `<section class="sheet"><div class="pad pb0"><h2>Знижки</h2></div>
+    ${d.discounts.length ? `<ul class="rows">${d.discounts.map(x => discRow(x)).join('')}</ul>` : '<div class="empty small">Знижок не було.</div>'}</section>
+  <section class="sheet"><div class="pad pb0"><h2>Бонуси й безкоштовні дні</h2></div>
+    ${bon.length ? `<ul class="rows">${bon.map(payRow).join('')}</ul>` : '<div class="empty small">Бонусів не було.</div>'}</section>`;
+}
+
+function activity(d) {
+  const a = d.activity, max = Math.max(1, ...a.days.map(x => x.n));
+  const total = a.days.reduce((x, y) => x + y.n, 0);
+  return `<section class="sheet pad stack">
+    <dl class="kv"><dt>Клієнтів</dt><dd>${a.clients}</dd><dt>Записів усього</dt><dd>${a.ops}</dd><dt>Остання дія</dt><dd>${a.last ? fmtDT(a.last) : '—'}</dd><dt>Працівників</dt><dd>${d.members.filter(m => m.active).length}</dd></dl>
+    <h2>Записи за 30 днів — ${total}</h2>
+    <div class="spark" role="img" aria-label="Записи по днях за 30 днів, усього ${total}">
+      ${a.days.map(x => `<span class="bar" style="height:${Math.max(2, Math.round(x.n / max * 100))}%" title="${fmtD(x.d)}: ${x.n} ${plural(x.n, 'запис', 'записи', 'записів')}"><i class="sr">${fmtD(x.d)}: ${x.n}</i></span>`).join('')}
+    </div>
+    <div class="row-between small muted"><span>${fmtD(a.days[0].d).slice(0, 5)}</span><span>сьогодні</span></div>
+    <p class="small muted">Імена й борги клієнтів магазину тут не показуються.</p>
+  </section>`;
+}
+
+function staff(d) {
+  return `<section class="sheet"><ul class="rows">${d.members.map(m => `<li class="row"><div class="who"><div class="name">${esc(m.name)} ${m.active ? '' : '<span class="chip warn">вимкнено</span>'}</div>
+    <div class="meta"><span>${m.role === 'owner' ? 'власник' : 'продавець'}</span><span>${esc(m.email || '')}</span><span>з ${fmtD(m.since)}</span></div></div>
+    <div class="sum"><span class="small muted">${m.last_sign_in ? 'вхід ' + fmtD(m.last_sign_in) : ''}</span></div></li>`).join('')}</ul></section>`;
+}
+
+function danger(d) {
+  const s = d.shop;
+  if (s.deleted_at) {
+    const from = new Date(new Date(s.deleted_at).getTime() + PURGE_DAYS * DAY), can = Date.now() >= from.getTime();
+    return `<section class="sheet pad stack">
+      <div class="banner warn">Видалено ${fmtD(s.deleted_at)}. Працівники магазин не бачать, але дані на місці.</div>
+      <div class="actions"><button class="btn ok" data-act="admin-restore">Відновити магазин</button><button class="btn" data-act="admin-export">Вивантажити копію</button></div>
+      <h3>Видалити остаточно</h3>
+      <p class="small">${can ? 'Незворотно: клієнти, борги й журнал зникнуть назавжди.' : `Остаточно видалити можна з <b>${fmtD(from)}</b>. До того магазин можна відновити.`}</p>
+      <label class="f">Назва магазину<input id="ax-purge-name" autocomplete="off" ${can ? '' : 'disabled'}></label>
+      <button class="btn bad" data-act="admin-purge" ${can ? '' : 'disabled'}>Видалити назавжди</button></section>`;
+  }
+  return `<section class="sheet pad stack">
+    <h2>Копія даних</h2><button class="btn" data-act="admin-export">Вивантажити копію (JSON)</button>
+    <h2>Видалити магазин</h2>
+    <p class="small">Лише на письмовий запит власника. Магазин зникне в усіх працівників, але <b>${PURGE_DAYS} днів його можна відновити</b>.</p>
+    <p class="small"><b>Крок 1.</b> Збережіть копію кнопкою вище. <b>Крок 2.</b> Введіть точну назву.</p>
+    <label class="f">Назва магазину<input id="ax-del-name" autocomplete="off" disabled placeholder="спершу крок 1"></label>
+    <button class="btn bad" data-act="admin-delete" disabled>Видалити (можна відновити ${PURGE_DAYS} днів)</button></section>`;
+}
+
+function remindText() {
+  const s = sp.data.shop, owner = sp.data.members.find(m => m.role === 'owner') || {};
+  const l = leftDays(s);
+  const lines = [`Вітаю${owner.name ? ', ' + owner.name : ''}!`,
     l > 0 ? `Підписка «Зошит боржників» для магазину «${s.name}» закінчується ${fmtD(s.access_until)} — через ${days(l)}.`
           : `Підписка «Зошит боржників» для магазину «${s.name}» закінчилась ${fmtD(s.access_until)}. Дані збережені, записувати нові можна після оплати.`,
-    `Вартість: ${CFG.priceMonth} грн на місяць або ${CFG.priceYear} грн на рік.`];
+    `Вартість: ${money(sp.data.month.final)} на місяць або ${money(sp.data.year.final)} на рік.`];
   if (CFG.payLink) lines.push(`Оплатити карткою: ${CFG.payLink}`);
   if (CFG.payCard) lines.push(`Картка: ${fmtCard(CFG.payCard)}${CFG.payRecipient ? ' (' + CFG.payRecipient + ')' : ''}`);
   if (CFG.payIban) lines.push(`IBAN: ${CFG.payIban}`);
-  lines.push(`Призначення: Зошит боржників, магазин «${s.name}».`);
+  lines.push(`Коментар до платежу: Зошит боржників, магазин «${s.name}».`);
   return lines.join('\n');
 }
 
+// спершу перечитуємо дані, потім повідомлення — щоб на екрані вже були нові цифри
+async function after(msg) { sp.form = null; as.shops = null; await loadShop(sp.id); toast(msg, 'ok'); }
+const csvCell = (v) => { v = String(v ?? ''); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+
 register({
-  'admin-reload': () => { as.shops = null; as.error = null; load(); },
+  'admin-reload': () => { refreshAll(); load(); },
   'admin-filter': (el) => { as.filter = el.dataset.v; view.rerender(); },
-  'admin-extend': (el) => extendModal(el.dataset.id),
-  'ax-days': (el) => { document.getElementById('ax-days').value = el.dataset.v; },
-  'admin-remind': (el) => {
-    const s = as.shops.find(x => x.id === el.dataset.id); if (!s) return;
-    const body = remindText(s);
+  'admin-open': (el) => go(`#/admin/shop/${el.dataset.id}/general`),
+  'admin-export-list': () => {
+    const rows = [['Магазин', 'Власник', 'Email', 'Статус', 'Тариф', 'Доступ до', 'Дохід, грн', 'Клієнтів', 'Записів за 7 днів', 'Зареєстровано']]
+      .concat(filtered().map(s => [s.name, s.owner_name, s.owner_email, (STATUS[s.status] || [s.status])[0], s.plan_name, fmtD(s.access_until),
+        (s.revenue_kop / 100).toFixed(2).replace('.', ','), s.clients, s.ops7, fmtD(s.created_at)]));
+    downloadFile(`magazyny-${isoDate()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
+  },
+  'adm-form': (el) => { sp.form = el.dataset.v || null; view.rerender(); if (sp.form) setTimeout(() => document.querySelector('.act-form')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 30); },
+  'adm-fill': (el) => { document.getElementById(el.dataset.t).value = el.dataset.v; },
+  'adm-copy': async (el) => toast(await copyText(el.dataset.v) ? 'Скопійовано' : 'Не вдалося скопіювати'),
+  'adm-label': async (el) => {
+    const cur = new Set(sp.data.shop.labels || []);
+    cur.has(el.dataset.v) ? cur.delete(el.dataset.v) : cur.add(el.dataset.v);
+    try { await api.rpc('admin_set_labels', { p_shop: sp.id, p_labels: [...cur] }); sp.data.shop.labels = [...cur]; as.shops = null; view.rerender(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+  'adm-cancel-disc': async (el) => {
+    try { await api.rpc('admin_cancel_discount', { p_id: +el.dataset.id }); await after('Знижку скасовано'); } catch (e) { toast(e.message, 'bad'); }
+  },
+  'admin-remind': () => {
+    const s = sp.data.shop, owner = sp.data.members.find(m => m.role === 'owner') || {};
+    const body = remindText();
     openModal(`<div class="stack">
-      <h2>Нагадування про оплату</h2>
-      <div class="small muted">${esc(s.owner_email || '')}</div>
-      <label class="f">Текст<textarea id="rem-text" rows="7">${esc(body)}</textarea></label>
-      <div class="m-actions start">
-        <button class="btn ink" data-act="copy-remind-admin">Копіювати</button>
-        ${s.owner_email ? `<a class="btn" href="mailto:${esc(s.owner_email)}?subject=${encodeURIComponent('Підписка «Зошит боржників»')}&body=${encodeURIComponent(body)}">Написати листа</a>` : ''}
-      </div>
-      <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
-    </div>`);
+      <h2>Нагадування про оплату</h2><div class="small muted">${esc(owner.email || '')}</div>
+      <label class="f">Текст<textarea id="rem-text" rows="8">${esc(body)}</textarea></label>
+      <div class="m-actions start"><button class="btn ink" data-act="copy-remind-admin">Копіювати</button>
+        ${owner.email ? `<a class="btn" href="mailto:${esc(owner.email)}?subject=${encodeURIComponent('Підписка «Зошит боржників» — ' + s.name)}&body=${encodeURIComponent(body)}">Написати листа</a>` : ''}</div>
+      <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div></div>`);
   },
   'copy-remind-admin': async () => { toast(await copyText(document.getElementById('rem-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
-  'admin-export': async (el) => {
+  'admin-export': async () => {
     try {
-      const data = await api.rpc('admin_export_shop', { p_shop: el.dataset.id });
+      const data = await api.rpc('admin_export_shop', { p_shop: sp.id });
       const slug = (data.shop?.name || 'magazyn').replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 30);
       downloadFile(`kopiya-${slug}-${isoDate()}.json`, JSON.stringify(data, null, 1), 'application/json');
       toast('Копію збережено', 'ok');
       const inp = document.getElementById('ax-del-name');
-      if (inp) { inp.disabled = false; inp.placeholder = ''; inp.focus(); document.querySelector('[data-act=admin-delete]').disabled = false; }
+      if (inp) { inp.disabled = false; inp.placeholder = ''; document.querySelector('[data-act=admin-delete]').disabled = false; }
     } catch (e) { toast(e.message, 'bad'); }
   },
-  'admin-delete': async (el) => {
-    const name = document.getElementById('ax-del-name').value;
-    try {
-      const r = await api.rpc('admin_delete_shop', { p_shop: el.dataset.id, p_confirm_name: name });
-      closeModal(); toast(`Магазин сховано. Відновити можна до ${fmtD(r.purge_after)}`); as.shops = null; load();
-    } catch (e) { toast(e.message, 'bad'); }
-  },
-  'admin-restore': async (el) => {
-    try { await api.rpc('admin_restore_shop', { p_shop: el.dataset.id }); closeModal(); toast('Магазин відновлено', 'ok'); as.filter = 'all'; as.shops = null; load(); }
+  'admin-delete': async () => {
+    try { const r = await api.rpc('admin_delete_shop', { p_shop: sp.id, p_confirm_name: document.getElementById('ax-del-name').value }); await after(`Магазин сховано. Відновити можна до ${fmtD(r.purge_after)}`); }
     catch (e) { toast(e.message, 'bad'); }
   },
-  'admin-purge': async (el) => {
-    const name = document.getElementById('ax-purge-name').value;
-    try { await api.rpc('admin_purge_shop', { p_shop: el.dataset.id, p_confirm_name: name }); closeModal(); toast('Магазин видалено остаточно'); as.shops = null; load(); }
+  'admin-restore': async () => { try { await api.rpc('admin_restore_shop', { p_shop: sp.id }); await after('Магазин відновлено'); } catch (e) { toast(e.message, 'bad'); } },
+  'admin-purge': async () => {
+    try { await api.rpc('admin_purge_shop', { p_shop: sp.id, p_confirm_name: document.getElementById('ax-purge-name').value }); toast('Магазин видалено остаточно'); refreshAll(); go('#/admin/shops'); }
     catch (e) { toast(e.message, 'bad'); }
   },
 }, {
-  async 'admin-extend'(form) {
-    const d = parseInt(document.getElementById('ax-days').value, 10);
-    const amount = parseMoney(document.getElementById('ax-amount').value || '0');
-    if (!d) return formError(form, 'Вкажіть кількість днів.');
-    if (!(amount >= 0)) return formError(form, 'Невірна сума.');
+  async 'adm-pay'(form) {
+    const period = form.querySelector('[name=pay-period]:checked').value;
+    const amount = parseMoney(document.getElementById('pay-amount').value);
+    const dd = parseInt(document.getElementById('pay-days').value, 10);
+    if (!(amount > 0)) return formError(form, 'Сума має бути більше нуля. Безкоштовні дні — це «Дати бонус».');
+    if (period === 'custom' && !(dd > 0)) return formError(form, 'Вкажіть кількість днів.');
     await busy(form, async () => {
       try {
-        const r = await api.rpc('admin_extend', { p_shop: form.dataset.id, p_days: d, p_amount_kop: amount, p_note: document.getElementById('ax-note').value });
-        closeModal(); toast('Доступ до ' + fmtD(r.paid_until), 'ok'); as.shops = null; load();
+        const r = await api.rpc('admin_add_payment', { p_shop: sp.id, p_amount_kop: amount, p_method: document.getElementById('pay-method').value, p_period: period, p_days: period === 'custom' ? dd : null, p_note: document.getElementById('pay-note').value });
+        await after(`Оплату зараховано. Доступ до ${fmtD(r.paid_until)}`);
       } catch (e) { formError(form, e.message); }
     });
   },
+  async 'adm-bonus'(form) {
+    const n = parseInt(document.getElementById('bonus-days').value, 10), reason = document.getElementById('bonus-reason').value.trim();
+    if (!(n > 0)) return formError(form, 'Вкажіть кількість днів.');
+    if (!reason) return formError(form, 'Вкажіть причину бонусу.');
+    await busy(form, async () => {
+      try { const r = await api.rpc('admin_add_bonus', { p_shop: sp.id, p_days: n, p_reason: reason }); await after(`Бонус +${n} дн. Доступ до ${fmtD(r.paid_until)}`); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-discount'(form) {
+    const p = readDiscount();
+    if (!p.reason) return formError(form, 'Вкажіть причину знижки.');
+    await busy(form, async () => {
+      try { await api.rpc('admin_add_discount', { p_shop: sp.id, p }); await after('Знижку додано'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-trial'(form) {
+    const n = parseInt(document.getElementById('trial-days').value, 10), reason = document.getElementById('trial-reason').value.trim();
+    if (!(n > 0)) return formError(form, 'Вкажіть кількість днів.');
+    if (!reason) return formError(form, 'Вкажіть причину.');
+    await busy(form, async () => {
+      try { const r = await api.rpc('admin_extend_trial', { p_shop: sp.id, p_days: n, p_reason: reason }); await after(`Пробний до ${fmtD(r.trial_until)}`); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-free'(form) {
+    const mode = form.querySelector('[name=free-mode]:checked').value, reason = document.getElementById('free-reason').value.trim();
+    const date = document.getElementById('free-until').value;
+    if (!reason) return formError(form, 'Вкажіть причину.');
+    if (mode === 'until' && !date) return formError(form, 'Оберіть дату.');
+    const until = mode === 'forever' ? '2099-12-31T00:00:00Z' : mode === 'until' ? new Date(date + 'T23:59:59').toISOString() : null;
+    await busy(form, async () => {
+      try { await api.rpc('admin_set_free', { p_shop: sp.id, p_until: until, p_reason: reason }); await after(mode === 'off' ? 'Безкоштовний режим вимкнено' : 'Магазин безкоштовний'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-suspend'(form) {
+    const on = !sp.data.shop.suspended_at;
+    const reason = on ? document.getElementById('susp-reason').value.trim() : '';
+    if (on && !reason) return formError(form, 'Вкажіть причину.');
+    await busy(form, async () => {
+      try { await api.rpc('admin_suspend', { p_shop: sp.id, p_on: on, p_reason: reason }); await after(on ? 'Доступ призупинено' : 'Доступ відновлено'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-note'(form) {
+    const t = document.getElementById('adm-note').value.trim();
+    if (!t) return;
+    try { await api.rpc('admin_add_note', { p_shop: sp.id, p_text: t }); sp.data = null; await loadShop(sp.id); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
 });
-document.addEventListener('input', (e) => { if (e.target.id === 'adm-q') { as.q = e.target.value; view.rerender(); } });
 
-return { as, load, ensureShops, adminView };
+document.addEventListener('input', (e) => { if (e.target.id === 'adm-q') { as.q = e.target.value; view.rerender(); } });
+document.addEventListener('change', async (e) => {
+  if (e.target.id === 'adm-sort') { as.sort = e.target.value; view.rerender(); }
+  if (e.target.name === 'pay-period') {
+    const a = document.getElementById('pay-amount'), v = e.target.value;
+    document.getElementById('pay-days-l').hidden = v !== 'custom';
+    if (v !== 'custom') a.value = (+a.dataset[v] / 100).toString().replace('.', ',');
+  }
+  if (e.target.id === 'adm-plan') {
+    try { await api.rpc('admin_set_plan', { p_shop: sp.id, p_plan: e.target.value }); await after('Тариф змінено'); } catch (err) { toast(err.message, 'bad'); }
+  }
+});
+
+return { as, load, ensureShops, refreshAll, STATUS, statusChip, adminView, shopPage, srcName, discText, discountForm, readDiscount, payRow, discRow };
 })();
 
 M.views_admin_app = (function () {
 const { esc, money, fmtD, fmtDT, days, plural, DAY, lsGet, lsSet } = M.util;
-const { register, toast, formError, busy, icon } = M.ui;
+const { register, toast, formError, busy, icon, openModal, closeModal } = M.ui;
 const { S, logout, pendingForLogout, runSync } = M.store;
 const api = M.api;
 const { view } = M.router;
 const { qrSvg } = M.qr;
 const { CFG, applyPlatform, fmtCard } = M.cfg;
-const { adminView: shopsSection, as, ensureShops } = M.views_admin;
+const { adminView: shopsSection, shopPage, as, ensureShops, refreshAll, payRow, discRow, discountForm, readDiscount, statusChip, discText, srcName } = M.views_admin;
 // Адмін-платформа: окремий застосунок за адресою #/admin (не залежить від жодного магазину).
 // Вхід: пароль + код з Google Authenticator (сервер вимагає aal2 для кожної адмін-функції).
 
@@ -3387,20 +4008,31 @@ const { adminView: shopsSection, as, ensureShops } = M.views_admin;
 
 
 const IDLE_MIN = 30;
-const ad = { factors: null, enroll: null, loading: false, error: null, pays: null, log: null, platform: null, admins: [], locked: false };
+const ad = { factors: null, enroll: null, loading: false, error: null, pays: null, log: null, platform: null, admins: [], locked: false,
+  disc: null, promos: null, plans: null, mass: null, promoForm: false, planEdit: null, visits: null, visitDays: 30 };
 
 const NAV = [
   ['', 'Огляд', 'home'],
   ['shops', 'Магазини', 'shop'],
   ['payments', 'Оплати', 'card'],
+  ['discounts', 'Знижки і бонуси', 'gift'],
+  ['visits', 'Відвідування', 'chart'],
+  ['promos', 'Промокоди', 'tag'],
+  ['plans', 'Тарифи', 'layers'],
   ['log', 'Журнал', 'log'],
   ['settings', 'Налаштування', 'gear'],
 ];
+const MOBILE_MAIN = 4;   // на телефоні: 4 пункти + «Ще»
 const ICONS = {
   home: '<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z"/>',
   shop: '<path d="M4 9h16l-1-5H5L4 9Zm0 0v11h16V9M9 20v-6h6v6"/>',
   card: '<path d="M3 6h18v12H3zM3 10h18M7 15h4"/>',
   log: '<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3"/>',
+  gift: '<path d="M4 11h16v10H4zM3 7h18v4H3zM12 7v14M12 7c-2-4-6-4-6-1s6 1 6 1Zm0 0c2-4 6-4 6-1s-6 1-6 1Z"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
 };
 const svg = (k) => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
@@ -3425,7 +4057,21 @@ function adminScreen(section) {
     return verified ? codeScreen(verified) : enrollScreen();
   }
   touch();
-  return shell(section || '', sectionView(section || ''));
+  const parts = location.hash.replace(/^#\/?admin\/?/, '').split('/');
+  const sec = parts[0] || '';
+  // відкрили розділ заново — показуємо свіжі дані, а не збережені з минулого разу
+  if (sec !== ad.lastSec) {
+    ad.lastSec = sec;
+    if (sec === 'log') ad.log = null;
+    if (sec === 'payments' || sec === '') ad.pays = null;
+    if (sec === 'discounts') ad.disc = null;
+    if (sec === 'promos') ad.promos = null;
+    if (sec === 'plans') ad.plans = null;
+    if (sec === 'visits') ad.visits = null;
+    if (sec === 'shops' || sec === '') as.shops = null;
+  }
+  if (sec === 'shop' && parts[1]) return shell('shops', shopPage(parts[1], parts[2] || 'general'));
+  return shell(sec, sectionView(sec));
 }
 
 const gate = (inner) => `<div class="auth adm-gate"><div class="auth-card">
@@ -3479,7 +4125,8 @@ function shell(section, content) {
     ${shops.length ? '<a class="btn sm adm-ghost" href="#/list">Мій магазин →</a>' : ''}
     <button class="btn sm adm-ghost" data-act="adm-logout" title="${esc(email)}">Вийти</button>
   </header>
-  <nav class="adm-nav" aria-label="Розділи адмінки">${NAV.map(([k, l, ic]) => `<a href="#/admin${k ? '/' + k : ''}" ${section === k ? 'aria-current="page"' : ''}>${svg(ic)}<span>${l}</span></a>`).join('')}</nav>
+  <nav class="adm-nav" aria-label="Розділи адмінки">${NAV.map(([k, l, ic], i) => `<a href="#/admin${k ? '/' + k : ''}" class="${i >= MOBILE_MAIN ? 'desk-only' : ''}" ${section === k ? 'aria-current="page"' : ''}>${svg(ic)}<span>${l}</span></a>`).join('')}
+    <button type="button" class="mob-only more-btn ${NAV.slice(MOBILE_MAIN).some(n => n[0] === section) ? 'on' : ''}" data-act="adm-more">${svg('more')}<span>Ще</span></button></nav>
   <main class="adm-main">${content}</main>
 </div>`;
 }
@@ -3488,6 +4135,10 @@ function sectionView(section) {
   switch (section) {
     case 'shops': return shopsSection();
     case 'payments': return paymentsView();
+    case 'discounts': return discountsView();
+    case 'promos': return promosView();
+    case 'plans': return plansView();
+    case 'visits': return visitsView();
     case 'log': return logView();
     case 'settings': return settingsView();
     default: return overviewView();
@@ -3501,36 +4152,38 @@ function overviewView() {
   if (!as.shops) return '<div class="empty">Завантаження…</div>';
   const now = Date.now();
   const alive = as.shops.filter(s => !s.deleted_at);
+  const by = (st) => alive.filter(s => s.status === st);
   const left = (s) => Math.ceil((new Date(s.access_until) - now) / DAY);
-  const paying = alive.filter(s => s.paid_until && left(s) > 0);
-  const trial = alive.filter(s => !s.paid_until && left(s) > 0);
-  const expired = alive.filter(s => left(s) <= 0);
+  const paying = by('paid'), trial = by('trial');
   const new30 = alive.filter(s => now - new Date(s.created_at) < 30 * DAY).length;
-  const paid30 = (ad.pays || []).filter(p => now - new Date(p.created_at) < 30 * DAY).reduce((x, p) => x + (+p.amount_kop || 0), 0);
-  const everPaid = new Set((ad.pays || []).filter(p => +p.amount_kop > 0).map(p => p.shop_id)).size;
+  const real30 = (ad.pays || []).filter(p => p.kind === 'payment' && now - new Date(p.created_at) < 30 * DAY);
+  const paid30 = real30.reduce((x, p) => x + (+p.amount_kop || 0), 0);
+  const mrr = alive.reduce((x, s) => x + (+s.mrr_kop || 0), 0);
+  const everPaid = alive.filter(s => s.paid_ever).length;
   const conv = alive.length ? Math.round(everPaid / alive.length * 100) : 0;
   const soonTrial = trial.filter(s => left(s) <= 3).sort((a, b) => left(a) - left(b));
   const idleTrial = trial.filter(s => !s.last_activity ? now - new Date(s.created_at) > 5 * DAY : now - new Date(s.last_activity) > 5 * DAY);
   const card = (k, v, cls = '', hint = '') => `<div class="kpi"><div class="k">${k}</div><div class="v ${cls}">${v}</div>${hint ? `<div class="small muted">${hint}</div>` : ''}</div>`;
-  const shopRow = (s, note) => `<li class="row" data-act="admin-extend" data-id="${esc(s.id)}" tabindex="0">
+  const shopRow = (s, note) => `<li class="row" data-act="admin-open" data-id="${esc(s.id)}" tabindex="0">
       <div class="who"><div class="name">${esc(s.name)}</div><div class="meta"><span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div></div>
       <div class="sum"><span class="small">${note}</span>${s.owner_email ? `<a class="btn sm" href="mailto:${esc(s.owner_email)}" data-stop>Написати</a>` : ''}</div></li>`;
+  const calm = !soonTrial.length && !idleTrial.length;
   return `<div class="row-between page-head"><h1>Огляд</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
   <section class="kpis">
-    ${card('Платних магазинів', paying.length, 'ok')}
+    ${card('Платних магазинів', paying.length, 'ok', 'остання дія — реальна оплата')}
     ${card('На пробному', trial.length)}
-    ${card('Прострочені', expired.length, expired.length ? 'bad' : '')}
+    ${card('З бонусом', by('bonus').length, '', 'безкоштовні дні')}
+    ${card('Безкоштовні', by('free').length)}
+    ${card('Прострочені', by('expired').length, by('expired').length ? 'bad' : '')}
     ${card('Нових за 30 днів', new30)}
-    ${card('Отримано за 30 днів', money(paid30), 'ok')}
-    ${card('Дохід на місяць', '≈ ' + money(paying.length * CFG.priceMonth * 100), '', `${paying.length} × ${CFG.priceMonth} грн`)}
-    ${card('Оплатили хоч раз', conv + '%', '', 'з усіх магазинів')}
-    ${card('Середній платіж', everPaid ? money(Math.round(paid30 / Math.max(1, (ad.pays || []).filter(p => now - new Date(p.created_at) < 30 * DAY && +p.amount_kop > 0).length))) : '—')}
+    ${card('Отримано за 30 днів', money(paid30), 'ok', `${real30.length} ${plural(real30.length, 'оплата', 'оплати', 'оплат')}`)}
+    ${card('Дохід на місяць', money(mrr), '', 'річні оплати ÷ 12')}
+    ${card('Оплатили хоч раз', conv + '%', '', `${everPaid} з ${alive.length}`)}
+    ${card('Середній платіж на місяць', paying.length ? money(Math.round(mrr / paying.length)) : '—')}
   </section>
-  <section class="sheet"><div class="pad pb0"><h2>Потребують уваги</h2></div>
-    <div class="pad pt0 small muted">Пробний закінчується за 3 дні або менше</div>
-    ${soonTrial.length ? `<ul class="rows">${soonTrial.map(s => shopRow(s, left(s) <= 0 ? 'закінчився' : 'ще ' + days(left(s)))).join('')}</ul>` : '<div class="empty small">Немає</div>'}
-    <div class="pad pt0 small muted" style="margin-top:12px">На пробному й не заходять 5+ днів — варто подзвонити</div>
-    ${idleTrial.length ? `<ul class="rows">${idleTrial.map(s => shopRow(s, s.last_activity ? 'остання дія ' + fmtD(s.last_activity) : 'жодного запису')).join('')}</ul>` : '<div class="empty small">Немає</div>'}
+  <section class="sheet"><div class="pad ${calm ? '' : 'pb0'}"><h2>Потребують уваги</h2>${calm ? '<p class="calm">Все спокійно ✓</p>' : ''}</div>
+    ${soonTrial.length ? `<div class="pad pt0 small muted">Пробний закінчується за 3 дні або менше</div><ul class="rows">${soonTrial.map(s => shopRow(s, left(s) <= 0 ? 'закінчився' : 'ще ' + days(left(s)))).join('')}</ul>` : ''}
+    ${idleTrial.length ? `<div class="pad pt0 small muted" style="margin-top:12px">На пробному й не заходять 5+ днів — варто подзвонити</div><ul class="rows">${idleTrial.map(s => shopRow(s, s.last_activity ? 'остання дія ' + fmtD(s.last_activity) : 'жодного запису')).join('')}</ul>` : ''}
   </section>`;
 }
 
@@ -3544,17 +4197,179 @@ async function ensurePays(force = false) {
 function paymentsView() {
   ensurePays();
   if (!ad.pays) return '<div class="empty">Завантаження…</div>';
-  const sum30 = ad.pays.filter(p => Date.now() - new Date(p.created_at) < 30 * DAY).reduce((x, p) => x + (+p.amount_kop || 0), 0);
+  const real = ad.pays.filter(p => p.kind === 'payment');
+  const sum30 = real.filter(p => Date.now() - new Date(p.created_at) < 30 * DAY).reduce((x, p) => x + (+p.amount_kop || 0), 0);
+  const all = ad.payKind === 'all';
+  const list = all ? ad.pays : real;
   return `<div class="row-between page-head"><h1>Оплати</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
-  <p>За 30 днів отримано <b class="txt-ok">${money(sum30)}</b>.</p>
-  <section class="sheet">${ad.pays.length ? `<ul class="rows">${ad.pays.map(p => `<li class="row">
-      <div class="who"><div class="name">${esc(p.shop_name)}</div><div class="meta"><span>${fmtDT(p.created_at)}</span><span>${p.days > 0 ? '+' : ''}${p.days} ${plural(Math.abs(p.days), 'день', 'дні', 'днів')}</span>${p.note ? `<span>${esc(p.note)}</span>` : ''}<span>${esc(p.by_email || '')}</span></div></div>
-      <div class="sum"><span class="amt ${+p.amount_kop ? 'ok' : 'zero'}">${money(+p.amount_kop || 0)}</span></div></li>`).join('')}</ul>`
-    : '<div class="empty">Оплат ще не було.</div>'}</section>`;
+  <p>За 30 днів отримано <b class="txt-ok">${money(sum30)}</b>. Бонуси й безкоштовні дні сюди не входять.</p>
+  <div class="seg chips"><button data-act="adm-paykind" data-v="real" aria-pressed="${!all}">Лише оплати</button><button data-act="adm-paykind" data-v="all" aria-pressed="${all}">Усе, разом з бонусами</button></div>
+  <section class="sheet">${list.length ? `<ul class="rows">${list.map(payRow).join('')}</ul>` : '<div class="empty">Оплат ще не було.</div>'}</section>`;
+}
+
+// ---------------- Знижки і бонуси ----------------
+async function ensureDisc(force = false) {
+  if ((ad.disc && !force) || ad.discLoading) return;
+  ad.discLoading = true;
+  try { ad.disc = await api.rpc('admin_all_discounts', { p_limit: 300 }); } catch (e) { ad.disc = { discounts: [], bonuses: [] }; toast(e.message, 'bad'); }
+  finally { ad.discLoading = false; view.rerender(); }
+}
+const MASS_FILTERS = [['all', 'усім магазинам'], ['paid', 'платним'], ['trial', 'на пробному'], ['bonus', 'з бонусом'], ['expired', 'простроченим'], ['soon', 'у кого закінчується за 7 днів']];
+function discountsView() {
+  ensureDisc();
+  if (!ad.disc) return '<div class="empty">Завантаження…</div>';
+  const m = ad.mass;
+  const active = ad.disc.discounts.filter(d => d.active);
+  return `<div class="row-between page-head"><h1>Знижки і бонуси</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  <p class="small muted">Одному магазину — на його сторінці (вкладка «Підписка»). Тут — масово і загальний список.</p>
+  <section class="sheet pad stack"><h2>Масова дія</h2>
+    <label class="f">Кому<select id="mass-filter">${MASS_FILTERS.map(([k, l]) => `<option value="${k}" ${m && m.filter === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <div class="seg chips"><label class="chip-radio"><input type="radio" name="mass-kind" value="bonus" ${!m || m.kind === 'bonus' ? 'checked' : ''}> Бонусні дні</label><label class="chip-radio"><input type="radio" name="mass-kind" value="discount" ${m && m.kind === 'discount' ? 'checked' : ''}> Знижка</label></div>
+    <button class="btn" data-act="mass-preview">Переглянути, кого зачепить</button>
+    ${m && m.preview ? `<div class="confirm-box info">Буде застосовано до <b>${m.preview.count}</b> ${plural(m.preview.count, 'магазину', 'магазинів', 'магазинів')}${m.preview.sample.length ? `: ${m.preview.sample.map(esc).join(', ')}${m.preview.count > m.preview.sample.length ? '…' : ''}` : ''}.</div>
+      ${m.preview.count ? (m.kind === 'bonus' ? `<form data-form="mass-bonus" class="stack">
+        <label class="f">Днів<input id="mass-days" inputmode="numeric" value="30"></label>
+        <label class="f">Причина *<input id="mass-reason" maxlength="200" placeholder="напр. акція до Дня незалежності"></label>
+        <div class="err" role="alert"></div><button class="btn ink" type="submit">Дати бонус ${m.preview.count} ${plural(m.preview.count, 'магазину', 'магазинам', 'магазинам')}</button></form>`
+        : discountForm('mass-discount')) : ''}` : ''}
+  </section>
+  <section class="sheet"><div class="pad pb0"><h2>Діючі знижки — ${active.length}</h2></div>
+    ${active.length ? `<ul class="rows">${active.map(x => discRow(x, true)).join('')}</ul>` : '<div class="empty small">Діючих знижок немає.</div>'}</section>
+  <section class="sheet"><div class="pad pb0"><h2>Останні бонуси</h2></div>
+    ${ad.disc.bonuses.length ? `<ul class="rows">${ad.disc.bonuses.slice(0, 50).map(payRow).join('')}</ul>` : '<div class="empty small">Бонусів ще не було.</div>'}</section>`;
+}
+
+// ---------------- Промокоди ----------------
+async function ensurePromos(force = false) {
+  if ((ad.promos && !force) || ad.promoLoading) return;
+  ad.promoLoading = true;
+  try { ad.promos = await api.rpc('admin_list_promos'); } catch (e) { ad.promos = []; toast(e.message, 'bad'); }
+  finally { ad.promoLoading = false; view.rerender(); }
+}
+const PROMO_T = { percent: 'відсоток', fixed: 'фіксована, грн', price: 'ціна, грн', bonus_days: 'бонусні дні' };
+function promosView() {
+  ensurePromos();
+  if (!ad.promos) return '<div class="empty">Завантаження…</div>';
+  const pv = (p) => p.type === 'percent' ? `−${p.value}%` : p.type === 'fixed' ? `−${money(p.value)}` : p.type === 'price' ? `ціна ${money(p.value)}` : `+${p.value} днів`;
+  return `<div class="row-between page-head"><h1>Промокоди</h1><button class="btn sm ink" data-act="promo-new">+ Новий</button></div>
+  ${ad.promoForm ? `<form data-form="promo" class="stack sheet pad act-form"><h3>Новий промокод</h3>
+    <label class="f">Код<input id="pr-code" maxlength="30" autocapitalize="characters" autocomplete="off" placeholder="напр. SELO2026"></label>
+    <div class="grid2"><label class="f">Тип<select id="pr-type">${Object.entries(PROMO_T).map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select></label>
+      <label class="f">Значення<input id="pr-value" inputmode="decimal" placeholder="напр. 20"></label></div>
+    <label class="f">Діє на<select id="pr-applies"><option value="both">місяць і рік</option><option value="month">лише місяць</option><option value="year">лише рік</option></select></label>
+    <div class="grid2"><label class="f">Скільки разів усього<input id="pr-max" inputmode="numeric" placeholder="без обмежень"></label>
+      <label class="f">Діє до<input id="pr-until" type="date"></label></div>
+    <label class="f">Партнер / агент<input id="pr-partner" maxlength="100" placeholder="хто роздає код — для винагороди"></label>
+    <label class="check"><input type="checkbox" id="pr-new"> Лише для нових (хто ще не платив)</label>
+    <p class="small muted">Кожен магазин може використати код лише раз. Знижки не сумуються — діє вигідніша для клієнта.</p>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="promo-new">Скасувати</button><button class="btn ink" type="submit">Створити</button></div></form>` : ''}
+  <section class="sheet">${ad.promos.length ? `<ul class="rows">${ad.promos.map(p => `<li class="row"><div class="who">
+      <div class="name"><span class="mono">${esc(p.code)}</span> · ${pv(p)} ${p.active ? '' : '<span class="chip">вимкнено</span>'}</div>
+      <div class="meta"><span>використано ${p.uses}${p.max_uses ? ' з ' + p.max_uses : ''}</span><span>принесли ${money(+p.revenue_kop)}</span>${p.partner ? `<span>партнер: ${esc(p.partner)}</span>` : ''}${p.valid_until ? `<span>до ${fmtD(p.valid_until)}</span>` : ''}${p.new_only ? '<span>лише нові</span>' : ''}</div>
+      ${p.shops.length ? `<div class="meta"><span>${p.shops.map(esc).join(', ')}</span></div>` : ''}</div>
+      <div class="sum"><button class="btn sm" data-act="promo-toggle" data-code="${esc(p.code)}" data-on="${!p.active}">${p.active ? 'Вимкнути' : 'Увімкнути'}</button></div></li>`).join('')}</ul>`
+    : '<div class="empty">Промокодів ще немає.</div>'}</section>`;
+}
+
+// ---------------- Тарифи ----------------
+async function ensurePlans(force = false) {
+  if ((ad.plans && !force) || ad.plansLoading) return;
+  ad.plansLoading = true;
+  try { ad.plans = await api.rpc('admin_list_plans'); } catch (e) { ad.plans = []; toast(e.message, 'bad'); }
+  finally { ad.plansLoading = false; view.rerender(); }
+}
+function plansView() {
+  ensurePlans(); ensurePlatform();
+  if (!ad.plans || !ad.platform) return '<div class="empty">Завантаження…</div>';
+  const e = ad.planEdit;
+  const grn = (k) => (k / 100).toString().replace('.', ',');
+  const form = e ? `<form data-form="plan" class="stack sheet pad act-form"><h3>${e.id ? 'Тариф «' + esc(e.name) + '»' : 'Новий тариф'}</h3>
+    ${e.id ? `<input type="hidden" id="pl-id" value="${esc(e.id)}">` : '<label class="f">Код<input id="pl-id" maxlength="30" autocomplete="off" placeholder="латиницею, напр. start"></label>'}
+    <label class="f">Назва<input id="pl-name" maxlength="60" value="${esc(e.name || '')}" placeholder="напр. Старт"></label>
+    <div class="grid2"><label class="f">Ціна за місяць, грн<input id="pl-pm" inputmode="decimal" value="${e.id ? grn(e.price_month) : ''}" placeholder="149"></label>
+      <label class="f">Ціна за рік, грн<input id="pl-py" inputmode="decimal" value="${e.id ? grn(e.price_year) : ''}" placeholder="1490"></label></div>
+    <div class="grid2"><label class="f">Клієнтів максимум<input id="pl-mc" inputmode="numeric" value="${e.max_clients ?? ''}" placeholder="без обмежень"></label>
+      <label class="f">Працівників максимум<input id="pl-mm" inputmode="numeric" value="${e.max_members ?? ''}" placeholder="без обмежень"></label></div>
+    ${e.id !== 'shop' ? `<label class="check"><input type="checkbox" id="pl-active" ${e.active !== false ? 'checked' : ''}> Доступний для вибору</label>` : ''}
+    ${e.id && e.locked ? `<label class="check"><input type="checkbox" id="pl-all"> Нова ціна й для тих ${e.locked}, хто вже платить (за замовчуванням вони лишаються на своїй ціні)</label>` : ''}
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="plan-edit" data-id="">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div></form>` : '';
+  return `<div class="row-between page-head"><h1>Тарифи</h1><button class="btn sm ink" data-act="plan-edit" data-id="__new">+ Новий</button></div>
+  ${form}
+  <section class="sheet"><ul class="rows">${ad.plans.map(p => `<li class="row" data-act="plan-edit" data-id="${esc(p.id)}" tabindex="0"><div class="who">
+    <div class="name">${esc(p.name)} ${p.active ? '' : '<span class="chip">прихований</span>'}</div>
+    <div class="meta"><span>${money(p.price_month)}/міс</span><span>${money(p.price_year)}/рік</span><span>клієнтів: ${p.max_clients ?? '∞'}</span><span>працівників: ${p.max_members ?? '∞'}</span></div></div>
+    <div class="sum"><span class="small muted">${p.shops} ${plural(p.shops, 'магазин', 'магазини', 'магазинів')}</span></div></li>`).join('')}</ul></section>
+  <form data-form="trial-days" class="sheet pad stack"><h2>Пробний період для нових магазинів</h2>
+    <div class="note-form"><input id="trial-len" inputmode="numeric" value="${esc(ad.platform.trial_days ?? 30)}" aria-label="Днів пробного"><span>днів</span><button class="btn sm ink" type="submit">Зберегти</button></div>
+    <div class="err" role="alert"></div></form>`;
+}
+
+// ---------------- Відвідування сайту ----------------
+async function ensureVisits(force = false) {
+  if ((ad.visits && !force) || ad.visitsLoading) return;
+  ad.visitsLoading = true;
+  try { ad.visits = await api.rpc('admin_visits', { p_days: ad.visitDays }); } catch (e) { ad.visits = { error: e.message }; }
+  finally { ad.visitsLoading = false; view.rerender(); }
+}
+const PAGE_NAMES = { '/': 'Головна сайту', '/app/signup': 'Реєстрація', '/app/login': 'Вхід у застосунок' };
+const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+/** Список «назва — число» з тонкою смужкою (один колір, без легенди) */
+function meterList(items, label, value, unit) {
+  if (!items.length) return '<div class="empty small">Поки немає даних.</div>';
+  const max = Math.max(1, ...items.map(value));
+  return `<ul class="meters">${items.map(x => `<li><div class="row-between"><span class="m-name">${esc(label(x))}</span><b>${value(x)}</b></div>
+    <span class="meter" role="img" aria-label="${esc(label(x))}: ${value(x)} ${unit}"><i style="width:${Math.max(2, Math.round(value(x) / max * 100))}%"></i></span></li>`).join('')}</ul>`;
+}
+function visitsView() {
+  ensureVisits();
+  const head = `<div class="row-between page-head"><h1>Відвідування</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  <div class="seg chips">${[[7, '7 днів'], [30, '30 днів'], [90, '90 днів']].map(([d, l]) => `<button data-act="adm-vdays" data-v="${d}" aria-pressed="${ad.visitDays === d}">${l}</button>`).join('')}</div>`;
+  if (!ad.visits) return head + '<div class="empty">Завантаження…</div>';
+  if (ad.visits.error) return head + `<div class="banner bad">${esc(ad.visits.error)}</div>`;
+  const v = ad.visits, f = v.funnel || {};
+  const max = Math.max(1, ...v.days.map(x => x.visitors));
+  const dev = v.devices || {}, devTotal = Object.values(dev).reduce((a, b) => a + b, 0);
+  const steps = [['Відкрили сайт', f.site], ['Натиснули «Спробувати»', f.cta], ['Відкрили реєстрацію', f.signup], ['Створили магазин', f.shops], ['Оплатили', f.paid]];
+  const top = Math.max(1, ...steps.map(x => x[1] || 0));
+  return head + `
+  <section class="kpis">
+    <div class="kpi"><div class="k">Відвідувачів</div><div class="v">${v.visitors}</div><div class="small muted">унікальних за день</div></div>
+    <div class="kpi"><div class="k">Переглядів сторінок</div><div class="v">${v.views}</div></div>
+    <div class="kpi"><div class="k">Нових магазинів</div><div class="v ok">${f.shops}</div><div class="small muted">з них через сайт: ${f.shops_from_site}</div></div>
+    <div class="kpi"><div class="k">Із сайту в реєстрацію</div><div class="v">${pct(f.shops_from_site, f.site)}</div><div class="small muted">відвідувач → магазин</div></div>
+  </section>
+  <section class="sheet pad stack"><h2>Відвідувачі по днях</h2>
+    <div class="spark" role="img" aria-label="Відвідувачі по днях за ${v.days.length} днів, усього ${v.visitors}">
+      ${v.days.map(x => `<span class="bar" style="height:${Math.max(2, Math.round(x.visitors / max * 100))}%" title="${fmtD(x.d)}: ${x.visitors} ${plural(x.visitors, 'відвідувач', 'відвідувачі', 'відвідувачів')}, ${x.views} ${plural(x.views, 'перегляд', 'перегляди', 'переглядів')}"><i class="sr">${fmtD(x.d)}: ${x.visitors}</i></span>`).join('')}
+    </div>
+    <div class="row-between small muted"><span>${fmtD(v.days[0].d).slice(0, 5)}</span><span>сьогодні</span></div>
+  </section>
+  <section class="sheet pad stack"><h2>Шлях до оплати</h2>
+    <ul class="meters funnel">${steps.map(([l, n], i) => `<li><div class="row-between"><span class="m-name">${l}</span><span><b>${n || 0}</b>${i && steps[i - 1][1] && (n || 0) <= steps[i - 1][1] ? ` <span class="small muted">${pct(n || 0, steps[i - 1][1])}</span>` : ''}</span></div>
+      <span class="meter"><i style="width:${Math.max(2, Math.round((n || 0) / top * 100))}%"></i></span></li>`).join('')}</ul>
+    <p class="small muted">Відсоток — скільки дійшло з попереднього кроку. «Створили магазин» і «Оплатили» — усі нові магазини за період, навіть ті, що прийшли не через сайт.</p>
+  </section>
+  <div class="grid2">
+    <section class="sheet pad stack"><h2>Звідки приходять</h2>${meterList(v.sources, x => srcName(x.source), x => x.visitors, 'відвідувачів')}</section>
+    <section class="sheet pad stack"><h2>Звідки магазини</h2>${v.shop_sources.length ? `<ul class="meters">${v.shop_sources.map(x => `<li><div class="row-between"><span class="m-name">${esc(srcName(x.source))}</span><span><b>${x.shops}</b> <span class="small muted">оплатили ${x.paid}</span></span></div></li>`).join('')}</ul>` : '<div class="empty small">Поки немає даних.</div>'}</section>
+    <section class="sheet pad stack"><h2>Сторінки</h2>${meterList(v.pages, x => PAGE_NAMES[x.page] || x.page, x => x.views, 'переглядів')}</section>
+    <section class="sheet pad stack"><h2>Пристрої</h2>${devTotal ? `<ul class="meters">${[['mobile', 'Телефон'], ['desktop', 'Комп’ютер'], ['tablet', 'Планшет']].filter(([k]) => dev[k]).map(([k, l]) => `<li><div class="row-between"><span class="m-name">${l}</span><b>${pct(dev[k], devTotal)}</b></div><span class="meter"><i style="width:${Math.round(dev[k] / devTotal * 100)}%"></i></span></li>`).join('')}</ul>` : '<div class="empty small">Поки немає даних.</div>'}</section>
+    ${v.campaigns.length ? `<section class="sheet pad stack"><h2>Рекламні кампанії</h2>${meterList(v.campaigns, x => x.campaign, x => x.visitors, 'відвідувачів')}</section>` : ''}
+  </div>
+  <section class="sheet pad stack"><h2>Як позначити рекламу</h2>
+    <p class="small">Додайте до посилання на сайт мітку — тоді тут буде видно, звідки саме прийшли люди. Наприклад:</p>
+    <div class="secret-key mono small">${esc(location.origin)}/?utm_source=facebook&amp;utm_campaign=osin</div>
+    <p class="small muted">Для листівки з QR-кодом: <span class="mono">?utm_source=qr&amp;utm_campaign=lystivka</span>. Лічильник не використовує cookies і не зберігає IP-адрес — дозвіл відвідувачів не потрібен.</p>
+  </section>`;
 }
 
 // ---------------- Журнал адміна ----------------
-const ACTIONS = { 'admin:extend': 'Продовжив доступ', 'admin:delete_shop': 'Видалив магазин (можна відновити)', 'admin:restore_shop': 'Відновив магазин',
+const ACTIONS = { 'admin:extend': 'Продовжив доступ', 'admin:payment': 'Зарахував оплату', 'admin:bonus': 'Дав бонус', 'admin:trial': 'Продовжив пробний',
+  'admin:free': 'Безкоштовний режим', 'admin:suspend': 'Призупинив доступ', 'admin:unsuspend': 'Відновив доступ', 'admin:plan': 'Змінив тариф магазину',
+  'admin:discount': 'Дав знижку', 'admin:discount_cancel': 'Скасував знижку', 'admin:mass': 'Масова дія', 'admin:promo': 'Зберіг промокод',
+  'admin:promo_on': 'Увімкнув промокод', 'admin:promo_off': 'Вимкнув промокод', 'admin:plan_save': 'Зберіг тариф', 'admin:delete_shop': 'Видалив магазин (можна відновити)', 'admin:restore_shop': 'Відновив магазин',
   'admin:purge_shop': 'Остаточно видалив магазин', 'admin:export_shop': 'Вивантажив копію магазину', 'admin:platform': 'Змінив налаштування платформи' };
 async function ensureLog(force = false) {
   if ((ad.log && !force) || ad.logLoading) return;
@@ -3564,6 +4379,11 @@ async function ensureLog(force = false) {
 }
 function logText(a) {
   const d = a.details || {};
+  if (a.action === 'admin:payment') return `${money(+d.amount_kop)} · ${d.days} дн. → до ${fmtD(d.paid_until)}${d.note ? ' · ' + d.note : ''}`;
+  if (a.action === 'admin:bonus') return `+${d.days} дн. · ${d.reason || ''}`;
+  if (a.action === 'admin:mass') return `${d.count} ${plural(d.count, 'магазин', 'магазини', 'магазинів')} · ${d.action && d.action.kind === 'bonus' ? '+' + d.action.days + ' дн.' : 'знижка'} · ${(d.action && d.action.reason) || ''}`;
+  if (a.action === 'admin:discount') return `${discText({ ...d, value: d.type === 'fixed' || d.type === 'price' ? Math.round(+d.value * 100) : +d.value })} · ${d.reason || ''}`;
+  if (['admin:trial', 'admin:free', 'admin:suspend'].includes(a.action)) return d.reason || '';
   if (a.action === 'admin:extend') return `${d.days > 0 ? '+' : ''}${d.days} дн.${+d.amount_kop ? ', ' + money(+d.amount_kop) : ''} → до ${fmtD(d.paid_until)}${d.note ? ' · ' + d.note : ''}`;
   if (a.action === 'admin:platform') {
     const o = d.old || {}, n = d.new || {};
@@ -3594,35 +4414,30 @@ function settingsView() {
   ensurePlatform();
   if (!ad.platform) return '<div class="empty">Завантаження…</div>';
   const p = ad.platform;
-  const f = (id, label, val, attrs = '', hint = '') => `<label class="f">${label}${hint ? ` <span class="muted small">${hint}</span>` : ''}<input id="pl-${id}" value="${esc(val ?? '')}" ${attrs}></label>`;
+  const f = (id, label, val, ph, attrs = '') => `<label class="f">${label}<input id="pl-${id}" value="${esc(val ?? '')}" placeholder="${esc(ph)}" autocomplete="off" ${attrs}></label>`;
   return `<div class="row-between page-head"><h1>Налаштування платформи</h1></div>
   <form data-form="adm-platform" class="stack" novalidate>
-    <section class="sheet pad stack"><h2>Ціни</h2>
-      <div class="grid2">${f('price_month', 'Місяць, грн', p.price_month ?? CFG.priceMonth, 'inputmode="numeric"')}${f('price_year', 'Рік, грн', p.price_year ?? CFG.priceYear, 'inputmode="numeric"')}</div>
-    </section>
     <section class="sheet pad stack"><h2>Реквізити для оплати</h2>
-      <p class="small muted">Власники магазинів бачать це в «Налаштування → Підписка» з кнопками «Копіювати».</p>
-      ${f('pay_card', 'Номер картки', fmtCard(p.pay_card || ''), 'inputmode="numeric" autocomplete="off"', '16 цифр')}
-      ${f('pay_recipient', 'Отримувач', p.pay_recipient, 'autocomplete="off"', 'напр. ФОП Прізвище І.П.')}
-      ${f('pay_iban', 'IBAN', p.pay_iban, 'autocomplete="off" autocapitalize="characters"', 'UA і 27 цифр, необов’язково')}
-      ${f('pay_link', 'Посилання на оплату', p.pay_link, 'inputmode="url" autocomplete="off"', 'банка monobank чи сторінка оплати, необов’язково')}
+      ${f('pay_card', 'Номер картки', fmtCard(p.pay_card || ''), '16 цифр', 'inputmode="numeric"')}
+      ${f('pay_recipient', 'Отримувач', p.pay_recipient, 'ФОП Прізвище І.П.')}
+      ${f('pay_iban', 'IBAN', p.pay_iban, 'UA… (необов’язково)', 'autocapitalize="characters"')}
+      ${f('pay_link', 'Посилання на оплату', p.pay_link, 'https://send.monobank.ua/… (необов’язково)', 'inputmode="url"')}
     </section>
     <section class="sheet pad stack"><h2>Контакти підтримки</h2>
-      <p class="small muted">З’являються кнопками «Telegram», «Viber», «Подзвонити» на екрані оплати.</p>
-      ${f('support_tg', 'Telegram', p.support_tg, 'autocomplete="off"', 'нік без @')}
-      ${f('support_phone', 'Телефон', p.support_phone, 'inputmode="tel" autocomplete="off"', '+38 0XX XXX XX XX')}
-      ${f('support_viber', 'Viber', p.support_viber, 'inputmode="tel" autocomplete="off"', 'якщо інший номер')}
-      ${f('support_email', 'Email', p.support_email, 'inputmode="email" autocomplete="off"')}
+      ${f('support_tg', 'Telegram', p.support_tg, 'нік без @')}
+      ${f('support_phone', 'Телефон', p.support_phone, '+38 0XX XXX XX XX', 'inputmode="tel"')}
+      ${f('support_viber', 'Viber', p.support_viber, 'якщо номер інший, ніж телефон', 'inputmode="tel"')}
+      ${f('support_email', 'Email', p.support_email, 'help@…', 'inputmode="email"')}
     </section>
     <section class="sheet pad stack"><h2>Адреса сайту</h2>
-      ${f('app_url', 'Для посилань і QR-кодів запрошення', p.app_url, 'inputmode="url" autocomplete="off"', 'коли з’явиться власний домен; порожньо — поточна адреса')}
+      ${f('app_url', 'Для посилань і QR-кодів', p.app_url, 'https://ваш-домен (порожньо — поточна адреса)', 'inputmode="url"')}
     </section>
     <div class="err" role="alert"></div>
     <button class="btn ink big" type="submit">Зберегти</button>
   </form>
   <section class="sheet pad stack"><h2>Адміністратори</h2>
     <ul class="plain">${ad.admins.map(e => `<li>${esc(e)}</li>`).join('')}</ul>
-    <p class="small muted">Додати адміністратора можна лише в Supabase → SQL Editor (див. інструкцію). Кожен адмін входить з кодом Google Authenticator.</p>
+    <p class="small muted">Додати адміністратора можна лише в Supabase → SQL Editor (див. інструкцію). Кожен входить з кодом Google Authenticator.</p>
   </section>`;
 }
 
@@ -3653,8 +4468,32 @@ register({
     } catch (e) { toast(e.message, 'bad'); }
   },
   'adm-reload': () => {
-    as.shops = null; as.error = null; ad.pays = null; ad.log = null;
+    refreshAll(); ad.pays = null; ad.log = null; ad.disc = null; ad.promos = null; ad.plans = null; ad.visits = null;
     ensureShops(); view.rerender();
+  },
+  'adm-more': () => {
+    openModal(`<div class="stack"><h2>Ще</h2><ul class="plain more-list">
+      ${NAV.slice(MOBILE_MAIN).map(([k, l, ic]) => `<li><a class="btn wide-btn" href="#/admin/${k}" data-act="close-go">${svg(ic)} ${l}</a></li>`).join('')}
+      ${(S.boot?.shops || []).length ? '<li><a class="btn wide-btn" href="#/list" data-act="close-go">Мій магазин →</a></li>' : ''}
+      </ul><div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div></div>`);
+  },
+  'adm-vdays': (el) => { ad.visitDays = +el.dataset.v; ad.visits = null; view.rerender(); },
+  'close-go': (el) => { closeModal(); location.hash = el.getAttribute('href'); },
+  'adm-paykind': (el) => { ad.payKind = el.dataset.v; view.rerender(); },
+  'mass-preview': async () => {
+    const filter = document.getElementById('mass-filter').value, kind = document.querySelector('[name=mass-kind]:checked').value;
+    try { ad.mass = { filter, kind, preview: await api.rpc('admin_mass_preview', { p_filter: filter }) }; view.rerender(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+  'promo-new': () => { ad.promoForm = !ad.promoForm; view.rerender(); },
+  'promo-toggle': async (el) => {
+    try { await api.rpc('admin_toggle_promo', { p_code: el.dataset.code, p_active: el.dataset.on === 'true' }); ad.promos = null; view.rerender(); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
+  'plan-edit': (el) => {
+    const id = el.dataset.id;
+    ad.planEdit = !id ? null : id === '__new' ? {} : ad.plans.find(p => p.id === id) || null;
+    view.rerender();
   },
 }, {
   async 'adm-code'(form) {
@@ -3679,8 +4518,8 @@ register({
   },
   async 'adm-platform'(form) {
     const v = (id) => document.getElementById('pl-' + id).value.trim();
-    const data = {};
-    for (const k of ['price_month', 'price_year', 'pay_card', 'pay_recipient', 'pay_iban', 'pay_link', 'support_tg', 'support_phone', 'support_viber', 'support_email', 'app_url']) data[k] = v(k);
+    const data = { ...ad.platform };   // інші налаштування (напр. пробний період) не губимо
+    for (const k of ['pay_card', 'pay_recipient', 'pay_iban', 'pay_link', 'support_tg', 'support_phone', 'support_viber', 'support_email', 'app_url']) data[k] = v(k);
     await busy(form, async () => {
       try {
         ad.platform = await api.rpc('admin_set_platform', { p_data: data });
@@ -3692,8 +4531,62 @@ register({
   },
 });
 
+async function massApply(form, action) {
+  const m = ad.mass;
+  await busy(form, async () => {
+    try {
+      const r = await api.rpc('admin_mass_apply', { p_filter: m.filter, p_action: action, p_expect: m.preview.count });
+      toast(`Готово: ${r.count} ${plural(r.count, 'магазин', 'магазини', 'магазинів')}`, 'ok');
+      ad.mass = null; ad.disc = null; refreshAll(); view.rerender();
+    } catch (e) { formError(form, e.message); }
+  });
+}
+register({}, {
+  async 'mass-bonus'(form) {
+    const days = parseInt(document.getElementById('mass-days').value, 10), reason = document.getElementById('mass-reason').value.trim();
+    if (!(days > 0)) return formError(form, 'Вкажіть кількість днів.');
+    if (!reason) return formError(form, 'Вкажіть причину.');
+    await massApply(form, { kind: 'bonus', days, reason });
+  },
+  async 'mass-discount'(form) {
+    const p = readDiscount();
+    if (!p.reason) return formError(form, 'Вкажіть причину знижки.');
+    await massApply(form, { kind: 'discount', ...p });
+  },
+  async promo(form) {
+    const v = (id) => document.getElementById(id).value.trim();
+    const p = { code: v('pr-code'), type: v('pr-type'), value: v('pr-value').replace(',', '.'), applies_to: v('pr-applies'), max_uses: v('pr-max'),
+      valid_until: v('pr-until') ? new Date(v('pr-until') + 'T23:59:59').toISOString() : '', partner: v('pr-partner'), new_only: document.getElementById('pr-new').checked };
+    if (!p.code) return formError(form, 'Вкажіть код.');
+    await busy(form, async () => {
+      try { await api.rpc('admin_save_promo', { p }); ad.promoForm = false; ad.promos = null; toast('Промокод створено', 'ok'); view.rerender(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async plan(form) {
+    const v = (id) => (document.getElementById(id)?.value || '').trim();
+    const p = { id: v('pl-id'), name: v('pl-name'), price_month: v('pl-pm').replace(',', '.'), price_year: v('pl-py').replace(',', '.'),
+      max_clients: v('pl-mc'), max_members: v('pl-mm'), active: document.getElementById('pl-active') ? document.getElementById('pl-active').checked : true };
+    const all = !!document.getElementById('pl-all')?.checked;
+    await busy(form, async () => {
+      try { await api.rpc('admin_save_plan', { p, p_apply_all: all }); ad.planEdit = null; ad.plans = null; refreshAll(); toast('Тариф збережено', 'ok'); view.rerender(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'trial-days'(form) {
+    const n = document.getElementById('trial-len').value.trim();
+    await busy(form, async () => {
+      try { ad.platform = await api.rpc('admin_set_platform', { p_data: { ...ad.platform, trial_days: n } }); toast('Збережено', 'ok'); view.rerender(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
+});
+
 // посилання «Написати» всередині рядка не повинно відкривати вікно магазину
 document.addEventListener('click', (e) => { if (e.target.closest('[data-stop]')) e.stopPropagation(); }, true);
+
+// вийшли з адмінки (напр. у свій магазин) — після повернення будь-який розділ перечитується
+window.addEventListener('hashchange', () => { if (!location.hash.startsWith('#/admin')) ad.lastSec = null; });
 
 return { adminScreen };
 })();
@@ -3801,17 +4694,33 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); inst
 window.addEventListener('appinstalled', () => { installPrompt = null; lsSet('zoshyt.installed', '1'); view.rerender && view.rerender(); });
 
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Лише справжній Safari на iPhone/iPad: Chrome (CriOS), Firefox (FxiOS), Edge (EdgiOS) і вбудовані браузери
+// (Viber, Telegram, Facebook, Instagram) «На екран Додому» не вміють — там підказка тільки заважає.
+const isIosSafari = () => {
+  const ua = navigator.userAgent;
+  const ios = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return ios && /Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|YaBrowser|GSA\/|FBAN|FBAV|Instagram|Line\/|Viber|Telegram/i.test(ua);
+};
+// Значок «Поділитися» з iOS: квадрат зі стрілкою вгору
+const IOS_SHARE = '<svg class="ios-share" viewBox="0 0 20 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M10 2v13M6 6l4-4 4 4M6.5 9.5H4a1 1 0 0 0-1 1V21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10.5a1 1 0 0 0-1-1h-2.5"/></svg>';
+const IOS_MAX = 3;   // показуємо не більше 3 разів
 
-/** Банер «Встановити на головний екран» (Android/Chrome — одна кнопка, iPhone — коротка підказка) */
+/** Банер «Встановити на головний екран» (Android/Chrome — одна кнопка, iPhone Safari — коротка підказка) */
 function installBanner() {
   if (isStandalone() || lsGet('zoshyt.installed')) return '';
   const hid = +(lsGet('zoshyt.installHidden') || 0);
   if (hid && Date.now() - hid < 14 * 86400000) return '';
-  const close = '<button class="icon-btn sm" data-act="install-hide" aria-label="Сховати">✕</button>';
+  const close = '<button class="icon-btn sm x" data-act="install-hide" aria-label="Сховати">✕</button>';
   if (installPrompt) return `<div class="banner info install-bar"><span><b>Встановіть «Зошит» на телефон</b> — відкриватиметься з іконки й працюватиме без інтернету.</span>
     <span class="actions"><button class="btn sm ink" data-act="install">Встановити</button>${close}</span></div>`;
-  if (isIos()) return `<div class="banner info install-bar"><span><b>Додайте «Зошит» на екран «Додому»:</b> натисніть <b>Поділитися</b> <span aria-hidden="true">⎋</span> унизу Safari → <b>«На екран “Додому”»</b>.</span>${close}</div>`;
+  if (isIosSafari()) {
+    // рахуємо покази: один раз за відкриття програми
+    let n = +(lsGet('zoshyt.iosShown') || 0);
+    let seen = false; try { seen = sessionStorage.getItem('zoshyt.iosSeen') === '1'; } catch { /* */ }
+    if (!seen) { if (n >= IOS_MAX) return ''; n += 1; lsSet('zoshyt.iosShown', String(n)); try { sessionStorage.setItem('zoshyt.iosSeen', '1'); } catch { /* */ } }
+    return `<div class="banner info ios-bar"><span class="ios-text"><b>Додайте «Зошит» на екран «Додому»</b><br>
+      ${IOS_SHARE} Поділитися → «На екран “Додому”»</span>${close}</div>`;
+  }
   return '';
 }
 
@@ -3854,7 +4763,7 @@ register({
     if (!me) return formError(form, 'Вкажіть ваше ім’я.');
     if (!navigator.onLine) return formError(form, 'Для створення магазину потрібен інтернет.');
     await busy(form, async () => {
-      try { const s = await api.rpc('create_shop', { p_name: name, p_display_name: me }); toast('Магазин створено! 30 днів безкоштовно.', 'ok'); await afterShop(s.id); }
+      try { const s = await api.rpc('create_shop', { p_name: name, p_display_name: me, p_source: api.sourceForSignup() }); toast('Магазин створено! 30 днів безкоштовно.', 'ok'); await afterShop(s.id); }
       catch (e) { formError(form, e.message); }
     });
   },
@@ -3905,17 +4814,38 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.3.0';
+window.ZOSHYT_VERSION = '1.6.0';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
 
 // ---------- рендер ----------
+let lastHash = null;
+const defaultOf = (el) => el.tagName === 'SELECT' ? ([...el.options].find(o => o.defaultSelected) || el.options[0] || {}).value
+  : el.type === 'checkbox' ? el.defaultChecked : el.defaultValue;
+const isDirty = (el) => el.type !== 'radio' && el.type !== 'file' && el.type !== 'password' && (el.type === 'checkbox' ? el.checked !== el.defaultChecked : el.value !== defaultOf(el));
+// після відправки форми введене вважається збереженим — нова форма приходить порожньою
+document.addEventListener('submit', (e) => {
+  for (const el of e.target.querySelectorAll('input, textarea, select')) {
+    el._orig = defaultOf(el);
+    if (el.type === 'checkbox') el.defaultChecked = el.checked;
+    else if (el.tagName === 'SELECT') [...el.options].forEach(o => { o.defaultSelected = o.selected; });
+    else el.defaultValue = el.value;
+  }
+}, true);
 function render() {
   const focusId = document.activeElement && document.activeElement.id;
   const sel = focusId && document.activeElement.selectionStart;
   const scroll = window.scrollY;
+  // фонове оновлення (синхронізація тощо) не стирає те, що людина вже ввела у форму на цьому ж екрані
+  const dirty = location.hash === lastHash ? [...root.querySelectorAll('input[id], textarea[id], select[id]')].filter(isDirty)
+    .map(el => [el.id, defaultOf(el), el.type === 'checkbox' ? el.checked : el.value]) : [];
+  lastHash = location.hash;
   root.innerHTML = screen();
+  for (const [id, def, val] of dirty) {
+    const el = document.getElementById(id);
+    if (el && root.contains(el) && defaultOf(el) === def) { if (el.type === 'checkbox') el.checked = val; else el.value = val; }
+  }
   if (focusId && !modalOpen()) {
     const el = document.getElementById(focusId);
     if (el && el.tagName === 'INPUT') { el.focus(); try { el.setSelectionRange(sel, sel); } catch { /* */ } }
@@ -3932,6 +4862,7 @@ function screen() {
   if (mode === 'loading') return '<div class="auth"><div class="loading">Відкриваю зошит…</div></div>';
   if (mode === 'setup') return setupView();
   if (mode === 'reset') return resetView();
+  if (mode === 'auth' && (r.name === 'signup' || r.name === 'login')) api.trackView('/app/' + r.name);
   if (mode === 'auth') return r.name === 'signup' ? signupView() : r.name === 'forgot' ? forgotView() : loginView({ admin: r.name === 'admin' });
   // mode === 'app'
   // адмін-платформа — окремий застосунок, магазин для неї не потрібен
