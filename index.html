@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-uktLV/QNbrN7qtv9fhVIlxxIR5a+TGA0trSlJQO90WE='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-yGRYYsRVnv+cPK8YMIXYytjsbSDD5Rs3HDu7LqH/7PA='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -321,6 +321,8 @@ details summary { cursor: pointer; padding: 6px 0; }
 .confirm-box.warn { background: var(--warn-soft); color: var(--text); border: 1px solid var(--warn); }
 .confirm-box.info { background: var(--info-soft); color: var(--text); border: 1px solid var(--ink); }
 .confirm-box.bad { background: var(--bad-soft); color: var(--text); border: 1px solid var(--bad); }
+.confirm-box.ok-box { background: var(--ok-soft); color: var(--text); border: 1px solid var(--ok); }
+.claim-box .btn { justify-self: start; }
 .confirm-box .check { font-weight: 600; }
 /* підписка: компактно, реквізити з кнопкою копіювання */
 .sub-box { gap: 8px; }
@@ -393,6 +395,10 @@ body.is-admin { background-image: none; background-color: #f3f2f7; padding: 0; }
 .adm-nav a { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; color: var(--text); text-decoration: none; font-weight: 600; }
 .adm-nav a:hover { background: var(--surface-2); }
 .adm-nav a[aria-current="page"] { background: var(--adm); color: #fff; }
+.adm-nav a { position: relative; }
+.nav-badge { margin-left: auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--bad); color: #fff; font-size: 0.75rem; font-weight: 800; display: inline-grid; place-items: center; }
+.claim-sheet { border: 2px solid var(--ok); }
+.claim-acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .adm-main { grid-area: main; padding: 16px 20px 40px; display: grid; gap: 14px; align-content: start; max-width: 1100px; width: 100%; min-width: 0; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
 .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
@@ -406,6 +412,7 @@ body.is-admin { background-image: none; background-color: #f3f2f7; padding: 0; }
     border-right: 0; border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); }
   .adm-nav a { flex: 1; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: 0.6875rem; text-align: center; }
   .adm-title { display: none; }
+  .nav-badge { position: absolute; top: 2px; left: calc(50% + 6px); margin: 0; min-width: 18px; height: 18px; font-size: 0.6875rem; }
 }
 
 /* номер/ім’я у пошуку: підписана кнопка замість незрозумілої трубки */
@@ -3109,7 +3116,7 @@ return { journalView };
 })();
 
 M.views_settings = (function () {
-const { esc, money, moneyInput, parseMoney, fmtD, days, copyText, plural, DAY } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtD, fmtDT, days, copyText, plural, DAY } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, confirmBox, icon } = M.ui;
 const { S, isOwner, me, online, pendingForLogout, logout } = M.store;
 const { prefs, setPref } = M.prefs;
@@ -3184,6 +3191,7 @@ function settingsView() {
     <div class="row-between"><h2>Магазин</h2><button class="btn sm" data-act="edit-shop">Змінити</button></div>
     <dl class="kv">
       <dt>Назва</dt><dd>${esc(shop.name)}</dd>
+      ${shop.code ? `<dt>Номер магазину</dt><dd><b class="mono">${esc(shopNo(shop))}</b></dd>` : ''}
       <dt>Ліміт боргу для нових клієнтів</dt><dd>${money(shop.default_limit || 0)}</dd>
       <dt>Продавець може скасувати свій запис протягом</dt><dd>${shop.cancel_minutes ?? 15} хв</dd>
       <dt>Перепитувати суму понад</dt><dd>${(shop.confirm_amount ?? 500000) > 0 ? money(shop.confirm_amount ?? 500000) : 'не перепитувати'}</dd>
@@ -3254,7 +3262,9 @@ function memberModal(id) {
   </form>`);
 }
 
-const payPurpose = (shop) => `Зошит боржників, магазин «${shop.name || ''}»`;
+// номер магазину (6 цифр) — у коментарі до оплати; за ним адміністратор знаходить магазин
+const shopNo = (shop) => shop.code ? '№' + shop.code : '';
+const payPurpose = (shop) => shop.code ? `Зошит боржників ${shopNo(shop)}` : `Зошит боржників, магазин «${shop.name || ''}»`;
 const grn = (n) => Math.round(n).toLocaleString('uk-UA') + ' грн';
 
 /** Блок «Підписка»: компактно, реальні реквізити з config.js, кнопки копіювання й зв'язку */
@@ -3263,14 +3273,15 @@ const bill = { shop: null, data: null, loading: null, promoOpen: false, promoErr
 async function loadBilling(force = false) {
   const id = S.shopId;                       // для якого магазину просимо — під ним і зберігаємо відповідь
   if (!navigator.onLine || !id || !isOwner() || bill.loading === id) return;
-  if (!force && bill.shop === id && bill.data) return;
+  // свіже щохвилини: власник побачить «Оплату отримали», щойно адмін підтвердить
+  if (!force && bill.shop === id && Date.now() - (bill.at || 0) < 60000) return;
   if (bill.shop !== id) { bill.promoOpen = false; bill.promoErr = ''; }
   bill.loading = id;
   let data = null;
   try { data = await api.rpc('my_billing', { p_shop: id }); } catch { data = null; }
   if (bill.loading === id) bill.loading = null;
   if (S.shopId !== id) return;               // поки чекали — перемкнули магазин: ця відповідь уже не потрібна
-  bill.data = data; bill.shop = id;
+  bill.data = data || (bill.shop === id ? bill.data : null); bill.shop = id; bill.at = Date.now();
   view.rerender();
 }
 
@@ -3324,9 +3335,11 @@ function subscriptionSection(shop, i, owner) {
       ${CFG.payIban ? row('IBAN', CFG.payIban, 'copy-iban', 'IBAN', CFG.payCard ? '' : CFG.payRecipient, 'mono iban') : ''}
       ${row('Коментар', payPurpose(shop), 'copy-purpose', 'коментар до платежу')}
     </div>
+    ${shop.code ? `<p class="small muted">Обов’язково вкажіть у коментарі номер магазину <b>${esc(shopNo(shop))}</b> — так ми побачимо, хто оплатив.</p>` : ''}
+    ${claimBox(b && b.claim)}
     <div class="actions two">
       ${CFG.payLink ? `<a class="btn ink" href="${esc(CFG.payLink)}" target="_blank" rel="noopener">Оплатити карткою</a>` : ''}
-      <button class="btn ${CFG.payLink ? '' : 'ink'}" data-act="paid-tell">Я оплатив(ла)</button>
+      ${b && b.claim && b.claim.status === 'pending' ? '' : `<button class="btn ${CFG.payLink ? '' : 'ink'}" data-act="paid-tell">Я оплатив(ла)</button>`}
     </div>` : !forever && contacts.length ? '<p class="small muted">Щоб оплатити, напишіть або зателефонуйте нам — підкажемо, як зручніше.</p>' : ''}
     ${contacts.length ? `<div class="contact-line" aria-label="Зв’язатися з нами">${contacts.join('')}</div>` : ''}
     ${b && !forever ? (bill.promoOpen ? `<form data-form="promo-apply" class="note-form"><input id="promo-code" autocapitalize="characters" autocomplete="off" placeholder="Промокод" aria-label="Промокод"><button class="btn sm ink" type="submit">Застосувати</button></form><div class="err small" id="promo-err" role="alert">${esc(bill.promoErr)}</div>`
@@ -3335,25 +3348,36 @@ function subscriptionSection(shop, i, owner) {
   </section>`;
 }
 
-/** Повідомлення адміністратору сервісу про оплату — щоб він продовжив підписку */
+/** Стан повідомлення «Я оплатив(ла)»: перевіряємо / підтверджено / не знайшли */
+const PERIOD_TXT = { month: 'місяць', year: 'рік' };
+function claimBox(c) {
+  if (!c) return '';
+  const what = `<b>${money(c.amount_kop)}</b> за ${PERIOD_TXT[c.period] || ''}`;
+  if (c.status === 'pending') return `<div class="confirm-box info claim-box" data-claim="pending">
+      <span>Ви повідомили про оплату ${what} ${fmtDT(c.created_at)}. Перевіряємо — зазвичай протягом дня, доступ продовжиться сам.</span>
+      <button class="btn sm ghost" data-act="claim-cancel">Скасувати повідомлення</button></div>`;
+  if (c.status === 'rejected') return `<div class="confirm-box bad claim-box" data-claim="rejected">
+      <span>Оплату ${what} від ${fmtD(c.created_at)} не підтвердили: <b>${esc(c.reason || '')}</b>. Перевірте платіж і повідомте ще раз або напишіть нам.</span></div>`;
+  if (c.status === 'confirmed' && Date.now() - new Date(c.decided_at) < 7 * DAY) return `<div class="confirm-box ok-box claim-box" data-claim="confirmed"><span>✓ Оплату ${what} отримали. Дякуємо!</span></div>`;
+  return '';
+}
+
+/** «Я оплатив(ла)»: повідомлення йде просто в адмінку сервісу — без месенджерів */
 function paidModal() {
-  const i = subscriptionInfo(S.shop);
-  const msg = `Вітаю! Я оплатив(ла) підписку «Зошит боржників».\nМагазин: «${S.shop?.name || ''}»\nПошта: ${S.user?.email || ''}\nДоступ зараз до: ${i ? fmtD(i.until) : '—'}`;
-  const tg = CFG.supportTg;
-  const phone = intlPhone(CFG.supportPhone);
-  openModal(`<div class="stack">
-    <h2>Повідомити про оплату</h2>
-    <p class="small muted">Надішліть це повідомлення — і ми продовжимо підписку. Зазвичай протягом дня.</p>
-    <label class="f">Текст<textarea id="paid-text" rows="5">${esc(msg)}</textarea></label>
-    <div class="m-actions start">
-      <button class="btn ink" data-act="copy-paid">Копіювати</button>
-      ${tg ? `<a class="btn" href="https://t.me/${esc(tg)}" target="_blank" rel="noopener">Telegram</a>` : ''}
-      ${phone ? `<a class="btn" href="viber://chat?number=${encodeURIComponent(phone)}">Viber</a>
-        <a class="btn" href="sms:${esc(phone)}?body=${encodeURIComponent(msg)}">SMS</a>` : ''}
-      ${CFG.supportEmail ? `<a class="btn" href="mailto:${esc(CFG.supportEmail)}?subject=${encodeURIComponent('Оплата підписки')}&body=${encodeURIComponent(msg)}">Пошта</a>` : ''}
+  const b = bill.shop === S.shopId ? bill.data : null;
+  const m = b ? b.month.final : CFG.priceMonth * 100, y = b ? b.year.final : CFG.priceYear * 100;
+  openModal(`<form data-form="claim-pay" class="stack" novalidate>
+    <h2>Я оплатив(ла)</h2>
+    <p class="small muted">Ми перевіримо надходження і продовжимо доступ — зазвичай протягом дня. Ви побачите результат тут, у розділі «Підписка».</p>
+    <div class="seg chips" role="radiogroup" aria-label="За який період">
+      <label class="chip-radio"><input type="radio" name="claim-period" value="month" data-sum="${m}" checked> Місяць · ${money(m)}</label>
+      <label class="chip-radio"><input type="radio" name="claim-period" value="year" data-sum="${y}"> Рік · ${money(y)}</label>
     </div>
-    <div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div>
-  </div>`);
+    <label class="f">Скільки оплатили, грн<input id="claim-amount" inputmode="decimal" autocomplete="off" value="${moneyInput(m)}"></label>
+    <label class="f">Коментар <span class="muted">(необов’язково)</span><input id="claim-note" maxlength="200" placeholder="напр. платив з картки дружини"></label>
+    <div class="err" role="alert"></div>
+    <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Повідомити</button></div>
+  </form>`);
 }
 
 const fmtCode = (c) => c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c;
@@ -3424,7 +3448,10 @@ register({
   'copy-card': async () => { toast(await copyText(CFG.payCard.replace(/\D/g, '')) ? 'Номер картки скопійовано' : 'Не вдалося скопіювати'); },
   'copy-iban': async () => { toast(await copyText(CFG.payIban.replace(/\s/g, '')) ? 'IBAN скопійовано' : 'Не вдалося скопіювати'); },
   'copy-purpose': async () => { toast(await copyText(payPurpose(S.shop || {})) ? 'Призначення скопійовано' : 'Не вдалося скопіювати'); },
-  'copy-paid': async () => { toast(await copyText(document.getElementById('paid-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
+  'claim-cancel': async () => {
+    try { await online('cancel_payment_claim', { p_shop: S.shopId }); toast('Повідомлення скасовано'); await loadBilling(true); }
+    catch (e) { toast(e.message, 'bad'); }
+  },
   'copy-invite': async () => { toast(await copyText(document.getElementById('inv-text').value) ? 'Скопійовано' : 'Виділіть текст і скопіюйте'); },
   'revoke-invite': async (el) => {
     try { await online('revoke_invite', { p_shop: S.shopId, p_code: el.dataset.code }); toast('Код скасовано'); loadInvites(); }
@@ -3457,6 +3484,18 @@ register({
     location.hash = '#/login';
   },
 }, {
+  async 'claim-pay'(form) {
+    const amount = parseMoney(document.getElementById('claim-amount').value);
+    const period = form.querySelector('input[name=claim-period]:checked')?.value || 'month';
+    if (!amount || amount <= 0) return formError(form, 'Вкажіть суму, яку ви оплатили.');
+    await busy(form, async () => {
+      try {
+        await online('claim_payment', { p_shop: S.shopId, p_amount_kop: amount, p_period: period, p_note: document.getElementById('claim-note').value });
+        closeModal(); toast('Дякуємо! Повідомлення надіслано — перевіримо найближчим часом', 'ok');
+        await loadBilling(true);
+      } catch (e) { formError(form, e.message); }
+    });
+  },
   async 'promo-apply'(form) {
     const code = document.getElementById('promo-code').value.trim();
     const err = document.getElementById('promo-err');
@@ -3537,12 +3576,18 @@ document.addEventListener('change', (e) => {
   w.hidden = !(e.target.value === 'owner' && e.target.dataset.was !== 'owner');
   const cb = document.getElementById('owner-ok'); if (cb && w.hidden) cb.checked = false;
 });
+// «Я оплатив(ла)»: вибрали місяць чи рік — підставляємо відповідну суму
+document.addEventListener('change', (e) => {
+  if (e.target.name !== 'claim-period') return;
+  const a = document.getElementById('claim-amount');
+  if (a) a.value = moneyInput(+e.target.dataset.sum || 0);
+});
 
 return { subscriptionInfo, subscriptionBanner, settingsView };
 })();
 
 M.views_admin = (function () {
-const { esc, money, parseMoney, fmtD, fmtDT, days, plural, copyText, downloadFile, isoDate, DAY } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtD, fmtDT, days, plural, copyText, downloadFile, isoDate, DAY } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { CFG, fmtCard } = M.cfg;
 const api = M.api;
@@ -3564,6 +3609,36 @@ async function load() {
   finally { as.loading = false; view.rerender(); }
 }
 function ensureShops() { if (!as.shops && !as.loading && !as.error) load(); }
+
+// ---------------- повідомлення «Я оплатив(ла)» ----------------
+async function ensureClaims(force = false) {
+  if ((as.claims && !force) || as.claimsLoading) return;
+  as.claimsLoading = true;
+  try { as.claims = await api.rpc('admin_payment_claims'); } catch { as.claims = as.claims || []; }
+  finally { as.claimsLoading = false; view.rerender(); }
+}
+/** Рядок повідомлення про оплату: хто, скільки, за що; кнопки «Підтвердити» / «Не знайшов» */
+function claimRow(c, withShop = true) {
+  const per = c.period === 'year' ? 'рік' : 'місяць';
+  const diff = c.expected_kop != null && +c.amount_kop !== +c.expected_kop;
+  return `<li class="row claim-row" data-claim="${esc(c.id)}">
+    <div class="who">
+      ${withShop ? `<div class="name"><a href="#/admin/shop/${esc(c.shop_id)}/billing">${esc(c.shop_name)}</a> <span class="mono muted">№${esc(c.code)}</span></div>` : ''}
+      <div class="meta"><span><b>${money(+c.amount_kop)}</b> за ${per}</span>${diff ? `<span class="chip warn">ціна ${money(+c.expected_kop)}</span>` : ''}<span>${fmtDT(c.created_at)}</span>
+        ${withShop ? `<span>${esc(c.owner_name || '')}</span><span>${esc(c.owner_email || '')}</span>` : ''}</div>
+      ${c.note ? `<div class="meta"><span>«${esc(c.note)}»</span></div>` : ''}
+    </div>
+    <div class="sum claim-acts">
+      <button class="btn sm ok" data-act="adm-claim-ok" data-id="${esc(c.id)}" data-amount="${+c.amount_kop}" data-period="${esc(c.period)}">Підтвердити</button>
+      <button class="btn sm ghost" data-act="adm-claim-no" data-id="${esc(c.id)}">Не знайшов</button></div></li>`;
+}
+async function claimDone(msg) {
+  closeModal();
+  as.claims = null; as.shops = null; as.onClaim && as.onClaim();
+  if (sp.id && sp.data) await loadShop(sp.id);
+  ensureClaims(true);
+  toast(msg, 'ok');
+}
 function refreshAll() { as.shops = null; as.error = null; sp.data = null; }
 
 // ---------------- статуси ----------------
@@ -3584,7 +3659,10 @@ const SORTS = [['new', 'Нові'], ['ending', 'Закінчуються ран�
 function filtered() {
   const q = as.q.trim().toLowerCase();
   let list = as.shops.filter(s => as.filter === 'deleted' ? s.deleted_at : !s.deleted_at);
-  if (q) list = list.filter(s => [s.name, s.owner_email, s.owner_name, s.id].some(v => String(v || '').toLowerCase().includes(q)));
+  // «№ 482 915», «#482915», «482915» — пошук за номером магазину (з коментаря до оплати)
+  const num = /^[№#\s\d-]+$/.test(q) ? q.replace(/\D/g, '') : '';
+  if (num) list = list.filter(s => String(s.code || '').startsWith(num));
+  else if (q) list = list.filter(s => [s.name, s.owner_email, s.owner_name, s.id].some(v => String(v || '').toLowerCase().includes(q)));
   const f = as.filter;
   if (['trial', 'paid', 'bonus', 'expired', 'free', 'suspended'].includes(f)) list = list.filter(s => s.status === f);
   if (f === 'soon') list = list.filter(s => leftDays(s) > 0 && leftDays(s) <= 7 && s.status !== 'free');
@@ -3604,12 +3682,12 @@ function adminView() {
   if (!as.shops) return `${header}<div class="empty">Завантаження…</div>`;
   const list = filtered();
   return `${header}
-  <input id="adm-q" class="search" type="search" placeholder="Назва, email, ім’я або ID" value="${esc(as.q)}" aria-label="Пошук магазину">
+  <input id="adm-q" class="search" type="search" placeholder="Номер, назва, email або ім’я" value="${esc(as.q)}" aria-label="Пошук магазину">
   <div class="seg chips" role="group" aria-label="Фільтр">${FILTERS.map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
   <label class="inline small">Сортування: <select id="adm-sort">${SORTS.map(([k, l]) => `<option value="${k}" ${as.sort === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
   <section class="sheet">${list.length ? `<ul class="rows">${list.map(s => `<li class="row" data-act="admin-open" data-id="${esc(s.id)}" tabindex="0">
       <div class="who"><div class="name">${esc(s.name)} ${labelChips(s.labels)}</div>
-        <div class="meta"><span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div>
+        <div class="meta">${s.code ? `<span class="mono">№${esc(s.code)}</span>` : ''}<span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div>
         <div class="meta"><span>${esc(s.plan_name || '')}</span>${s.has_discount ? '<span class="chip ok">знижка</span>' : ''}<span>${s.ops7} ${plural(s.ops7, 'запис', 'записи', 'записів')} за 7 дн.</span>${s.revenue_kop ? `<span>дохід ${money(s.revenue_kop)}</span>` : ''}</div></div>
       <div class="sum">${statusChip(s.status)}<span class="small muted">${s.status === 'free' ? (new Date(s.free_until).getFullYear() > 2090 ? 'назавжди' : 'до ' + fmtD(s.free_until)) : 'до ' + fmtD(s.access_until)}</span></div></li>`).join('')}</ul>`
     : '<div class="empty">Нічого не знайдено</div>'}</section>`;
@@ -3634,7 +3712,7 @@ function shopPage(id, tab = 'general') {
   const d = sp.data, s = d.shop;
   const owner = d.members.find(m => m.role === 'owner') || {};
   return `${back}
-  <div class="shop-head"><div><h1>${esc(s.name)}</h1><div class="small muted">${esc(owner.name || '')} · ${esc(owner.email || '')}</div></div>
+  <div class="shop-head"><div><h1>${esc(s.name)}</h1><div class="small muted">${s.code ? `<b class="mono">№${esc(s.code)}</b> · ` : ''}${esc(owner.name || '')} · ${esc(owner.email || '')}</div></div>
     <div class="shop-head-st">${statusChip(s.status)} ${labelChips(s.labels)}</div></div>
   <nav class="tabs-h" aria-label="Вкладки магазину">${TABS.map(([k, l]) => `<a href="#/admin/shop/${esc(id)}/${k}" ${tab === k ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>
   ${({ general, billing, payments, discounts, activity, staff, danger }[tab] || general)(d)}`;
@@ -3731,7 +3809,10 @@ function billing(d) {
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="adm-form" data-v="">Скасувати</button><button class="btn ${s.suspended_at ? 'ok' : 'bad'}" type="submit">${s.suspended_at ? 'Відновити' : 'Призупинити'}</button></div></form>`,
   };
-  return `<section class="sheet pad stack">
+  const claim = d.claim ? { ...d.claim, expected_kop: (d[d.claim.period] || {}).final } : null;
+  return `${claim ? `<section class="sheet claim-sheet"><div class="pad pb0"><h2>Власник повідомив про оплату</h2>
+      <p class="small muted">Перевірте надходження в банку (у коментарі — №${esc(s.code)}).</p></div><ul class="rows">${claimRow(claim, false)}</ul></section>` : ''}
+  <section class="sheet pad stack">
     <dl class="kv">
       <dt>Статус</dt><dd>${statusChip(s.status)}</dd>
       <dt>Доступ до</dt><dd><b>${s.status === 'free' && new Date(s.free_until).getFullYear() > 2090 ? 'назавжди' : fmtD(s.access_until)}</b>${s.status !== 'free' && leftDays(s) > 0 ? ` · ще ${days(leftDays(s))}` : ''}</dd>
@@ -3858,7 +3939,7 @@ function remindText() {
   if (CFG.payLink) lines.push(`Оплатити карткою: ${CFG.payLink}`);
   if (CFG.payCard) lines.push(`Картка: ${fmtCard(CFG.payCard)}${CFG.payRecipient ? ' (' + CFG.payRecipient + ')' : ''}`);
   if (CFG.payIban) lines.push(`IBAN: ${CFG.payIban}`);
-  lines.push(`Коментар до платежу: Зошит боржників, магазин «${s.name}».`);
+  lines.push(s.code ? `Коментар до платежу: Зошит боржників №${s.code}` : `Коментар до платежу: Зошит боржників, магазин «${s.name}».`);
   return lines.join('\n');
 }
 
@@ -3871,13 +3952,30 @@ register({
   'admin-filter': (el) => { as.filter = el.dataset.v; view.rerender(); },
   'admin-open': (el) => go(`#/admin/shop/${el.dataset.id}/general`),
   'admin-export-list': () => {
-    const rows = [['Магазин', 'Власник', 'Email', 'Статус', 'Тариф', 'Доступ до', 'Дохід, грн', 'Клієнтів', 'Записів за 7 днів', 'Зареєстровано']]
-      .concat(filtered().map(s => [s.name, s.owner_name, s.owner_email, (STATUS[s.status] || [s.status])[0], s.plan_name, fmtD(s.access_until),
+    const rows = [['Номер', 'Магазин', 'Власник', 'Email', 'Статус', 'Тариф', 'Доступ до', 'Дохід, грн', 'Клієнтів', 'Записів за 7 днів', 'Зареєстровано']]
+      .concat(filtered().map(s => [s.code || '', s.name, s.owner_name, s.owner_email, (STATUS[s.status] || [s.status])[0], s.plan_name, fmtD(s.access_until),
         (s.revenue_kop / 100).toFixed(2).replace('.', ','), s.clients, s.ops7, fmtD(s.created_at)]));
     downloadFile(`magazyny-${isoDate()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
   },
   'adm-form': (el) => { sp.form = el.dataset.v || null; view.rerender(); if (sp.form) setTimeout(() => document.querySelector('.act-form')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 30); },
   'adm-fill': (el) => { document.getElementById(el.dataset.t).value = el.dataset.v; },
+  'adm-claim-ok': (el) => {
+    const year = el.dataset.period === 'year';
+    openModal(`<form data-form="adm-claim-ok" data-id="${esc(el.dataset.id)}" class="stack" novalidate>
+      <h2>Підтвердити оплату</h2>
+      <p class="small muted">Переконайтесь, що гроші надійшли. Оплата запишеться в історію, доступ продовжиться на ${year ? 'рік' : 'місяць'}, власник побачить «Оплату отримали».</p>
+      <label class="f">Отримана сума, грн<input id="claim-ok-amount" inputmode="decimal" value="${moneyInput(+el.dataset.amount || 0)}"></label>
+      <label class="f">Спосіб<select id="claim-ok-method">${Object.entries(METHOD).map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select></label>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ok" type="submit">Зарахувати</button></div></form>`);
+  },
+  'adm-claim-no': (el) => openModal(`<form data-form="adm-claim-no" data-id="${esc(el.dataset.id)}" class="stack" novalidate>
+      <h2>Оплату не знайдено</h2>
+      <p class="small muted">Власник побачить причину у своїй програмі й зможе повідомити ще раз.</p>
+      <label class="f">Причина *<input id="claim-reason" maxlength="200" placeholder="напр. оплату не знайдено"></label>
+      <div class="quick">${['Оплату не знайдено', 'Сума менша, ніж потрібно', 'Немає номера магазину в коментарі'].map(t => `<button type="button" data-act="adm-fill" data-t="claim-reason" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn bad" type="submit">Відхилити</button></div></form>`),
   'adm-copy': async (el) => toast(await copyText(el.dataset.v) ? 'Скопійовано' : 'Не вдалося скопіювати'),
   'adm-label': async (el) => {
     const cur = new Set(sp.data.shop.labels || []);
@@ -3919,6 +4017,24 @@ register({
     catch (e) { toast(e.message, 'bad'); }
   },
 }, {
+  async 'adm-claim-ok'(form) {
+    const amount = parseMoney(document.getElementById('claim-ok-amount').value);
+    if (!(amount > 0)) return formError(form, 'Вкажіть отриману суму.');
+    await busy(form, async () => {
+      try {
+        const r = await api.rpc('admin_confirm_claim', { p_claim: form.dataset.id, p_amount_kop: amount, p_method: document.getElementById('claim-ok-method').value });
+        await claimDone(`Оплату зараховано. Доступ до ${fmtD(r.paid_until)}`);
+      } catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'adm-claim-no'(form) {
+    const reason = document.getElementById('claim-reason').value.trim();
+    if (!reason) return formError(form, 'Вкажіть причину — її побачить власник.');
+    await busy(form, async () => {
+      try { await api.rpc('admin_reject_claim', { p_claim: form.dataset.id, p_reason: reason }); await claimDone('Повідомлення відхилено'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
   async 'adm-pay'(form) {
     const period = form.querySelector('[name=pay-period]:checked').value;
     const amount = parseMoney(document.getElementById('pay-amount').value);
@@ -3999,7 +4115,7 @@ document.addEventListener('change', async (e) => {
   }
 });
 
-return { as, load, ensureShops, refreshAll, STATUS, statusChip, adminView, shopPage, srcName, discText, discountForm, readDiscount, payRow, discRow };
+return { as, load, ensureShops, ensureClaims, claimRow, refreshAll, STATUS, statusChip, METHOD, adminView, shopPage, srcName, discText, discountForm, readDiscount, payRow, discRow };
 })();
 
 M.views_admin_app = (function () {
@@ -4010,7 +4126,7 @@ const api = M.api;
 const { view } = M.router;
 const { qrSvg } = M.qr;
 const { CFG, applyPlatform, fmtCard } = M.cfg;
-const { adminView: shopsSection, shopPage, as, ensureShops, refreshAll, payRow, discRow, discountForm, readDiscount, statusChip, discText, srcName } = M.views_admin;
+const { adminView: shopsSection, shopPage, as, ensureShops, ensureClaims, claimRow, refreshAll, payRow, discRow, discountForm, readDiscount, statusChip, discText, srcName } = M.views_admin;
 // Адмін-платформа: окремий застосунок за адресою #/admin (не залежить від жодного магазину).
 // Вхід: пароль + код з Google Authenticator (сервер вимагає aal2 для кожної адмін-функції).
 
@@ -4083,7 +4199,10 @@ function adminScreen(section) {
     if (sec === 'plans') ad.plans = null;
     if (sec === 'visits') ad.visits = null;
     if (sec === 'shops' || sec === '') as.shops = null;
+    as.claims = null;   // повідомлення про оплату — свіжі при кожному переході між розділами
   }
+  as.onClaim = () => { ad.pays = null; };
+  ensureClaims();   // лічильник «Я оплатив(ла)» біля «Оплати» — видно з будь-якого розділу
   if (sec === 'shop' && parts[1]) return shell('shops', shopPage(parts[1], parts[2] || 'general'));
   return shell(sec, sectionView(sec));
 }
@@ -4139,7 +4258,7 @@ function shell(section, content) {
     ${shops.length ? '<a class="btn sm adm-ghost" href="#/list">Мій магазин →</a>' : ''}
     <button class="btn sm adm-ghost" data-act="adm-logout" title="${esc(email)}">Вийти</button>
   </header>
-  <nav class="adm-nav" aria-label="Розділи адмінки">${NAV.map(([k, l, ic], i) => `<a href="#/admin${k ? '/' + k : ''}" class="${i >= MOBILE_MAIN ? 'desk-only' : ''}" ${section === k ? 'aria-current="page"' : ''}>${svg(ic)}<span>${l}</span></a>`).join('')}
+  <nav class="adm-nav" aria-label="Розділи адмінки">${NAV.map(([k, l, ic], i) => `<a href="#/admin${k ? '/' + k : ''}" class="${i >= MOBILE_MAIN ? 'desk-only' : ''}" ${section === k ? 'aria-current="page"' : ''}>${svg(ic)}<span>${l}</span>${k === 'payments' && as.claims && as.claims.length ? `<b class="nav-badge" aria-label="нових повідомлень про оплату: ${as.claims.length}">${as.claims.length}</b>` : ''}</a>`).join('')}
     <button type="button" class="mob-only more-btn ${NAV.slice(MOBILE_MAIN).some(n => n[0] === section) ? 'on' : ''}" data-act="adm-more">${svg('more')}<span>Ще</span></button></nav>
   <main class="adm-main">${content}</main>
 </div>`;
@@ -4183,6 +4302,7 @@ function overviewView() {
       <div class="sum"><span class="small">${note}</span>${s.owner_email ? `<a class="btn sm" href="mailto:${esc(s.owner_email)}" data-stop>Написати</a>` : ''}</div></li>`;
   const calm = !soonTrial.length && !idleTrial.length;
   return `<div class="row-between page-head"><h1>Огляд</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  ${claimsSection()}
   <section class="kpis">
     ${card('Платних магазинів', paying.length, 'ok', 'остання дія — реальна оплата')}
     ${card('На пробному', trial.length)}
@@ -4202,6 +4322,14 @@ function overviewView() {
 }
 
 // ---------------- Оплати ----------------
+/** «Я оплатив(ла)» від власників: перевірити в банку й підтвердити або відхилити */
+function claimsSection() {
+  const c = as.claims;
+  if (!c || !c.length) return '';
+  return `<section class="sheet claim-sheet"><div class="pad pb0"><h2>Повідомили про оплату — ${c.length}</h2>
+    <p class="small muted">Перевірте надходження в банку за номером магазину в коментарі. «Підтвердити» — зарахує оплату й продовжить доступ.</p></div>
+    <ul class="rows">${c.map(x => claimRow(x)).join('')}</ul></section>`;
+}
 async function ensurePays(force = false) {
   if ((ad.pays && !force) || ad.paysLoading) return;
   ad.paysLoading = true;
@@ -4216,6 +4344,7 @@ function paymentsView() {
   const all = ad.payKind === 'all';
   const list = all ? ad.pays : real;
   return `<div class="row-between page-head"><h1>Оплати</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  ${claimsSection()}
   <p>За 30 днів отримано <b class="txt-ok">${money(sum30)}</b>. Бонуси й безкоштовні дні сюди не входять.</p>
   <div class="seg chips"><button data-act="adm-paykind" data-v="real" aria-pressed="${!all}">Лише оплати</button><button data-act="adm-paykind" data-v="all" aria-pressed="${all}">Усе, разом з бонусами</button></div>
   <section class="sheet">${list.length ? `<ul class="rows">${list.map(payRow).join('')}</ul>` : '<div class="empty">Оплат ще не було.</div>'}</section>`;
@@ -4482,7 +4611,7 @@ register({
     } catch (e) { toast(e.message, 'bad'); }
   },
   'adm-reload': () => {
-    refreshAll(); ad.pays = null; ad.log = null; ad.disc = null; ad.promos = null; ad.plans = null; ad.visits = null;
+    refreshAll(); as.claims = null; ad.pays = null; ad.log = null; ad.disc = null; ad.promos = null; ad.plans = null; ad.visits = null;
     ensureShops(); view.rerender();
   },
   'adm-more': () => {
@@ -4831,7 +4960,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.7.0';
+window.ZOSHYT_VERSION = '1.8.0';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
