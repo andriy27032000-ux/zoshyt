@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nXOsQP+wcgLGhOYsLRy2muwo+NWPNhO5edjAW0lp7/o=' 'sha256-7EeflQlfMl03in5XLGUwazTPp9tqKcFq9mTR0Zi+3G4='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-uktLV/QNbrN7qtv9fhVIlxxIR5a+TGA0trSlJQO90WE='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -508,7 +508,7 @@ ul.hist-mini li { padding: 4px 0; }
 <script>window.ZOSHYT_CONFIG = {
   "supabaseUrl": "https://bafzvncwbfjqgbuchdkh.supabase.co",
   "supabaseAnonKey": "sb_publishable_YCt2G_UE6KCG9piN0oNtRg_H1NdWShL",
-  "googleAuth": false,
+  "googleAuth": true,
   "APP_URL": "",
   "PRICE_MONTH": 149,
   "PRICE_YEAR": 1490,
@@ -1527,7 +1527,7 @@ async function foreignPending(user) {
 }
 
 async function start(user) {
-  S.user = { id: user.id, email: user.email };
+  S.user = { id: user.id, email: user.email, user_metadata: user.user_metadata || {} };
   const owner = await idb.kv.get('user_id');
   if (owner && owner !== user.id) await idb.clearAll();   // на пристрої були дані іншого користувача
   await idb.kv.set('user_id', user.id);
@@ -2604,7 +2604,7 @@ function remindModal() {
 /** Поле пошуку з перемикачем «за номером» — тоді відкривається цифрова клавіатура */
 function searchBox(id, value, byPhone, act) {
   return `<span class="search-box">
-    <input id="${id}" class="search" type="search" value="${esc(value)}" autocomplete="off"
+    <input id="${id}" class="search" type="${byPhone ? 'tel' : 'search'}" value="${esc(value)}" autocomplete="off"
       ${byPhone ? 'inputmode="tel" placeholder="Номер телефону"' : 'inputmode="search" placeholder="Ім’я або номер"'} aria-label="Пошук клієнта">
     <button type="button" class="icon-btn phone-toggle" data-act="${act}" aria-pressed="${byPhone}" aria-label="${byPhone ? 'Шукати за ім’ям (літери)' : 'Шукати за номером (цифрова клавіатура)'}" title="${byPhone ? 'Шукати за ім’ям' : 'Шукати за номером'}">${byPhone ? 'АБВ' : '123'}</button>
   </span>`;
@@ -2651,8 +2651,19 @@ function togglePhone(state, inputId) {
   const inp = document.getElementById(inputId);
   if (inp) {
     inp.setAttribute('inputmode', state.byPhone ? 'tel' : 'search');
+    inp.type = state.byPhone ? 'tel' : 'search';
     inp.placeholder = state.byPhone ? 'Номер телефону' : 'Ім’я або номер';
-    inp.blur(); inp.focus();   // клавіатура перемикається лише після нового фокуса
+    // iPhone міняє клавіатуру лише при новому фокусі: на мить переводимо фокус на тимчасове поле
+    // з потрібним типом і одразу повертаємо — усе в межах того самого дотику, тож клавіатура не ховається
+    const tmp = document.createElement('input');
+    tmp.type = inp.type; tmp.setAttribute('inputmode', inp.getAttribute('inputmode'));
+    tmp.setAttribute('aria-hidden', 'true'); tmp.tabIndex = -1;
+    tmp.style.cssText = `position:fixed;left:0;top:${Math.max(0, inp.getBoundingClientRect().top)}px;width:1px;height:1px;opacity:0;font-size:16px;border:0;padding:0`;
+    document.body.appendChild(tmp);
+    tmp.focus({ preventScroll: true });
+    inp.focus({ preventScroll: true });
+    const end = inp.value.length; try { inp.setSelectionRange(end, end); } catch { /* type=tel/search */ }
+    setTimeout(() => tmp.remove(), 300);
   }
   const b = inp && inp.parentElement.querySelector('.phone-toggle');
   if (b) { b.textContent = state.byPhone ? 'АБВ' : '123'; b.setAttribute('aria-pressed', state.byPhone); b.setAttribute('aria-label', state.byPhone ? 'Шукати за ім’ям (літери)' : 'Шукати за номером (цифрова клавіатура)'); }
@@ -2859,6 +2870,9 @@ register({
     });
   },
 });
+
+// кнопка «123/АБВ» не забирає фокус у поля пошуку — клавіатура не ховається, лише змінюється
+document.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('.phone-toggle')) e.preventDefault(); }, true);
 
 return { DEFAULT_NOTES, listState, listView, balHtml, clientView, DEFAULT_REMIND, fillTemplate };
 })();
@@ -4605,7 +4619,10 @@ const { lsGet, lsSet } = M.util;
 
 
 
-const defaultName = () => (api.getSession()?.user?.user_metadata?.name) || sessionStorage.getItem('zoshyt.name') || '';
+const defaultName = () => {
+  const m = api.getSession()?.user?.user_metadata || S.user?.user_metadata || {};
+  return m.name || m.full_name || sessionStorage.getItem('zoshyt.name') || '';   // Google дає full_name
+};
 const invitedCode = () => { try { return sessionStorage.getItem('zoshyt.invite') || ''; } catch (e) { return ''; } };
 const clearInvite = () => { try { sessionStorage.removeItem('zoshyt.invite'); } catch (e) {} };
 
@@ -4814,7 +4831,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.6.0';
+window.ZOSHYT_VERSION = '1.7.0';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
