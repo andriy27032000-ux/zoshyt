@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-GV4qkAj/onVVxlnTQciLOM9ox4hM/knIBPWlp9+2DDk='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-9B9tnxXUroCA6dQ9hX48HAnRYRi2T2l8E7aeyvCOboM='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -640,6 +640,12 @@ const cleanPhone = (s) => String(s || '').replace(/[^\d+]/g, '');
 function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function lsSet(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* приватний режим */ } }
 
+/** Клітинка CSV для Excel: лапки за потреби і захист від формул (=, +, -, @ на початку тексту — не число) */
+function csvCell(v) {
+  v = String(v ?? '');
+  if (/^[=+\-@\t\r]/.test(v) && !/^[-+]?\d[\d\s\u00a0]*([.,]\d+)?$/.test(v)) v = "'" + v;
+  return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
 /** Завантажити файл, згенерований у браузері */
 function downloadFile(name, content, type) {
   const blob = content instanceof Blob ? content : new Blob([content], { type });
@@ -702,7 +708,7 @@ function matchClient(c, q) {
   return fold(c.name).includes(f) || fold(c.address).includes(f) || fold(c.note).includes(f);
 }
 
-return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, sinceText, ageTone, uuid, debounce, digits, cleanPhone, lsGet, lsSet, downloadFile, copyText, localPhone, phoneMask, fmtPhone, storePhone, fold, matchClient };
+return { DAY, $, esc, fmtNum, money, moneyInput, parseMoney, fmtDT, fmtD, fmtTime, isoDate, startOfDay, ts, plural, days, sinceText, ageTone, uuid, debounce, digits, cleanPhone, lsGet, lsSet, csvCell, downloadFile, copyText, localPhone, phoneMask, fmtPhone, storePhone, fold, matchClient };
 })();
 
 M.idb = (function () {
@@ -1208,7 +1214,7 @@ const AUTH_ERRORS = {
   invalid_grant: 'Невірний email або пароль.',
   email_not_confirmed: 'Email ще не підтверджено. Відкрийте лист від нас і натисніть посилання.',
   user_already_exists: 'Такий email уже зареєстровано. Увійдіть або відновіть пароль.',
-  weak_password: 'Пароль закороткий — мінімум 6 символів.',
+  weak_password: 'Пароль закороткий — мінімум 8 символів.',
   validation_failed: 'Перевірте правильність email.',
   over_email_send_rate_limit: 'Забагато листів за короткий час. Спробуйте пізніше.',
   over_request_rate_limit: 'Забагато спроб. Спробуйте за кілька хвилин.',
@@ -2113,7 +2119,7 @@ function signupView() {
       <p class="small muted">Один акаунт для власника і для продавця. Після реєстрації ви створите свій магазин або приєднаєтесь до магазину за кодом від власника.</p>
       <label class="f">Ваше ім’я<input id="s-name" autocomplete="name" required autofocus maxlength="60"></label>
       <label class="f">Email<input id="s-email" type="email" autocomplete="username" inputmode="email" required></label>
-      <label class="f">Пароль (мінімум 6 символів)<input id="s-pass" type="password" autocomplete="new-password" required minlength="6"></label>
+      <label class="f">Пароль (мінімум 8 символів)<input id="s-pass" type="password" autocomplete="new-password" required minlength="8"></label>
       <div class="err" role="alert"></div>
       <button class="btn ink big" type="submit">Зареєструватися</button>
       ${legal}
@@ -2139,7 +2145,7 @@ function resetView() {
   return `<div class="auth"><div class="auth-card">${brand}
     <form data-form="reset" class="stack" novalidate>
       <h2>Новий пароль</h2>
-      <label class="f">Новий пароль (мінімум 6 символів)<input id="r-pass" type="password" autocomplete="new-password" required minlength="6" autofocus></label>
+      <label class="f">Новий пароль (мінімум 8 символів)<input id="r-pass" type="password" autocomplete="new-password" required minlength="8" autofocus></label>
       <label class="f">Повторіть пароль<input id="r-pass2" type="password" autocomplete="new-password" required></label>
       <div class="err" role="alert"></div>
       <button class="btn ink big" type="submit">Зберегти пароль</button>
@@ -2182,7 +2188,7 @@ register({
     const name = val('s-name').trim(), email = val('s-email').trim(), pass = val('s-pass');
     if (!name) return formError(form, 'Вкажіть ваше ім’я.');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return formError(form, 'Перевірте email.');
-    if (pass.length < 6) return formError(form, 'Пароль закороткий — мінімум 6 символів.');
+    if (pass.length < 8) return formError(form, 'Пароль закороткий — мінімум 8 символів.');
     await busy(form, async () => {
       try {
         const r = await api.signUp(email, pass, name);
@@ -2207,7 +2213,7 @@ register({
   },
   async reset(form) {
     const p1 = val('r-pass'), p2 = val('r-pass2');
-    if (p1.length < 6) return formError(form, 'Мінімум 6 символів.');
+    if (p1.length < 8) return formError(form, 'Мінімум 8 символів.');
     if (p1 !== p2) return formError(form, 'Паролі не збігаються.');
     await busy(form, async () => {
       try {
@@ -2925,7 +2931,7 @@ return { DEFAULT_NOTES, listState, listView, balHtml, clientView, DEFAULT_REMIND
 })();
 
 M.views_reports = (function () {
-const { esc, money, fmtD, isoDate, downloadFile, sinceText, ageTone, plural } = M.util;
+const { esc, money, fmtD, isoDate, downloadFile, csvCell, sinceText, ageTone, plural } = M.util;
 const { register, toast } = M.ui;
 const { S, memberName } = M.store;
 const { report, stats } = M.calc;
@@ -3009,7 +3015,6 @@ function reportsView() {
   </section>`;
 }
 
-const csvCell = (v) => { v = String(v ?? ''); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
 const num = (k) => (k / 100).toFixed(2).replace('.', ',');
 const dt = (t) => t ? new Date(t).toLocaleString('uk-UA') : '';
 const csv = (rows) => '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n');
@@ -3603,7 +3608,7 @@ register({
   },
   'change-password': () => {
     openModal(`<form data-form="password" class="stack"><h2>Новий пароль</h2>
-      <label class="f">Новий пароль (мінімум 6 символів)<input id="pw1" type="password" autocomplete="new-password" required autofocus></label>
+      <label class="f">Новий пароль (мінімум 8 символів)<input id="pw1" type="password" autocomplete="new-password" required minlength="8" autofocus></label>
       <label class="f">Повторіть<input id="pw2" type="password" autocomplete="new-password" required></label>
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Змінити</button></div></form>`);
@@ -3695,7 +3700,7 @@ register({
   },
   async password(form) {
     const a = document.getElementById('pw1').value, b = document.getElementById('pw2').value;
-    if (a.length < 6) return formError(form, 'Мінімум 6 символів.');
+    if (a.length < 8) return formError(form, 'Мінімум 8 символів.');
     if (a !== b) return formError(form, 'Паролі не збігаються.');
     await busy(form, async () => {
       try { await api.updatePassword(a); closeModal(); toast('Пароль змінено', 'ok'); }
@@ -3723,7 +3728,7 @@ return { subscriptionInfo, subscriptionBanner, settingsView, billingView };
 })();
 
 M.views_admin = (function () {
-const { esc, money, moneyInput, parseMoney, fmtD, fmtDT, days, plural, copyText, downloadFile, isoDate, DAY } = M.util;
+const { esc, money, moneyInput, parseMoney, fmtD, fmtDT, days, plural, copyText, downloadFile, csvCell, isoDate, DAY } = M.util;
 const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { CFG, fmtCard } = M.cfg;
 const api = M.api;
@@ -4081,7 +4086,6 @@ function remindText() {
 
 // спершу перечитуємо дані, потім повідомлення — щоб на екрані вже були нові цифри
 async function after(msg) { sp.form = null; as.shops = null; await loadShop(sp.id); toast(msg, 'ok'); }
-const csvCell = (v) => { v = String(v ?? ''); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
 
 register({
   'admin-reload': () => { refreshAll(); load(); },
@@ -4283,6 +4287,7 @@ const NAV = [
   ['payments', 'Оплати', 'card'],
   ['discounts', 'Знижки і бонуси', 'gift'],
   ['visits', 'Відвідування', 'chart'],
+  ['errors', 'Помилки', 'bug'],
   ['promos', 'Промокоди', 'tag'],
   ['plans', 'Тарифи', 'layers'],
   ['log', 'Журнал', 'log'],
@@ -4298,6 +4303,7 @@ const ICONS = {
   tag: '<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
   layers: '<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>',
   chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  bug: '<path d="M8 8a4 4 0 0 1 8 0v1H8V8Zm-2 3h12v3a6 6 0 0 1-12 0v-3Zm6 0v9M3 12h3m12 0h3M4 18l3-2m13 2-3-2M5 7l3 2m11-2-3 2"/>',
   more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
 };
@@ -4334,6 +4340,7 @@ function adminScreen(section) {
     if (sec === 'promos') ad.promos = null;
     if (sec === 'plans') ad.plans = null;
     if (sec === 'visits') ad.visits = null;
+    if (sec === 'errors' || sec === '') ad.errs = null;
     if (sec === 'shops' || sec === '') as.shops = null;
     as.claims = null;   // повідомлення про оплату — свіжі при кожному переході між розділами
   }
@@ -4408,6 +4415,7 @@ function sectionView(section) {
     case 'promos': return promosView();
     case 'plans': return plansView();
     case 'visits': return visitsView();
+    case 'errors': return errorsView();
     case 'log': return logView();
     case 'settings': return settingsView();
     default: return overviewView();
@@ -4416,7 +4424,7 @@ function sectionView(section) {
 
 // ---------------- Огляд ----------------
 function overviewView() {
-  ensureShops(); ensurePays();
+  ensureShops(); ensurePays(); ensureErrs();
   if (as.error) return `<div class="banner bad">${esc(as.error)}</div>`;
   if (!as.shops) return '<div class="empty">Завантаження…</div>';
   const now = Date.now();
@@ -4439,6 +4447,7 @@ function overviewView() {
   const calm = !soonTrial.length && !idleTrial.length;
   const noPay = !CFG.payCard && !CFG.payIban && !CFG.payLink;
   return `<div class="row-between page-head"><h1>Огляд</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  ${ad.errs && ad.errs.last24 > 0 ? `<div class="banner warn"><b>Помилки програми за добу: ${ad.errs.last24}.</b> <a href="#/admin/errors">Переглянути →</a></div>` : ''}
   ${noPay ? `<div class="banner warn no-pay"><b>Не вказано, куди платити.</b> Власники магазинів не бачать реквізитів, номера для коментаря і кнопки «Я оплатив(ла)». <a href="#/admin/settings">Додати картку чи IBAN →</a></div>` : ''}
   ${claimsSection()}
   <section class="kpis">
@@ -4603,6 +4612,26 @@ function meterList(items, label, value, unit) {
   return `<ul class="meters">${items.map(x => `<li><div class="row-between"><span class="m-name">${esc(label(x))}</span><b>${value(x)}</b></div>
     <span class="meter" role="img" aria-label="${esc(label(x))}: ${value(x)} ${unit}"><i style="width:${Math.max(2, Math.round(value(x) / max * 100))}%"></i></span></li>`).join('')}</ul>`;
 }
+// ---------------- Помилки програми ----------------
+async function ensureErrs(force = false) {
+  if ((ad.errs && !force) || ad.errsLoading) return;
+  ad.errsLoading = true;
+  try { ad.errs = await api.rpc('admin_client_errors', { p_days: 7 }); } catch { ad.errs = { total: 0, last24: 0, items: [] }; }
+  finally { ad.errsLoading = false; view.rerender(); }
+}
+function errorsView() {
+  ensureErrs();
+  if (!ad.errs) return '<div class="empty">Завантаження…</div>';
+  const e = ad.errs;
+  return `<div class="row-between page-head"><h1>Помилки програми</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  <p class="small muted">Збої, що сталися в програмі на телефонах і комп’ютерах за 7 днів. Однакові згруповані. Особистих даних тут немає. Обриви інтернету сюди не потрапляють.</p>
+  <section class="kpis"><div class="kpi"><div class="k">За добу</div><div class="v ${e.last24 ? 'bad' : 'ok'}">${e.last24}</div></div><div class="kpi"><div class="k">За 7 днів</div><div class="v">${e.total}</div></div></section>
+  <section class="sheet">${e.items.length ? `<ul class="rows">${e.items.map(x => `<li class="row"><div class="who"><div class="name mono">${esc(x.message)}</div>
+      <div class="meta"><span>${esc(x.source)}</span><span>версія ${esc(x.version || '?')}</span><span>${esc(x.ua.slice(0, 60))}</span></div>
+      <div class="meta"><span>уперше ${fmtDT(x.first_at)}</span><span>востаннє ${fmtDT(x.last_at)}</span></div></div>
+      <div class="sum"><b>${x.count}×</b></div></li>`).join('')}</ul>` : '<div class="empty">Помилок немає ✓</div>'}</section>`;
+}
+
 function visitsView() {
   ensureVisits();
   const head = `<div class="row-between page-head"><h1>Відвідування</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
@@ -4749,7 +4778,7 @@ register({
     } catch (e) { toast(e.message, 'bad'); }
   },
   'adm-reload': () => {
-    refreshAll(); as.claims = null; ad.pays = null; ad.log = null; ad.disc = null; ad.promos = null; ad.plans = null; ad.visits = null;
+    refreshAll(); as.claims = null; ad.errs = null; ad.pays = null; ad.log = null; ad.disc = null; ad.promos = null; ad.plans = null; ad.visits = null;
     ensureShops(); view.rerender();
   },
   'adm-more': () => {
@@ -5098,7 +5127,26 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.9.0';
+window.ZOSHYT_VERSION = '1.9.1';
+// Захист від «клікджекінгу»: програму не можна вбудувати в чужу сторінку (GitHub Pages не дає заголовка frame-ancestors)
+const framed = (() => { try { return window.top !== window.self; } catch { return true; } })();
+if (framed) {
+  document.documentElement.innerHTML = '';
+  try { window.top.location = window.location.href; } catch { /* чужий сайт не дасть — сторінка просто лишиться порожньою */ }
+  throw new Error('framed');
+}
+// Помилки програми — адміністратору (Адмін → Помилки). Без особистих даних: лише текст помилки, місце й версія.
+const errSent = new Set(); let errN = 0;
+function reportError(msg, src) {
+  msg = String(msg || '').slice(0, 300);
+  if (!msg || /framed|Failed to fetch|NetworkError|Load failed|AbortError|ResizeObserver/i.test(msg)) return;   // зв'язок і шум браузера — не помилки програми
+  const k = msg + '|' + src;
+  if (errSent.has(k) || ++errN > 10 || !navigator.onLine) return;
+  errSent.add(k);
+  api.rpc('log_client_error', { p_message: msg, p_source: String(src || '').slice(0, 200), p_version: window.ZOSHYT_VERSION }).catch(() => {});
+}
+window.addEventListener('error', (e) => reportError(e.message, `${String(e.filename || '').split('/').pop()}:${e.lineno || 0}:${e.colno || 0}`));
+window.addEventListener('unhandledrejection', (e) => reportError(e.reason && (e.reason.message || e.reason), 'promise'));
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
