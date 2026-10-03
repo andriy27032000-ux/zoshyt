@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-9B9tnxXUroCA6dQ9hX48HAnRYRi2T2l8E7aeyvCOboM='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ioLLoYLiO9RhoaYVuZa+Bfga3Fs2V92U8gLvRw1mb8o=' 'sha256-q8L4Z/yxzBQdtg5d7Oxe/SC28D3feiPApPpHhynnryY='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -559,6 +559,7 @@ div.sub-box { gap: 14px; }
   "PAY_IBAN": "",
   "PAY_LINK": "",
   "SUPPORT_TG": "",
+  "SUPPORT_TG_BOT": "",
   "SUPPORT_PHONE": "",
   "SUPPORT_EMAIL": ""
 };</script>
@@ -829,6 +830,7 @@ const CFG = {
   payRecipient: str('PAY_RECIPIENT'),
   payIban: str('PAY_IBAN'),
   payLink: str('PAY_LINK', 'payLink'),
+  supportTgBot: str('SUPPORT_TG_BOT').replace(/^@/, ''),
   supportTg: str('SUPPORT_TG', 'supportTelegram').replace(/^@/, '').replace(/^https?:\/\/t\.me\//, ''),
   supportPhone: str('SUPPORT_PHONE', 'supportPhone').replace(/[^\d+]/g, ''),
   supportEmail: str('SUPPORT_EMAIL', 'supportEmail'),
@@ -842,7 +844,7 @@ function applyPlatform(p) {
   const set = (key, v) => { if (v !== undefined && v !== null && String(v).trim() !== '') CFG[key] = v; };
   set('priceMonth', +p.price_month || undefined); set('priceYear', +p.price_year || undefined);
   set('payCard', p.pay_card); set('payRecipient', p.pay_recipient); set('payIban', p.pay_iban); set('payLink', p.pay_link);
-  set('supportTg', p.support_tg); set('supportPhone', p.support_phone); set('supportViber', p.support_viber);
+  set('supportTg', p.support_tg); set('supportTgBot', p.support_tg_bot); set('supportPhone', p.support_phone); set('supportViber', p.support_viber);
   set('supportEmail', p.support_email); set('appUrl', p.app_url && String(p.app_url).replace(/\/+$/, ''));
 }
 
@@ -3272,6 +3274,8 @@ function settingsView() {
     <div class="actions"><button class="btn sm" data-act="change-password">Змінити пароль</button><a class="btn sm" href="#/install">Як встановити програму</a><button class="btn sm bad-outline" data-act="logout">Вийти з акаунта</button></div>
   </section>
 
+  ${supportSection()}
+
   <section class="pad small muted center">Зошит боржників · версія ${esc(window.ZOSHYT_VERSION || '')} · <a href="terms.html" target="_blank" rel="noopener">Умови</a> · <a href="privacy.html" target="_blank" rel="noopener">Конфіденційність</a></section>`;
 }
 
@@ -3358,6 +3362,19 @@ function subscriptionSection(shop, i, owner) {
   </section>`;
 }
 
+// Кнопка «Telegram»: з ботом підтримки — одноразове посилання, щоб бот одразу знав магазин; інакше — звичайний чат
+const tgButton = (cls, label = 'Telegram') => CFG.supportTgBot ? `<button class="${cls}" data-act="tg-support">${label}</button>`
+  : CFG.supportTg ? `<a class="${cls}" href="https://t.me/${esc(CFG.supportTg)}" target="_blank" rel="noopener">${label}</a>` : '';
+function supportSection() {
+  const tel = intlPhone(CFG.supportPhone), viber = intlPhone(CFG.supportViber || CFG.supportPhone);
+  const btns = [tgButton('btn ink', 'Написати в Telegram'), viber ? `<a class="btn" href="viber://chat?number=${encodeURIComponent(viber)}">Viber</a>` : '',
+    tel ? `<a class="btn" href="tel:${esc(tel)}">Подзвонити</a>` : ''].filter(Boolean);
+  if (!btns.length) return '';
+  return `<section class="sheet pad stack support-box"><h2>Підтримка</h2>
+    <p class="small muted">${CFG.supportTgBot ? 'У Telegram-боті — відповіді на часті питання одразу, будь-коли. ' : ''}Підтримка працює щодня з 9:00 до 19:00, зазвичай відповідаємо протягом години.</p>
+    <div class="actions">${btns.join('')}</div></section>`;
+}
+
 const isForever = (shop) => !!(shop.free_until && new Date(shop.free_until).getFullYear() > 2090);
 function subStatus(shop, i, b) {
   return b ? b.status : shop.suspended ? 'suspended' : shop.free_until && new Date(shop.free_until) > Date.now() ? 'free' : i && !i.writable ? 'expired' : i && i.trial ? 'trial' : 'paid';
@@ -3389,7 +3406,7 @@ function billingView() {
   const pending = claim && claim.status === 'pending';
   const tel = intlPhone(CFG.supportPhone);
   const viber = intlPhone(CFG.supportViber || CFG.supportPhone);
-  const contacts = [CFG.supportTg ? `<a class="btn sm" href="https://t.me/${esc(CFG.supportTg)}" target="_blank" rel="noopener">Telegram</a>` : '',
+  const contacts = [tgButton('btn sm'),
     viber ? `<a class="btn sm" href="viber://chat?number=${encodeURIComponent(viber)}">Viber</a>` : '',
     tel ? `<a class="btn sm" href="tel:${esc(tel)}">Подзвонити</a>` : '',
     CFG.supportEmail ? `<a class="btn sm" href="mailto:${esc(CFG.supportEmail)}">Пошта</a>` : ''].filter(Boolean);
@@ -3579,6 +3596,14 @@ register({
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Створити код</button></div>
     </form>`);
+  },
+  'tg-support': async (el) => {
+    const plain = `https://t.me/${CFG.supportTgBot}`;
+    if (!navigator.onLine || !S.shopId) { location.href = plain; return; }
+    el.disabled = true;
+    try { const r = await api.rpc('support_link', { p_shop: S.shopId }); location.href = r.url; }
+    catch { location.href = plain; }
+    finally { setTimeout(() => { el.disabled = false; }, 1500); }
   },
   'copy-sum': async () => {
     const b = bill.shop === S.shopId ? bill.data : null;
@@ -4734,7 +4759,8 @@ function settingsView() {
       ${f('pay_link', 'Посилання на оплату', p.pay_link, 'https://send.monobank.ua/… (необов’язково)', 'inputmode="url"')}
     </section>
     <section class="sheet pad stack"><h2>Контакти підтримки</h2>
-      ${f('support_tg', 'Telegram', p.support_tg, 'нік без @')}
+      ${f('support_tg_bot', 'Telegram-бот підтримки', p.support_tg_bot, 'нік бота без @, напр. zoshyt_help_bot')}
+      ${f('support_tg', 'Telegram (особистий)', p.support_tg, 'нік без @ — якщо бота ще немає')}
       ${f('support_phone', 'Телефон', p.support_phone, '+38 0XX XXX XX XX', 'inputmode="tel"')}
       ${f('support_viber', 'Viber', p.support_viber, 'якщо номер інший, ніж телефон', 'inputmode="tel"')}
       ${f('support_email', 'Email', p.support_email, 'help@…', 'inputmode="email"')}
@@ -4829,7 +4855,7 @@ register({
   async 'adm-platform'(form) {
     const v = (id) => document.getElementById('pl-' + id).value.trim();
     const data = { ...ad.platform };   // інші налаштування (напр. пробний період) не губимо
-    for (const k of ['pay_card', 'pay_recipient', 'pay_iban', 'pay_link', 'support_tg', 'support_phone', 'support_viber', 'support_email', 'app_url']) data[k] = v(k);
+    for (const k of ['pay_card', 'pay_recipient', 'pay_iban', 'pay_link', 'support_tg_bot', 'support_tg', 'support_phone', 'support_viber', 'support_email', 'app_url']) data[k] = v(k);
     await busy(form, async () => {
       try {
         ad.platform = await api.rpc('admin_set_platform', { p_data: data });
@@ -5127,7 +5153,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.9.1';
+window.ZOSHYT_VERSION = '1.10.0';
 // Захист від «клікджекінгу»: програму не можна вбудувати в чужу сторінку (GitHub Pages не дає заголовка frame-ancestors)
 const framed = (() => { try { return window.top !== window.self; } catch { return true; } })();
 if (framed) {
