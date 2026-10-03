@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-yGRYYsRVnv+cPK8YMIXYytjsbSDD5Rs3HDu7LqH/7PA='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-0+q/szLfYI3Y+8NvdhNbk7fCVWa/2GNDCdiKjwRwl9w=' 'sha256-DG2B6aiybd0T/R6+94FATo7D9zdRq0fYo/fvqHXW/cM='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1908,7 +1908,8 @@ async function runSync({ forceBoot = false } = {}) {
       lsSet('zoshyt.lastSync', String(S.sync.lastOk));
       if (stopped.size) {
         const names = [...stopped].map(id => (S.boot?.shops.find(s => s.id === id) || {}).name || 'магазин').join(', ');
-        S.sync = { state: 'error', lastOk: Date.now(), error: `Підписка закінчилась (${names}) — записи чекають і відправляться після продовження.` };
+        const susp = [...stopped].some(id => (S.boot?.shops.find(s => s.id === id) || {}).suspended);
+        S.sync = { state: 'error', lastOk: Date.now(), error: susp ? `Доступ призупинено (${names}) — записи чекають і відправляться після відновлення.` : `Підписка закінчилась (${names}) — записи чекають і відправляться після продовження.` };
       }
     } catch (e) {
       if (e.code === 'not_member') { await refreshBoot().catch(() => {}); S.sync = { state: 'ok', lastOk: Date.now(), error: null }; }
@@ -1947,15 +1948,19 @@ const { S } = M.store;
 
 const counts = (o) => !o.cancelled_at && !o._failed;
 let cache = { v: -1, st: null };
+// клієнт, якого ще немає в підрахунку (щойно прийшов із синхронізації) — порожні цифри замість помилки
+const EMPTY = Object.freeze({ bal: 0, lastPay: 0, firstDebt: 0, lastAt: 0, days: 0, pending: 0 });
+class Stats extends Map { get(k) { return super.get(k) || EMPTY; } }
 
 /** Баланс і "давність" для кожного клієнта поточного магазину */
 function stats() {
   if (cache.v === S.version) return cache.st;
-  const per = new Map();
+  const per = new Stats();
   for (const c of S.clients.values()) per.set(c.id, { bal: 0, lastPay: 0, firstDebt: 0, lastAt: 0, days: 0, pending: 0 });
   const ops = [...S.ops.values()].sort((a, b) => ts(a.client_at) - ts(b.client_at));
   for (const o of ops) {
-    const p = per.get(o.client_id); if (!p) continue;
+    if (!per.has(o.client_id)) continue;
+    const p = Map.prototype.get.call(per, o.client_id);
     if (o._pending || o._pendingCancel) p.pending++;
     if (!counts(o)) continue;
     const t = ts(o.client_at);
@@ -3150,6 +3155,7 @@ function subscriptionInfo(shop) {
 function subscriptionBanner() {
   const i = subscriptionInfo(S.shop);
   if (!i) return '';
+  if (S.shop.suspended) return `<div class="banner warn"><b>Доступ до магазину призупинено.</b> Дані можна переглядати й вивантажувати, але нові записи недоступні. ${isOwner() ? `<a href="#/settings">Зв’язатися з нами →</a>` : 'Зверніться до власника магазину.'}</div>`;
   if (!i.writable) return `<div class="banner bad"><b>Підписка закінчилась.</b> Дані можна переглядати й вивантажувати, але нові записи недоступні. ${isOwner() ? `<a href="#/settings">Як продовжити →</a>` : 'Зверніться до власника магазину.'}</div>`;
   if (i.left <= 0) return `<div class="banner warn">Підписка закінчилась ${fmtD(i.until)}. Ще кілька днів програма працює як звичайно. ${isOwner() ? '<a href="#/settings">Продовжити →</a>' : ''}</div>`;
   if (isOwner() && i.left <= 5) return `<div class="banner warn">${i.trial ? 'Пробний період' : 'Підписка'} закінчується через ${days(i.left)} (${fmtD(i.until)}). <a href="#/settings">Як продовжити →</a></div>`;
@@ -3306,12 +3312,13 @@ function histLine(h) {
 function subscriptionSection(shop, i, owner) {
   if (owner) loadBilling();
   const b = owner && bill.shop === S.shopId ? bill.data : null;
-  const st = b ? b.status : shop.free_until && new Date(shop.free_until) > Date.now() ? 'free' : i && !i.writable ? 'expired' : i && i.trial ? 'trial' : 'paid';
+  const st = b ? b.status : shop.suspended ? 'suspended' : shop.free_until && new Date(shop.free_until) > Date.now() ? 'free' : i && !i.writable ? 'expired' : i && i.trial ? 'trial' : 'paid';
   const [stTxt, stCls] = STATUS_TXT[st] || ['', ''];
   const forever = shop.free_until && new Date(shop.free_until).getFullYear() > 2090;
   const head = `<div class="row-between"><h2>Підписка</h2><span class="chip ${stCls}">${stTxt}</span></div>
     ${i ? `<p>${forever ? 'Безкоштовно назавжди' : `Доступ до <b>${fmtD(i.until)}</b>${i.left > 0 ? ` · ще ${days(i.left)}` : ''}`}</p>` : ''}`;
   if (!owner) return `<section class="sheet pad stack">${head}</section>`;
+  const suspended = st === 'suspended' || shop.suspended;
   const copyBtn = (act, what) => `<button class="icon-btn sm copy" data-act="${act}" aria-label="Копіювати ${what}" title="Копіювати">${icon.copy}</button>`;
   const row = (label, value, act, what, sub = '', cls = '') => `<div class="pay-row"><span class="muted">${label}</span><span><b class="${cls}">${esc(value)}</b>${sub ? `<small class="muted">${esc(sub)}</small>` : ''}</span>${act ? copyBtn(act, what) : '<span></span>'}</div>`;
   const hasPay = !!(CFG.payCard || CFG.payIban || CFG.payLink);
@@ -3327,6 +3334,7 @@ function subscriptionSection(shop, i, owner) {
   const hist = b ? b.history.map(histLine).filter(Boolean).slice(0, 5) : [];
   return `<section class="sheet pad stack sub-box">
     ${head}
+    ${suspended ? `<div class="confirm-box warn"><span><b>Доступ призупинено.</b> Ваші дані на місці й доступні для перегляду. Щоб відновити роботу, зв’яжіться з нами${contacts.length ? ' — кнопки нижче' : ''}.</span></div>` : ''}
     ${forever ? '' : `<p class="price-line">${priceCell(m, 'міс')} · ${priceCell(y, 'рік')}</p>${badge ? `<div>${badge}</div>` : ''}`}
     ${freeMonth ? '<button class="btn ok" data-act="claim-free">Взяти безкоштовний місяць</button>' : ''}
     ${!forever && hasPay ? `<div class="pay-rows">
@@ -4301,7 +4309,9 @@ function overviewView() {
       <div class="who"><div class="name">${esc(s.name)}</div><div class="meta"><span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div></div>
       <div class="sum"><span class="small">${note}</span>${s.owner_email ? `<a class="btn sm" href="mailto:${esc(s.owner_email)}" data-stop>Написати</a>` : ''}</div></li>`;
   const calm = !soonTrial.length && !idleTrial.length;
+  const noPay = !CFG.payCard && !CFG.payIban && !CFG.payLink;
   return `<div class="row-between page-head"><h1>Огляд</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  ${noPay ? `<div class="banner warn no-pay"><b>Не вказано, куди платити.</b> Власники магазинів не бачать реквізитів, номера для коментаря і кнопки «Я оплатив(ла)». <a href="#/admin/settings">Додати картку чи IBAN →</a></div>` : ''}
   ${claimsSection()}
   <section class="kpis">
     ${card('Платних магазинів', paying.length, 'ok', 'остання дія — реальна оплата')}
@@ -4960,7 +4970,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.8.0';
+window.ZOSHYT_VERSION = '1.8.1';
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | app
 let reloginShown = false;
