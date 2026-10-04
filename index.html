@@ -7,7 +7,7 @@
 <meta name="description" content="Облік боргів покупців для магазину: з телефону й комп’ютера, з доступами для продавців і роботою без інтернету.">
 <meta name="theme-color" content="#2140a8">
 <meta name="color-scheme" content="light dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wvRbzl1+ZkKgbUzSRRD2oA9b0ttcIh/RYqKZo/pKLjs=' 'sha256-NnvVXRhuJK1hPAim9nTLiGnI8QUaQfHyk/HTkxI47aA='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wvRbzl1+ZkKgbUzSRRD2oA9b0ttcIh/RYqKZo/pKLjs=' 'sha256-dZXASErQsQVjwyRTk8Q1dAro3Z9FJ01QMm5S1R99oWc='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co http://localhost:54321; base-uri 'self'; form-action 'self'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
@@ -554,6 +554,26 @@ div.sub-box { gap: 14px; }
 .idle-warn #idle-left { font-variant-numeric: tabular-nums; font-weight: 700; }
 @media (min-width: 900px) { .idle-warn { bottom: 24px; } }
 .nobr { white-space: nowrap; }   /* сума разом з крапкою після неї не розривається */
+
+/* ТЗ №4: «де магазин» (поле з підказками) і «Географія» в адмінці */
+.geo-sugg { list-style: none; margin: -6px 0 0; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow); max-height: 300px; overflow: auto; }
+.geo-opt { display: grid; gap: 1px; width: 100%; text-align: left; background: none; border: 0; border-radius: 8px; padding: 9px 10px; color: var(--text); font: inherit; cursor: pointer; min-height: 44px; }
+.geo-opt:hover, .geo-opt:focus-visible { background: var(--surface-2); }
+.geo-status:empty { display: none; }
+.geo-picked { color: var(--ok); margin-top: -4px; }
+.geo-map { margin: 0; }
+.geo-map svg { width: 100%; max-width: 760px; height: auto; display: block; margin: 0 auto; }
+.geo-map path, .geo-map circle { stroke: var(--surface); stroke-width: 1; cursor: pointer; }
+.geo-map path.off { cursor: default; opacity: .7; }
+.geo-map path.on, .geo-map path:hover, .geo-map path:focus-visible { stroke: var(--text); stroke-width: 1.6; outline: none; }
+.geo-legend { display: inline-flex; align-items: center; gap: 4px; }
+.geo-legend i { display: inline-block; width: 14px; height: 10px; border-radius: 3px; border: 1px solid var(--line); margin-left: 6px; }
+.tbl tbody tr[data-act] { cursor: pointer; }
+.tbl tbody tr[data-act]:hover, .tbl tbody tr.on { background: var(--surface-2); }
+.tbl th[scope=row] { font-size: 0.875rem; color: var(--text); white-space: normal; }
+.doc-page { white-space: normal; line-height: 1.6; }
+.doc-page h1 { font-size: 1.35rem; }
+.doc-page p { margin: 0 0 .8em; }
 
 </style>
 <script>window.ZOSHYT_CONFIG = {
@@ -1441,6 +1461,9 @@ function sourceForSignup() {
   if (s.landing) o.landing = true;
   return Object.keys(o).length ? o : null;
 }
+/** Виклик функції бази без входу (лише ті, що відкриті для всіх: документи, публічні налаштування) */
+const publicRpc = (fn, args = {}) => request('/rest/v1/rpc/' + fn, { body: args });
+
 /** Публічні налаштування (без входу): чи увімкнено вхід кодом з пошти, бот підтримки. Кеш на пристрої. */
 let pubInfo = null;
 async function publicInfo() {
@@ -1466,7 +1489,7 @@ function trackView(page) {
   } catch { /* */ }
 }
 
-return { configured, ApiError, getSession, clearSession, onAuthExpired, signUp, signIn, signOut, sendEmailCode, verifyEmailCode, verifyTokenHash, recoverPassword, googleSignInUrl, takeSessionFromUrl, updatePassword, fetchUser, accessToken, onMfaRequired, rpc, sessionId, currentAal, mfaFactors, mfaEnroll, mfaUnenroll, mfaVerify, firstSource, sourceForSignup, publicInfo, trackView };
+return { configured, ApiError, getSession, clearSession, onAuthExpired, signUp, signIn, signOut, sendEmailCode, verifyEmailCode, verifyTokenHash, recoverPassword, googleSignInUrl, takeSessionFromUrl, updatePassword, fetchUser, accessToken, onMfaRequired, rpc, sessionId, currentAal, mfaFactors, mfaEnroll, mfaUnenroll, mfaVerify, firstSource, sourceForSignup, publicRpc, publicInfo, trackView };
 })();
 
 M.ui = (function () {
@@ -2138,6 +2161,203 @@ function report(period) {
 return { stats, balanceOf, summary, periodStart, report };
 })();
 
+M.geo = (function () {
+const { esc } = M.util;
+const { register } = M.ui;
+// «Де магазин»: область (список) + населений пункт (пошук з підказками) + адреса (необов'язково).
+// Довідник — файли geo/UAxx.json (Кодифікатор КАТОТТГ), по одному на область: завантажується лише після вибору
+// області і шукається на самому телефоні — база даних для пошуку не потрібна.
+
+
+const REGIONS = [
+  ['UA05', 'Вінницька'], ['UA07', 'Волинська'], ['UA12', 'Дніпропетровська'], ['UA14', 'Донецька'], ['UA18', 'Житомирська'],
+  ['UA21', 'Закарпатська'], ['UA23', 'Запорізька'], ['UA26', 'Івано-Франківська'], ['UA32', 'Київська'], ['UA35', 'Кіровоградська'],
+  ['UA44', 'Луганська'], ['UA46', 'Львівська'], ['UA48', 'Миколаївська'], ['UA51', 'Одеська'], ['UA53', 'Полтавська'],
+  ['UA56', 'Рівненська'], ['UA59', 'Сумська'], ['UA61', 'Тернопільська'], ['UA63', 'Харківська'], ['UA65', 'Херсонська'],
+  ['UA68', 'Хмельницька'], ['UA71', 'Черкаська'], ['UA73', 'Чернівецька'], ['UA74', 'Чернігівська'], ['UA80', 'Київ'],
+];
+const KIND = ['м.', 'с-ще', 'с.'];
+const HROM = ['міська', 'селищна', 'сільська'];
+const regionLabel = (r) => !r ? 'Не вказано' : r === 'Київ' ? 'м. Київ' : r + ' обл.';
+const regionId = (name) => (REGIONS.find(r => r[1] === name) || [])[0] || '';
+
+/** Коротко для списків: «с. Вишневе, Київська обл.» */
+function geoShort(g) {
+  if (!g || !g.region) return '';
+  if (g.region === 'Київ') return 'м. Київ' + (g.address ? ', ' + g.address : '');
+  return `${g.settlement_kind ? g.settlement_kind + ' ' : ''}${g.settlement_name}, ${regionLabel(g.region)}`;
+}
+/** Повністю: «с. Вишневе, Бучанський р-н, Київська обл., вул. Шевченка 5» */
+function geoFull(g) {
+  if (!g || !g.region) return '';
+  if (g.region === 'Київ') return 'м. Київ' + (g.address ? ', ' + g.address : '');
+  return [`${g.settlement_kind ? g.settlement_kind + ' ' : ''}${g.settlement_name}`, g.district ? g.district + ' р-н' : '', regionLabel(g.region), g.address || '']
+    .filter(Boolean).join(', ');
+}
+
+// ---------- довідник ----------
+const cache = new Map();
+function loadRegion(id) {
+  if (!cache.has(id)) {
+    cache.set(id, fetch('geo-' + id + '.json', { cache: 'force-cache' })
+      .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(d => { d.norm = d.s.map(x => norm(x[0])); return d; })
+      .catch(e => { cache.delete(id); throw e; }));
+  }
+  return cache.get(id);
+}
+// апостроф буває ’ ' ʼ `, «ґ» часто пишуть як «г» — шукаємо однаково
+const norm = (s) => String(s || '').toLowerCase().replace(/[’'ʼ`‘]/g, "'").replace(/ґ/g, 'г').replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
+
+/** До 10 підказок: спершу точний збіг, потім «починається з», потім слово всередині, потім будь-де */
+function search(d, q, limit = 10) {
+  const n = norm(q);
+  if (!n) return [];
+  const hits = [];
+  d.norm.forEach((name, i) => {
+    let score = -1;
+    if (name === n) score = 0;
+    else if (name.startsWith(n)) score = 1;
+    else if (name.includes(' ' + n) || name.includes('-' + n)) score = 2;
+    else if (n.length >= 3 && name.includes(n)) score = 3;
+    if (score >= 0) hits.push([score, d.s[i][1], name.length, i]);
+  });
+  hits.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+  return hits.slice(0, limit).map(h => record(d, h[3]));
+}
+function record(d, i) {
+  const [name, kind, hi, code] = d.s[i];
+  const h = d.h[hi] || ['', 2, 0];
+  return { settlement_name: name, settlement_kind: KIND[kind], settlement_code: code || null, settlement_manual: !code,
+    community: h[0] ? `${h[0]} ${HROM[h[1]]}` : null, district: d.d[h[2]] || null, region: d.r };
+}
+
+// ---------- поля форми ----------
+// Стан кожної форми — у пам'яті (ключ — префікс полів), тож фонове оновлення екрана нічого не губить.
+const st = {};
+function geoState(prefix, geo) {
+  // початкові дані беремо лише при першому показі форми; щоб почати заново — resetGeo(prefix)
+  if (!st[prefix]) {
+    const g = geo || null;
+    st[prefix] = { region: g ? g.region : '', picked: g && g.region ? { ...g } : null, manual: !!(g && g.settlement_manual && g.region !== 'Київ'),
+      q: g && g.region ? g.settlement_name : '', address: g ? g.address || '' : '', sugg: [], status: '' };
+  }
+  return st[prefix];
+}
+
+/** Поля «Область», «Населений пункт», «Адреса». geo — поточні дані (для редагування) */
+function geoFields(prefix, geo, { address = true } = {}) {
+  const s = geoState(prefix, geo);
+  if (s.region && s.region !== 'Київ' && !s.manual) loadRegion(regionId(s.region)).catch(() => {});
+  const kyiv = s.region === 'Київ';
+  const picked = s.picked && !s.manual && !kyiv ? `<div class="geo-picked small" id="${prefix}-picked">✓ ${esc(placeLine(s.picked))}</div>` : '';
+  return `<div class="geo stack" data-geo="${esc(prefix)}">
+    <label class="f">Область *<select id="${prefix}-region" class="geo-region" required>
+      <option value="">— оберіть —</option>
+      ${REGIONS.map(([, n]) => `<option value="${esc(n)}" ${s.region === n ? 'selected' : ''}>${esc(regionLabel(n))}</option>`).join('')}
+    </select></label>
+    ${kyiv ? '' : `<label class="f">Населений пункт *<input id="${prefix}-q" class="geo-q" autocomplete="off" autocapitalize="words" maxlength="100"
+        value="${esc(s.q)}" ${s.region ? '' : 'disabled'} placeholder="${s.region ? (s.manual ? 'Назва, як пишеться' : 'Почніть вводити, напр. Виш…') : 'Спершу оберіть область'}"
+        role="combobox" aria-autocomplete="list" aria-expanded="${s.sugg.length ? 'true' : 'false'}" aria-controls="${prefix}-list"></label>
+      <ul class="geo-sugg" id="${prefix}-list" role="listbox" ${s.sugg.length ? '' : 'hidden'}>${suggHtml(prefix, s)}</ul>
+      <div class="geo-status small muted" id="${prefix}-status">${esc(s.status)}</div>
+      ${picked}
+      ${s.region ? `<label class="check small"><input type="checkbox" class="geo-manual" data-prefix="${esc(prefix)}" ${s.manual ? 'checked' : ''}> Мого населеного пункту немає в списку — ввести вручну</label>` : ''}`}
+    ${address ? `<label class="f">Адреса (необов’язково)<input id="${prefix}-address" class="geo-address" maxlength="200" autocomplete="street-address" value="${esc(s.address)}" placeholder="вул. Шевченка, 5"></label>` : ''}
+  </div>`;
+}
+const placeLine = (g) => [`${g.settlement_kind || ''} ${g.settlement_name}`.trim(), g.district ? g.district + ' р-н' : '', g.community ? g.community + ' громада' : ''].filter(Boolean).join(', ');
+const suggHtml = (prefix, s) => s.sugg.map((g, i) => `<li role="option"><button type="button" class="geo-opt" data-act="geo-pick" data-prefix="${esc(prefix)}" data-i="${i}">
+  <b>${esc(g.settlement_kind)} ${esc(g.settlement_name)}</b><span class="small muted">${esc([g.district ? g.district + ' р-н' : '', g.community ? g.community + ' громада' : ''].filter(Boolean).join(', '))}</span></button></li>`).join('');
+
+function paint(prefix) {
+  const s = st[prefix];
+  const list = document.getElementById(prefix + '-list');
+  const status = document.getElementById(prefix + '-status');
+  const q = document.getElementById(prefix + '-q');
+  if (list) { list.innerHTML = suggHtml(prefix, s); list.hidden = !s.sugg.length; }
+  if (q) q.setAttribute('aria-expanded', s.sugg.length ? 'true' : 'false');
+  if (status) status.textContent = s.status;
+  const pk = document.getElementById(prefix + '-picked');
+  if (pk && (!s.picked || s.manual)) pk.remove();
+}
+async function suggest(prefix) {
+  const s = st[prefix];
+  if (!s || !s.region || s.manual || s.region === 'Київ') return;
+  const q = s.q;
+  if (!q.trim()) { s.sugg = []; s.status = ''; return paint(prefix); }
+  let d;
+  try { if (!cache.has(regionId(s.region))) { s.status = 'Завантажую список…'; paint(prefix); } d = await loadRegion(regionId(s.region)); }
+  catch { s.sugg = []; s.status = 'Список не завантажився (немає інтернету?). Можна ввести назву вручну — позначка нижче.'; return paint(prefix); }
+  if (st[prefix] !== s || s.q !== q) return;   // поки вантажилось, людина ввела далі
+  s.sugg = search(d, q);
+  s.status = s.sugg.length ? '' : 'Не знайдено. Перевірте назву або оберіть «ввести вручну».';
+  paint(prefix);
+}
+
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  const box = t.closest && t.closest('[data-geo]');
+  if (!box) return;
+  const s = geoState(box.dataset.geo);
+  if (t.classList.contains('geo-q')) { s.q = t.value; if (!s.manual) { s.picked = null; suggest(box.dataset.geo); } }
+  if (t.classList.contains('geo-address')) s.address = t.value;
+});
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  const box = t.closest && t.closest('[data-geo]');
+  if (!box) return;
+  const prefix = box.dataset.geo, s = geoState(prefix);
+  if (t.classList.contains('geo-region')) {
+    s.region = t.value; s.picked = null; s.q = ''; s.sugg = []; s.status = ''; s.manual = false;
+    if (s.region === 'Київ') s.picked = { region: 'Київ', settlement_name: 'Київ', settlement_kind: 'м.', settlement_code: 'UA80000000000093317', settlement_manual: false };
+    rerenderBox(box, prefix);
+    if (s.region && s.region !== 'Київ') { loadRegion(regionId(s.region)).catch(() => {}); setTimeout(() => document.getElementById(prefix + '-q')?.focus(), 0); }
+  }
+  if (t.classList.contains('geo-manual')) {
+    s.manual = t.checked; s.sugg = []; s.status = ''; if (s.manual) s.picked = null;
+    rerenderBox(box, prefix);
+    setTimeout(() => document.getElementById(prefix + '-q')?.focus(), 0);
+  }
+});
+function rerenderBox(box, prefix) {
+  const withAddr = !!box.querySelector('.geo-address');
+  const tmp = document.createElement('div');
+  tmp.innerHTML = geoFields(prefix, undefined, { address: withAddr });
+  box.replaceWith(tmp.firstElementChild);
+}
+register({
+  'geo-pick': (el) => {
+    const prefix = el.dataset.prefix, s = st[prefix];
+    const g = s && s.sugg[+el.dataset.i];
+    if (!g) return;
+    s.picked = g; s.q = g.settlement_name; s.sugg = []; s.status = '';
+    const box = document.querySelector(`[data-geo="${CSS.escape(prefix)}"]`);
+    if (box) rerenderBox(box, prefix);
+    document.getElementById(prefix + '-address')?.focus();
+  },
+});
+
+/** Прочитати поля: { geo } або { error } */
+function readGeo(prefix) {
+  const s = st[prefix];
+  if (!s || !s.region) return { error: 'Оберіть область.' };
+  const address = (s.address || '').trim();
+  if (s.region === 'Київ') return { geo: { region: 'Київ', settlement_name: 'Київ', settlement_kind: 'м.', settlement_code: 'UA80000000000093317', settlement_manual: false, address } };
+  if (s.manual) {
+    const name = s.q.trim();
+    if (name.length < 2) return { error: 'Вкажіть назву населеного пункту.' };
+    if (!/[а-щьюяґєіїА-ЩЬЮЯҐЄІЇ]/.test(name)) return { error: 'Назву населеного пункту пишіть українською.' };
+    return { geo: { region: s.region, settlement_name: name, settlement_kind: null, settlement_code: null, settlement_manual: true, address } };
+  }
+  if (!s.picked) return { error: s.q.trim() ? 'Оберіть населений пункт зі списку підказок (або позначте «ввести вручну»).' : 'Вкажіть населений пункт.' };
+  return { geo: { ...s.picked, address } };
+}
+function resetGeo(prefix) { delete st[prefix]; }
+
+return { REGIONS, regionLabel, geoShort, geoFull, loadRegion, search, geoState, geoFields, readGeo, resetGeo };
+})();
+
 M.views_auth = (function () {
 const api = M.api;
 const { esc, lsGet, lsSet } = M.util;
@@ -2160,11 +2380,42 @@ const googleBtn = (label) => (CFG.googleAuth
   ? `<button type="button" class="btn big wide-btn" data-act="google">${icon.google} ${label}</button>
      <div class="or"><span>або</span></div>`
   : '');
-const legal = `<p class="small muted legal">Реєструючись, ви погоджуєтесь з <a href="terms.html" target="_blank" rel="noopener">умовами користування</a> та <a href="privacy.html" target="_blank" rel="noopener">політикою конфіденційності</a>.</p>`;
+// Посилання на умови й конфіденційність — лише коли адміністратор вставив їхній текст (Адмін → Налаштування → Документи)
+const docLink = (k, label) => `<a href="#/doc/${k}" target="_blank" rel="noopener">${label}</a>`;
+function legalLine() {
+  const d = (ensurePub().docs) || {};
+  if (!d.terms && !d.privacy) return '';
+  const parts = [d.terms && docLink('terms', 'умовами користування'), d.privacy && docLink('privacy', 'політикою конфіденційності')].filter(Boolean);
+  return `<p class="small muted legal">Реєструючись, ви погоджуєтесь з ${parts.join(' та ')}.</p>`;
+}
+function legalFooter() {
+  const d = (ensurePub().docs) || {};
+  return [d.terms && ' · ' + docLink('terms', 'Умови'), d.privacy && ' · ' + docLink('privacy', 'Конфіденційність')].filter(Boolean).join('');
+}
+
+/** Сторінка документа: текст як є (абзаци — порожнім рядком), без HTML */
+const docs = {};
+const DOC_T = { terms: 'Умови користування', privacy: 'Політика конфіденційності' };
+function docView(kind) {
+  if (!DOC_T[kind]) return `<div class="auth"><div class="auth-card">${brand}<div class="banner bad">Сторінку не знайдено.</div><a class="btn" href="#/list">До програми</a></div></div>`;
+  if (docs[kind] === undefined) {
+    docs[kind] = null;
+    api.publicRpc('legal_doc', { p_kind: kind }).then(r => { docs[kind] = r || false; view.rerender(); }).catch(() => { docs[kind] = { error: true }; view.rerender(); });
+  }
+  const d = docs[kind];
+  const body = d === null ? '<div class="loading">Завантаження…</div>'
+    : d === false ? '<p class="muted">Документ ще готується.</p>'
+    : d.error ? '<div class="banner warn">Не вдалося завантажити. Перевірте інтернет.</div>'
+    : d.body.split(/\n\s*\n/).map(par => `<p>${esc(par.trim()).replace(/\n/g, '<br>')}</p>`).join('');
+  return `<div class="auth"><div class="auth-card wide"><section class="sheet pad stack doc-page">
+    <h1>${DOC_T[kind]}</h1>${d && d.updated_at ? `<p class="small muted">Редакція від ${new Date(d.updated_at).toLocaleDateString('uk-UA')}</p>` : ''}
+    ${body}
+    <div class="actions"><button type="button" class="btn" data-act="doc-back">← Назад</button></div></section></div></div>`;
+}
 
 // Вхід кодом з пошти вмикає адміністратор (після налаштування власної пошти) — дізнаємось без входу
 let pub = null;
-function ensurePub() { if (pub === null) { pub = {}; api.publicInfo().then(p => { pub = p || {}; if (pub.email_code_login) view.rerender(); }); } return pub; }
+function ensurePub() { if (pub === null) { pub = {}; api.publicInfo().then(p => { pub = p || {}; if (pub.email_code_login || (pub.docs && (pub.docs.terms || pub.docs.privacy))) view.rerender(); }); } return pub; }
 const emailCodeOn = () => !!ensurePub().email_code_login;
 
 // Не частіше одного листа на хвилину на одну адресу (як і обмеження Supabase) — з відліком на кнопці
@@ -2211,7 +2462,7 @@ function signupView() {
       <label class="f">Пароль (мінімум 8 символів)<input id="s-pass" type="password" autocomplete="new-password" required minlength="8"></label>
       <div class="err" role="alert"></div>
       <button class="btn ink big" type="submit">Зареєструватися</button>
-      ${legal}
+      ${legalLine()}
       <div class="small">Вже є акаунт? <a href="#/login">Увійти</a></div>
     </form>
   </div></div>`;
@@ -2333,6 +2584,7 @@ register({
     cooldown(el, email, 'Надіслати ще раз');
   },
   'code-other': () => { codeState.email = ''; view.rerender(); },
+  'doc-back': () => { if (history.length > 1) history.back(); else location.hash = '#/list'; },
   // повторний вхід без пароля: код на пошту, яка вже відома (модальне вікно лишається над тим самим екраном)
   'relogin-code': async (el) => {
     const email = S.user?.email;
@@ -2444,7 +2696,7 @@ register({
 });
 
 
-return { setOnSignedIn, emailCodeOn, loginView, signupView, forgotView, codeView, confirmParams, confirmView, resetView, setupView, reloginModal, CFG };
+return { setOnSignedIn, legalLine, legalFooter, docView, emailCodeOn, loginView, signupView, forgotView, codeView, confirmParams, confirmView, resetView, setupView, reloginModal, CFG };
 })();
 
 M.views_statement = (function () {
@@ -3377,7 +3629,11 @@ const { CFG, appUrl, fmtCard, intlPhone } = M.cfg;
 const api = M.api;
 const { exportClients, exportOps, exportJson } = M.views_reports;
 const { view } = M.router;
+const { geoFields, readGeo, resetGeo, geoFull } = M.geo;
+const { legalFooter } = M.views_auth;
 // Налаштування: магазин, працівники, запрошення, підписка, профіль
+
+
 
 
 
@@ -3443,6 +3699,7 @@ function settingsView() {
     <div class="row-between"><h2>Магазин</h2><button class="btn sm" data-act="edit-shop">Змінити</button></div>
     <dl class="kv">
       <dt>Назва</dt><dd>${esc(shop.name)}</dd>
+      <dt>Де знаходиться</dt><dd>${shop.geo ? esc(geoFull(shop.geo)) : '<span class="chip warn">не вказано</span>'} <button class="btn sm ghost" data-act="edit-geo">${shop.geo ? 'змінити' : 'вказати'}</button></dd>
       ${shop.code ? `<dt>Номер магазину</dt><dd><b class="mono">${esc(shopNo(shop))}</b></dd>` : ''}
       <dt>Ліміт боргу для нових клієнтів</dt><dd>${money(shop.default_limit || 0)}</dd>
       <dt>Продавець може скасувати свій запис протягом</dt><dd>${shop.cancel_minutes ?? 15} хв</dd>
@@ -3464,7 +3721,7 @@ function settingsView() {
 
   <section class="sheet pad stack">
     <h2>Резервна копія</h2>
-    <p class="small muted">Сервер щодня зберігає копію бази. Додатково можна зберегти дані магазину собі на комп’ютер.</p>
+    <p class="small muted">Збережіть копію даних магазину собі на телефон чи комп’ютер.</p>
     <div class="actions"><button class="btn sm" data-act="x-clients">Excel: боржники</button><button class="btn sm" data-act="x-ops">Excel: усі записи</button><button class="btn sm" data-act="x-json">Повна копія (JSON)</button></div>
   </section>` : ''}
 
@@ -3480,7 +3737,7 @@ function settingsView() {
 
   ${supportSection()}
 
-  <section class="pad small muted center">Зошит боржників · версія ${esc(window.ZOSHYT_VERSION || '')} · <a href="terms.html" target="_blank" rel="noopener">Умови</a> · <a href="privacy.html" target="_blank" rel="noopener">Конфіденційність</a></section>`;
+  <section class="pad small muted center">Зошит боржників · версія ${esc(window.ZOSHYT_VERSION || '')}${legalFooter()}</section>`;
 }
 
 function shopModal() {
@@ -3789,6 +4046,13 @@ register({
   'q-approve': (el) => resolveQ(el.dataset.id, true),
   'q-reject': (el) => resolveQ(el.dataset.id, false),
   'edit-shop': () => shopModal(),
+  'edit-geo': () => {
+    resetGeo('sg');
+    openModal(`<form data-form="shop-geo" class="stack" novalidate><h2>Де знаходиться магазин</h2>
+      ${geoFields('sg', S.shop.geo || null)}
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div></form>`);
+  },
   'edit-member': (el) => memberModal(el.dataset.id),
   'new-invite': () => {
     openModal(`<form data-form="invite" class="stack">
@@ -3879,6 +4143,14 @@ register({
       } catch (e) { bill.promoErr = err.textContent = e.message; }
     });
   },
+  async 'shop-geo'(form) {
+    const g = readGeo('sg');
+    if (g.error) return formError(form, g.error);
+    await busy(form, async () => {
+      try { const sh = await online('update_shop_geo', { p_shop: S.shopId, p_geo: g.geo }); Object.assign(S.shop, { geo: sh.geo }); resetGeo('sg'); closeModal(); toast('Збережено', 'ok'); view.rerender(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
   async shop(form) {
     const name = document.getElementById('sh-name').value.trim();
     const lim = parseMoney(document.getElementById('sh-limit').value || '0');
@@ -3962,7 +4234,9 @@ const { register, openModal, closeModal, toast, formError, busy, icon } = M.ui;
 const { CFG, fmtCard } = M.cfg;
 const api = M.api;
 const { view, go } = M.router;
+const { geoFields, readGeo, resetGeo, geoFull, geoShort, regionLabel } = M.geo;
 // Адмінка: список магазинів і сторінка магазину з вкладками (#/admin/shop/<id>/<вкладка>)
+
 
 
 
@@ -4032,7 +4306,8 @@ function filtered() {
   // «№ 482 915», «#482915», «482915» — пошук за номером магазину (з коментаря до оплати)
   const num = /^[№#\s\d-]+$/.test(q) ? q.replace(/\D/g, '') : '';
   if (num) list = list.filter(s => String(s.code || '').startsWith(num));
-  else if (q) list = list.filter(s => [s.name, s.owner_email, s.owner_name, s.id].some(v => String(v || '').toLowerCase().includes(q)));
+  else if (q) list = list.filter(s => [s.name, s.owner_email, s.owner_name, s.id, s.settlement, s.region].some(v => String(v || '').toLowerCase().includes(q)));
+  if (as.region !== undefined && as.region !== null) list = list.filter(s => (s.region || '') === as.region && (!as.settlement || s.settlement === as.settlement));
   const f = as.filter;
   if (['trial', 'paid', 'bonus', 'expired', 'free', 'suspended'].includes(f)) list = list.filter(s => s.status === f);
   if (f === 'soon') list = list.filter(s => leftDays(s) > 0 && leftDays(s) <= 7 && s.status !== 'free');
@@ -4053,12 +4328,13 @@ function adminView() {
   if (!as.shops) return `${header}<div class="empty">Завантаження…</div>`;
   const list = filtered();
   return `${header}
-  <input id="adm-q" class="search" type="search" placeholder="Номер, назва, email або ім’я" value="${esc(as.q)}" aria-label="Пошук магазину">
+  ${as.region != null ? `<div class="banner info row-between"><span>Лише: <b>${esc(as.settlement ? as.settlement + ', ' : '')}${esc(regionLabel(as.region))}</b></span><button class="btn sm" data-act="adm-region-clear">Усі області</button></div>` : ''}
+  <input id="adm-q" class="search" type="search" placeholder="Номер, назва, email, ім’я або село" value="${esc(as.q)}" aria-label="Пошук магазину">
   <div class="seg chips" role="group" aria-label="Фільтр">${FILTERS.map(([k, l]) => `<button data-act="admin-filter" data-v="${k}" aria-pressed="${as.filter === k}">${l}</button>`).join('')}</div>
   <label class="inline small">Сортування: <select id="adm-sort">${SORTS.map(([k, l]) => `<option value="${k}" ${as.sort === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
   <section class="sheet">${list.length ? `<ul class="rows">${list.map(s => `<li class="row" data-act="admin-open" data-id="${esc(s.id)}" tabindex="0">
       <div class="who"><div class="name">${esc(s.name)} ${labelChips(s.labels)}</div>
-        <div class="meta">${s.code ? `<span class="mono">№${esc(s.code)}</span>` : ''}<span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span></div>
+        <div class="meta">${s.code ? `<span class="mono">№${esc(s.code)}</span>` : ''}<span>${esc(s.owner_name || '')}</span><span>${esc(s.owner_email || '')}</span>${s.region ? `<span>${esc(geoShort({ region: s.region, settlement_name: s.settlement, settlement_kind: s.settlement_kind }))}</span>` : ''}</div>
         <div class="meta"><span>${esc(s.plan_name || '')}</span>${s.has_discount ? '<span class="chip ok">знижка</span>' : ''}<span>${s.members} ${plural(s.members, 'працівник', 'працівники', 'працівників')}</span><span>${s.ops7} ${plural(s.ops7, 'запис', 'записи', 'записів')} за 7 дн.</span>${s.revenue_kop ? `<span>дохід ${money(s.revenue_kop)}</span>` : ''}${s.online ? '<span class="chip ok"><span class="dot-on" aria-hidden="true"></span>онлайн</span>' : ''}</div></div>
       <div class="sum">${statusChip(s.status)}<span class="small muted">${s.status === 'free' ? (new Date(s.free_until).getFullYear() > 2090 ? 'назавжди' : 'до ' + fmtD(s.free_until)) : 'до ' + fmtD(s.access_until)}</span></div></li>`).join('')}</ul>`
     : '<div class="empty">Нічого не знайдено</div>'}</section>`;
@@ -4116,6 +4392,8 @@ function general(d) {
       <dt>Email</dt><dd>${esc(owner.email || '—')}</dd>
       <dt>Зареєстровано</dt><dd>${fmtD(s.created_at)}</dd>
       <dt>Останній вхід власника</dt><dd>${owner.last_sign_in ? fmtDT(owner.last_sign_in) : '—'}</dd>
+      <dt>Де знаходиться</dt><dd>${s.geo ? esc(geoFull(s.geo)) + (s.geo.settlement_manual ? ' <span class="chip">введено вручну</span>' : '') : `<span class="chip warn">не вказано</span>${s.geo_later ? ` <span class="small muted">«Пізніше» ${s.geo_later} з 3</span>` : ''}`}
+        <button class="btn sm ghost" data-act="adm-geo-edit">${s.geo ? 'змінити' : 'вказати'}</button></dd>
       <dt>Звідки прийшов</dt><dd>${esc(sourceText(s.source))}</dd>
       <dt>Промокоди</dt><dd>${d.promos.length ? d.promos.map(esc).join(', ') : '—'}</dd>
       <dt>ID</dt><dd class="small mono">${esc(s.id)}</dd>
@@ -4319,11 +4597,21 @@ async function after(msg) { sp.form = null; as.shops = null; await loadShop(sp.i
 
 register({
   'admin-reload': () => { refreshAll(); load(); },
+  'adm-region-clear': () => { as.region = null; as.settlement = null; view.rerender(); },
+  'adm-geo-edit': () => {
+    const s = sp.data.shop;
+    resetGeo('ag');
+    openModal(`<form data-form="adm-geo" class="stack" novalidate><h2>Де знаходиться магазин</h2>
+      <p class="small muted">${esc(s.name)} · №${esc(s.code)}</p>
+      ${geoFields('ag', s.geo)}
+      <div class="err" role="alert"></div>
+      <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Зберегти</button></div></form>`);
+  },
   'admin-filter': (el) => { as.filter = el.dataset.v; view.rerender(); },
   'admin-open': (el) => go(`#/admin/shop/${el.dataset.id}/general`),
   'admin-export-list': () => {
-    const rows = [['Номер', 'Магазин', 'Власник', 'Email', 'Статус', 'Тариф', 'Доступ до', 'Дохід, грн', 'Працівників', 'з них продавців', 'Клієнтів', 'Записів за 7 днів', 'Востаннє в програмі', 'Зареєстровано']]
-      .concat(filtered().map(s => [s.code || '', s.name, s.owner_name, s.owner_email, (STATUS[s.status] || [s.status])[0], s.plan_name, fmtD(s.access_until),
+    const rows = [['Номер', 'Магазин', 'Власник', 'Email', 'Область', 'Населений пункт', 'Статус', 'Тариф', 'Доступ до', 'Дохід, грн', 'Працівників', 'з них продавців', 'Клієнтів', 'Записів за 7 днів', 'Востаннє в програмі', 'Зареєстровано']]
+      .concat(filtered().map(s => [s.code || '', s.name, s.owner_name, s.owner_email, s.region ? regionLabel(s.region) : '', s.settlement || '', (STATUS[s.status] || [s.status])[0], s.plan_name, fmtD(s.access_until),
         (s.revenue_kop / 100).toFixed(2).replace('.', ','), s.members, s.sellers, s.clients, s.ops7, s.last_seen ? fmtDT(s.last_seen) : '', fmtD(s.created_at)]));
     downloadFile(`magazyny-${isoDate()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
   },
@@ -4470,6 +4758,14 @@ register({
     try { await api.rpc('admin_add_note', { p_shop: sp.id, p_text: t }); sp.data = null; await loadShop(sp.id); }
     catch (e) { toast(e.message, 'bad'); }
   },
+  async 'adm-geo'(form) {
+    const r = readGeo('ag');
+    if (r.error) return formError(form, r.error);
+    await busy(form, async () => {
+      try { await api.rpc('admin_set_shop_geo', { p_shop: sp.id, p_geo: r.geo }); closeModal(); resetGeo('ag'); as.shops = null; as.geo = null; await loadShop(sp.id); toast('Збережено', 'ok'); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
 });
 
 document.addEventListener('input', (e) => { if (e.target.id === 'adm-q') { as.q = e.target.value; view.rerender(); } });
@@ -4497,8 +4793,12 @@ const { view } = M.router;
 const { qrSvg } = M.qr;
 const { CFG, applyPlatform, fmtCard } = M.cfg;
 const { adminView: shopsSection, shopPage, as, ensureShops, ensureClaims, claimRow, refreshAll, payRow, discRow, discountForm, readDiscount, statusChip, discText, srcName } = M.views_admin;
+const { REGIONS, regionLabel } = M.geo;
+const { go } = M.router;
 // Адмін-платформа: окремий застосунок за адресою #/admin (не залежить від жодного магазину).
 // Вхід: пароль + код з Google Authenticator (сервер вимагає aal2 для кожної адмін-функції).
+
+
 
 
 
@@ -4524,12 +4824,13 @@ const forgetDev = () => lsSet(DEV_KEY, null);
 /** Другий фактор пройдено: щойно введено код (aal2) або цю сесію звільнив довірений пристрій */
 const mfaOk = () => api.currentAal() === 'aal2' || (!!ad.deviceOk && ad.deviceOk === api.sessionId());
 async function tryDevice(dev) {
-  ad.deviceTry = api.sessionId(); ad.deviceTries++;
+  ad.deviceTry = api.sessionId(); ad.deviceTries++; ad.deviceBusy = true;
   try {
     const r = await api.rpc('trusted_device_unlock', { p_device: dev.id, p_token: dev.token });
     if (r && r.ok) { ad.deviceOk = api.sessionId(); touch(true); runSync({ forceBoot: true }); }
     else forgetDev();
   } catch { /* немає зв'язку — попросимо код */ }
+  ad.deviceBusy = false;
   view.rerender();
 }
 const deviceLabel = () => {
@@ -4550,6 +4851,7 @@ const NAV = [
   ['payments', 'Оплати', 'card'],
   ['discounts', 'Знижки і бонуси', 'gift'],
   ['visits', 'Відвідування', 'chart'],
+  ['geo', 'Географія', 'map'],
   ['errors', 'Помилки', 'bug'],
   ['promos', 'Промокоди', 'tag'],
   ['plans', 'Тарифи', 'layers'],
@@ -4566,6 +4868,7 @@ const ICONS = {
   tag: '<path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
   layers: '<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>',
   chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  map: '<path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6Zm6-2v14m6-12v14"/>',
   bug: '<path d="M8 8a4 4 0 0 1 8 0v1H8V8Zm-2 3h12v3a6 6 0 0 1-12 0v-3Zm6 0v9M3 12h3m12 0h3M4 18l3-2m13 2-3-2M5 7l3 2m11-2-3 2"/>',
   more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
@@ -4593,6 +4896,7 @@ function adminScreen(section) {
   if (ad.locked || !mfaOk()) {
     // довірений пристрій: спершу пробуємо без коду (один раз на сесію входу)
     const dev = !ad.locked && getDev();
+    if (ad.deviceBusy) return gate('<div class="loading">Перевірка пристрою…</div>');
     if (dev && ad.deviceTry !== api.sessionId() && ad.deviceTries < 3) { tryDevice(dev); return gate('<div class="loading">Перевірка пристрою…</div>'); }
     // вихід з акаунта ще триває (сесію вже стерто) — нічого не запитуємо
     if (!api.getSession()) return gate('<div class="loading">Вихід…</div>');
@@ -4613,6 +4917,7 @@ function adminScreen(section) {
     if (sec === 'promos') ad.promos = null;
     if (sec === 'plans') ad.plans = null;
     if (sec === 'visits') ad.visits = null;
+    if (sec === 'geo') as.geo = null;
     if (sec === '') ad.live = null;
     if (sec === 'settings') ad.devices = null;
     if (sec === 'errors' || sec === '') ad.errs = null;
@@ -4692,6 +4997,7 @@ function sectionView(section) {
     case 'promos': return promosView();
     case 'plans': return plansView();
     case 'visits': return visitsView();
+    case 'geo': return geoView();
     case 'errors': return errorsView();
     case 'log': return logView();
     case 'settings': return settingsView();
@@ -4997,13 +5303,71 @@ function visitsView() {
   </section>`;
 }
 
+// ---------------- Географія ----------------
+async function ensureGeo(force = false) {
+  if ((as.geo && !force) || ad.geoLoading) return;
+  ad.geoLoading = true;
+  try { as.geo = await api.rpc('admin_geo', { p_status: ad.geoStatus || 'all' }); } catch (e) { as.geo = { error: e.message }; }
+  finally { ad.geoLoading = false; view.rerender(); }
+  if (!ad.map) fetch('geo-map.json').then(r => r.json()).then(m => { ad.map = m; view.rerender(); }).catch(() => { ad.map = { error: true }; });
+}
+const idOf = (name) => (REGIONS.find(r => r[1] === name) || [])[0];
+const nameOf = (id) => (REGIONS.find(r => r[0] === id) || [])[1];
+function geoMap(g) {
+  const m = ad.map;
+  if (!m) return '<div class="geo-map empty small">Карта завантажується…</div>';
+  if (m.error) return '';
+  const by = Object.fromEntries(g.regions.filter(r => r.region).map(r => [r.region, r]));
+  const max = Math.max(1, ...g.regions.filter(r => r.region).map(r => r.shops));
+  // насиченість — частка від найбільшої області (5 кроків, щоб різницю було видно на око)
+  const fill = (n) => !n ? 'var(--surface-2)' : `color-mix(in srgb, var(--adm-accent, var(--ink)) ${[0, 22, 40, 58, 78, 100][Math.ceil(n / max * 5)]}%, var(--surface-2))`;
+  const kyiv = by['Київ'];
+  return `<figure class="geo-map"><svg viewBox="0 0 ${m.w} ${m.h}" role="img" aria-label="Карта: магазини по областях">
+    ${Object.entries(m.shapes).map(([id, d]) => { const name = nameOf(id); const r = name ? by[name] : null;
+      return `<path d="${d}" fill="${name ? fill(r && r.shops) : 'var(--surface-2)'}" ${name ? `data-act="geo-region" data-v="${esc(name)}" tabindex="0" class="${ad.geoRegion === name ? 'on' : ''}"` : 'class="off"'}><title>${esc(name ? `${regionLabel(name)}: ${r ? r.shops : 0} ${plural(r ? r.shops : 0, 'магазин', 'магазини', 'магазинів')}` : 'АР Крим')}</title></path>`; }).join('')}
+    <circle cx="${m.kyiv[0]}" cy="${m.kyiv[1]}" r="7" fill="${fill(kyiv && kyiv.shops)}" stroke="var(--text)" stroke-width="1.5" data-act="geo-region" data-v="Київ" tabindex="0"><title>м. Київ: ${kyiv ? kyiv.shops : 0}</title></circle>
+  </svg><figcaption class="small muted row-between"><span>Насиченість кольору — кількість магазинів</span><span class="geo-legend"><i style="background:${fill(0)}"></i>0<i style="background:${fill(max)}"></i>${max}</span></figcaption></figure>`;
+}
+function geoView() {
+  ensureGeo();
+  const st = ad.geoStatus || 'all';
+  const head = `<div class="row-between page-head"><h1>Географія</h1><button class="icon-btn" data-act="adm-reload" aria-label="Оновити">${icon.refresh}</button></div>
+  <div class="seg chips">${[['all', 'Усі'], ['paid', 'Платні'], ['trial', 'Пробні']].map(([k, l]) => `<button data-act="adm-geo-st" data-v="${k}" aria-pressed="${st === k}">${l}</button>`).join('')}</div>`;
+  const g = as.geo;
+  if (!g) return head + '<div class="empty">Завантаження…</div>';
+  if (g.error) return head + `<div class="banner bad">${esc(g.error)}</div>`;
+  const unknown = g.regions.find(r => !r.region);
+  const sel = ad.geoRegion;
+  const setts = sel ? g.settlements.filter(x => x.region === sel) : [];
+  const row = (r, act) => `<tr ${act} tabindex="0"><th scope="row">${esc(regionLabel(r.region))}</th><td>${r.shops}</td><td>${r.paid}</td><td>${r.trial}</td><td>${money(+r.revenue_kop || 0)}</td><td>${r.users}</td></tr>`;
+  return head + `
+  <section class="kpis">
+    <div class="kpi"><div class="k">Магазинів</div><div class="v">${g.total}</div></div>
+    <div class="kpi"><div class="k">Вказали, де вони</div><div class="v ok">${g.known}</div><div class="small muted">${g.total ? Math.round(g.known / g.total * 100) : 0}%</div></div>
+    <div class="kpi"><div class="k">Не вказано</div><div class="v ${unknown ? 'warn' : ''}">${unknown ? unknown.shops : 0}</div><div class="small muted">власник побачить вікно при вході</div></div>
+    <div class="kpi"><div class="k">Областей</div><div class="v">${g.regions.filter(r => r.region).length}</div></div>
+  </section>
+  <section class="sheet pad stack">${geoMap(g)}</section>
+  ${sel ? `<section class="sheet"><div class="pad pb0 row-between"><h2>${esc(regionLabel(sel))}</h2><span class="actions"><button class="btn sm" data-act="geo-shops" data-v="${esc(sel)}">Магазини області</button><button class="btn sm ghost" data-act="geo-region" data-v="">✕</button></span></div>
+    ${setts.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Населений пункт</th><th>Магазинів</th><th>Платних</th><th>Пробних</th><th>Дохід</th><th>Людей</th></tr></thead><tbody>
+      ${setts.map(x => `<tr data-act="geo-shops" data-v="${esc(sel)}" data-s="${esc(x.name)}" tabindex="0"><th scope="row">${esc((x.kind ? x.kind + ' ' : '') + x.name)}${x.district ? `<div class="small muted">${esc(x.district)} р-н</div>` : ''}</th><td>${x.shops}</td><td>${x.paid}</td><td>${x.trial}</td><td>${money(+x.revenue_kop || 0)}</td><td>${x.users}</td></tr>`).join('')}
+    </tbody></table></div>` : '<div class="empty small">Тут магазинів немає.</div>'}</section>` : ''}
+  <section class="sheet"><div class="pad pb0"><h2>Області</h2><p class="small muted">Натисніть область — побачите населені пункти. «Людей» — власники й продавці.</p></div>
+    ${g.regions.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Область</th><th>Магазинів</th><th>Платних</th><th>Пробних</th><th>Дохід</th><th>Людей</th></tr></thead><tbody>
+      ${g.regions.filter(r => r.region).map(r => row(r, `data-act="geo-region" data-v="${esc(r.region)}" class="${sel === r.region ? 'on' : ''}"`)).join('')}
+      ${unknown ? row(unknown, 'data-act="geo-shops" data-v="" class="muted"') : ''}
+    </tbody></table></div>` : '<div class="empty">Магазинів ще немає.</div>'}
+  </section>`;
+}
+
 // ---------------- Журнал адміна ----------------
 const ACTIONS = { 'admin:extend': 'Продовжив доступ', 'admin:payment': 'Зарахував оплату', 'admin:bonus': 'Дав бонус', 'admin:trial': 'Продовжив пробний',
   'admin:free': 'Безкоштовний режим', 'admin:suspend': 'Призупинив доступ', 'admin:unsuspend': 'Відновив доступ', 'admin:plan': 'Змінив тариф магазину',
   'admin:discount': 'Дав знижку', 'admin:discount_cancel': 'Скасував знижку', 'admin:mass': 'Масова дія', 'admin:promo': 'Зберіг промокод',
   'admin:promo_on': 'Увімкнув промокод', 'admin:promo_off': 'Вимкнув промокод', 'admin:plan_save': 'Зберіг тариф', 'admin:delete_shop': 'Видалив магазин (можна відновити)', 'admin:restore_shop': 'Відновив магазин',
   'admin:purge_shop': 'Остаточно видалив магазин', 'admin:export_shop': 'Вивантажив копію магазину', 'admin:platform': 'Змінив налаштування платформи',
-  'admin:device_trust': 'Запам’ятав пристрій (без коду 30 днів)', 'admin:device_revoke': 'Відкликав довірений пристрій' };
+  'admin:device_trust': 'Запам’ятав пристрій (без коду 30 днів)', 'admin:device_revoke': 'Відкликав довірений пристрій',
+  'admin:geo': 'Вказав, де магазин', 'admin:legal': 'Змінив документ (умови / конфіденційність)' };
 async function ensureLog(force = false) {
   if ((ad.log && !force) || ad.logLoading) return;
   ad.logLoading = true;
@@ -5018,6 +5382,8 @@ function logText(a) {
   if (a.action === 'admin:discount') return `${discText({ ...d, value: d.type === 'fixed' || d.type === 'price' ? Math.round(+d.value * 100) : +d.value })} · ${d.reason || ''}`;
   if (['admin:trial', 'admin:free', 'admin:suspend'].includes(a.action)) return d.reason || '';
   if (['admin:device_trust', 'admin:device_revoke'].includes(a.action)) return d.label || '';
+  if (a.action === 'admin:geo') return [d.new && d.new.settlement_name, d.new && regionLabel(d.new.region)].filter(Boolean).join(', ');
+  if (a.action === 'admin:legal') return (d.kind === 'terms' ? 'Умови користування' : 'Політика конфіденційності') + (d.chars ? ` · ${d.chars} символів` : ' · прибрано');
   if (a.action === 'admin:extend') return `${d.days > 0 ? '+' : ''}${d.days} дн.${+d.amount_kop ? ', ' + money(+d.amount_kop) : ''} → до ${fmtD(d.paid_until)}${d.note ? ' · ' + d.note : ''}`;
   if (a.action === 'admin:platform') {
     const o = d.old || {}, n = d.new || {};
@@ -5064,6 +5430,27 @@ function devicesSection() {
   </section>`;
 }
 
+// Документи: поки текст порожній — посилань на умови й конфіденційність ніде немає (ні в програмі, ні на сайті)
+async function ensureDocs(force = false) {
+  if ((ad.docs && !force) || ad.docsLoading) return;
+  ad.docsLoading = true;
+  try { const [t, p] = await Promise.all([api.publicRpc('legal_doc', { p_kind: 'terms' }), api.publicRpc('legal_doc', { p_kind: 'privacy' })]); ad.docs = { terms: t, privacy: p }; }
+  catch { ad.docs = { terms: null, privacy: null }; }
+  finally { ad.docsLoading = false; view.rerender(); }
+}
+function docsSection() {
+  ensureDocs();
+  if (!ad.docs) return '<section class="sheet pad"><div class="empty small">Завантаження…</div></section>';
+  const one = (k, title) => { const d = ad.docs[k];
+    return `<form data-form="adm-doc" data-kind="${k}" class="stack" novalidate><h3>${title} ${d ? `<span class="chip ok">опубліковано ${fmtD(d.updated_at)}</span>` : '<span class="chip">прихований</span>'}</h3>
+      <label class="f">Текст (вставте готовий; порожній — документ і посилання на нього приховані)<textarea id="doc-${k}" rows="6" maxlength="60000">${esc(d ? d.body : '')}</textarea></label>
+      <div class="err" role="alert"></div>
+      <div class="actions">${d ? `<a class="btn sm ghost" href="#/doc/${k}" target="_blank" rel="noopener">Переглянути</a>` : ''}<button class="btn sm ink" type="submit">Зберегти</button></div></form>`; };
+  return `<section class="sheet pad stack"><h2>Документи</h2>
+    <p class="small muted">Умови користування й політика конфіденційності. Поки текст не вставлено — посилань на них немає ні при реєстрації, ні в налаштуваннях, ні на сайті. Абзаци розділяйте порожнім рядком.</p>
+    ${one('terms', 'Умови користування')}${one('privacy', 'Політика конфіденційності')}</section>`;
+}
+
 function settingsView() {
   ensurePlatform();
   if (!ad.platform) return '<div class="empty">Завантаження…</div>';
@@ -5097,6 +5484,7 @@ function settingsView() {
     <div class="err" role="alert"></div>
     <button class="btn ink" type="submit">Зберегти</button>
   </form>
+  ${docsSection()}
   ${devicesSection()}
   <section class="sheet pad stack"><h2>Адміністратори</h2>
     <ul class="plain">${ad.admins.map(e => `<li>${esc(e)}</li>`).join('')}</ul>
@@ -5189,6 +5577,10 @@ register({
       </ul><div class="m-actions"><button class="btn ghost" data-act="close">Закрити</button></div></div>`);
   },
   'adm-vdays': (el) => { ad.visitDays = +el.dataset.v; ad.visits = null; view.rerender(); },
+  'adm-geo-st': (el) => { ad.geoStatus = el.dataset.v; as.geo = null; view.rerender(); },
+  'geo-region': (el) => { ad.geoRegion = el.dataset.v && ad.geoRegion !== el.dataset.v ? el.dataset.v : null; view.rerender();
+    if (ad.geoRegion) setTimeout(() => document.querySelector('.adm-main h2')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 30); },
+  'geo-shops': (el) => { as.region = el.dataset.v; as.settlement = el.dataset.s || null; as.filter = 'all'; go('#/admin/shops'); },
   'close-go': (el) => { closeModal(); location.hash = el.getAttribute('href'); },
   'adm-paykind': (el) => { ad.payKind = el.dataset.v; view.rerender(); },
   'mass-preview': async () => {
@@ -5293,6 +5685,14 @@ register({}, {
       catch (e) { formError(form, e.message); }
     });
   },
+  async 'adm-doc'(form) {
+    const kind = form.dataset.kind, body = document.getElementById('doc-' + kind).value;
+    await busy(form, async () => {
+      try { await api.rpc('admin_save_legal', { p_kind: kind, p_body: body }); ad.docs = null; ad.log = null; lsSet('zoshyt.pub', null);
+        toast(body.trim() ? 'Опубліковано' : 'Документ приховано', 'ok'); view.rerender(); }
+      catch (e) { formError(form, e.message); }
+    });
+  },
   async 'adm-security'(form) {
     const data = { ...ad.platform, admin_idle_min: document.getElementById('pl-admin_idle_min').value, email_code_login: document.getElementById('pl-email_code_login').checked };
     await busy(form, async () => {
@@ -5324,11 +5724,13 @@ return { adminScreen };
 M.views_misc = (function () {
 const { esc, money, fmtDT } = M.util;
 const { register, openModal, closeModal, toast, formError, busy } = M.ui;
-const { S, selectShop, runSync, clearNotices } = M.store;
+const { S, selectShop, runSync, clearNotices, isOwner } = M.store;
 const api = M.api;
 const { go, view } = M.router;
 const { lsGet, lsSet } = M.util;
+const { geoFields, readGeo, resetGeo } = M.geo;
 // Перший вхід (створити магазин / приєднатися), огляд кількох магазинів, встановлення, сповіщення
+
 
 
 
@@ -5352,8 +5754,9 @@ function startView() {
       <form data-form="create-shop" class="stack sheet pad" novalidate>
         <h2>Я власник магазину</h2>
         <p class="small muted">Створіть свій магазин. 30 днів безкоштовно, без картки.</p>
-        <label class="f">Назва магазину<input id="cs-name" required maxlength="100" placeholder="Магазин «Колосок», с. Вишневе"></label>
+        <label class="f">Назва магазину<input id="cs-name" required maxlength="100" placeholder="Магазин «Колосок»"></label>
         <label class="f">Ваше ім’я<input id="cs-me" required maxlength="60" value="${n}"></label>
+        ${geoFields('cs')}
         <div class="err" role="alert"></div>
         <button class="btn ink" type="submit">Створити магазин</button>
       </form>
@@ -5467,10 +5870,12 @@ function installBanner() {
 
 function shopForm(kind) {
   const n = esc(defaultName());
+  if (kind === 'create') resetGeo('cs');
   openModal(kind === 'create' ? `<form data-form="create-shop" class="stack" novalidate>
       <h2>Новий магазин</h2>
       <label class="f">Назва магазину<input id="cs-name" required maxlength="100" autofocus></label>
       <label class="f">Ваше ім’я<input id="cs-me" required maxlength="60" value="${esc((S.members.find(m => m.user_id === S.user.id) || {}).display_name || n)}"></label>
+      ${geoFields('cs')}
       <p class="small muted">Кожен магазин має окремих клієнтів, працівників і підписку.</p>
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Створити</button></div></form>`
@@ -5481,6 +5886,29 @@ function shopForm(kind) {
       <div class="err" role="alert"></div>
       <div class="m-actions"><button type="button" class="btn ghost" data-act="close">Скасувати</button><button class="btn ink" type="submit">Приєднатися</button></div></form>`);
 }
+
+// ---------- «Вкажіть, де знаходиться ваш магазин» (магазини, створені до 1.12.0) ----------
+// Лише власнику, лише з інтернетом, раз за відкриття програми. «Пізніше» — 3 рази, далі вікно обов'язкове (2 поля, ~10 секунд).
+let geoAsked = '';
+const STARTED = Date.now();
+function maybeAskGeo() {
+  const sh = S.shop;
+  // лише зі свіжими даними з сервера (після синхронізації в цьому відкритті), а не зі збережених на телефоні
+  if (!sh || !isOwner() || sh.geo !== null || !navigator.onLine || geoAsked === sh.id || document.getElementById('modal').hidden === false) return;
+  if (S.sync.state !== 'ok' || !(S.sync.lastOk > STARTED)) return;
+  try { if (sessionStorage.getItem('zoshyt.geoAsked:' + sh.id)) return; } catch { /* */ }
+  geoAsked = sh.id;
+  const later = (sh.geo_later || 0) < 3;
+  resetGeo('gp');
+  openModal(`<form data-form="geo-prompt" data-shop="${esc(sh.id)}" class="stack" novalidate>
+    <h2>Вкажіть, де знаходиться ваш магазин</h2>
+    <p class="small muted">«${esc(sh.name)}» — область і населений пункт. Це 10 секунд: так ми краще розуміємо, де нами користуються.</p>
+    ${geoFields('gp', null, { address: false })}
+    <div class="err" role="alert"></div>
+    <div class="m-actions">${later ? `<button type="button" class="btn ghost" data-act="geo-later">Пізніше${sh.geo_later ? ` (${3 - sh.geo_later})` : ''}</button>` : ''}<button class="btn ink" type="submit">Зберегти</button></div>
+  </form>`, { opaque: !later, onClose: () => {} });
+}
+const geoDone = (id) => { try { sessionStorage.setItem('zoshyt.geoAsked:' + id, '1'); } catch { /* */ } };
 
 async function afterShop(shopId) {
   await runSync({ forceBoot: true });
@@ -5496,16 +5924,35 @@ register({
   install: async () => { if (!installPrompt) return; installPrompt.prompt(); const r = await installPrompt.userChoice; installPrompt = null; if (r && r.outcome === 'accepted') lsSet('zoshyt.installed', '1'); view.rerender(); },
   'install-hide': () => { lsSet('zoshyt.installHidden', String(Date.now())); view.rerender(); },
   notices: () => noticesModal(),
+  'geo-later': async (el) => {
+    const id = el.closest('form').dataset.shop;
+    geoDone(id); closeModal();
+    try { const n = await api.rpc('shop_geo_later', { p_shop: id }); if (S.shop && S.shop.id === id) S.shop.geo_later = n; } catch { /* офлайн — нічого */ }
+  },
   'clear-notices': async () => { await clearNotices(); closeModal(); },
 }, {
   async 'create-shop'(form) {
     const name = document.getElementById('cs-name').value.trim(), me = document.getElementById('cs-me').value.trim();
     if (!name) return formError(form, 'Вкажіть назву магазину.');
     if (!me) return formError(form, 'Вкажіть ваше ім’я.');
+    const g = readGeo('cs');
+    if (g.error) return formError(form, g.error);
     if (!navigator.onLine) return formError(form, 'Для створення магазину потрібен інтернет.');
     await busy(form, async () => {
-      try { const s = await api.rpc('create_shop', { p_name: name, p_display_name: me, p_source: api.sourceForSignup() }); toast('Магазин створено! 30 днів безкоштовно.', 'ok'); await afterShop(s.id); }
+      try { const s = await api.rpc('create_shop', { p_name: name, p_display_name: me, p_source: api.sourceForSignup(), p_geo: g.geo }); resetGeo('cs'); toast('Магазин створено! 30 днів безкоштовно.', 'ok'); await afterShop(s.id); }
       catch (e) { formError(form, e.message); }
+    });
+  },
+  async 'geo-prompt'(form) {
+    const g = readGeo('gp');
+    if (g.error) return formError(form, g.error);
+    await busy(form, async () => {
+      try {
+        const sh = await api.rpc('update_shop_geo', { p_shop: form.dataset.shop, p_geo: g.geo });
+        geoDone(form.dataset.shop); resetGeo('gp');
+        if (S.shop && S.shop.id === sh.id) Object.assign(S.shop, { geo: sh.geo, geo_later: sh.geo_later });
+        closeModal(); toast('Дякуємо!', 'ok'); runSync();
+      } catch (e) { formError(form, e.message); }
     });
   },
   async 'join-shop'(form) {
@@ -5524,7 +5971,7 @@ register({
   },
 });
 
-return { startView, overviewView, installView, noticesModal, installPrompt, installBanner };
+return { startView, overviewView, installView, noticesModal, installPrompt, installBanner, maybeAskGeo };
 })();
 
 M.main = (function () {
@@ -5534,13 +5981,13 @@ const { actions, forms, closeModal, modalOpen, toast, icon, register, confirmBox
 const { S, subscribe, start, foreignPending, requestSync, runSync, selectShop, isOwner } = M.store;
 const { view, parse, go } = M.router;
 const { applyPrefs } = M.prefs;
-const { loginView, signupView, forgotView, resetView, setupView, reloginModal, setOnSignedIn, codeView, confirmView } = M.views_auth;
+const { loginView, signupView, forgotView, resetView, setupView, reloginModal, setOnSignedIn, codeView, confirmView, docView } = M.views_auth;
 const { listView, clientView, listState } = M.views_shop;
 const { reportsView } = M.views_reports;
 const { journalView } = M.views_journal;
 const { settingsView, billingView, subscriptionBanner } = M.views_settings;
 const { adminScreen } = M.views_admin_app;
-const { startView, overviewView, installView, installBanner } = M.views_misc;
+const { startView, overviewView, installView, installBanner, maybeAskGeo } = M.views_misc;
 // Точка входу: запуск, маршрути, оболонка, обробка подій
 
 
@@ -5555,7 +6002,7 @@ const { startView, overviewView, installView, installBanner } = M.views_misc;
 
 
 
-window.ZOSHYT_VERSION = '1.11.0';
+window.ZOSHYT_VERSION = '1.12.0';
 // Захист від «клікджекінгу»: програму не можна вбудувати в чужу сторінку (GitHub Pages не дає заголовка frame-ancestors)
 const framed = (() => { try { return window.top !== window.self; } catch { return true; } })();
 if (framed) {
@@ -5577,7 +6024,7 @@ window.addEventListener('error', (e) => reportError(e.message, `${String(e.filen
 window.addEventListener('unhandledrejection', (e) => reportError(e.reason && (e.reason.message || e.reason), 'promise'));
 const root = $('#root');
 let mode = 'loading';   // loading | setup | auth | reset | confirm | app
-const AUTH_ROUTES = ['login', 'signup', 'forgot', 'code', 'admin'];
+const AUTH_ROUTES = ['login', 'signup', 'forgot', 'code', 'admin', 'doc'];
 const isConfirm = () => location.hash.startsWith('#/confirm');
 let reloginShown = false;
 
@@ -5615,6 +6062,8 @@ function render() {
   if (view.keepScroll) window.scrollTo(0, scroll);
   view.keepScroll = true;
   if (S.authExpired && !reloginShown && mode === 'app') { reloginShown = true; reloginModal(); }
+  // магазин без області й населеного пункту — власнику одноразове вікно (на головному екрані, коли нічого не відкрито)
+  if (mode === 'app' && !S.authExpired && view.name === 'list' && !view.clientId && parse().name !== 'admin') maybeAskGeo();
   if (!S.authExpired) reloginShown = false;
 }
 view.rerender = render;
@@ -5625,6 +6074,7 @@ function screen() {
   if (mode === 'setup') return setupView();
   if (mode === 'reset') return resetView();
   if (mode === 'confirm') return confirmView();
+  if (r.name === 'doc' && (mode === 'auth' || mode === 'app')) return docView(r.arg);
   if (mode === 'auth' && (r.name === 'signup' || r.name === 'login')) api.trackView('/app/' + r.name);
   if (mode === 'auth') return r.name === 'signup' ? signupView() : r.name === 'forgot' ? forgotView() : r.name === 'code' ? codeView() : loginView({ admin: r.name === 'admin' });
   // mode === 'app'
@@ -5697,7 +6147,8 @@ function shell(tab, content, title) {
 // ---------- події ----------
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-act]');
-  if (!t) { if (e.target.id === 'modal') closeModal(); return; }
+  // обов'язкове вікно (opaque) повз нього не закривається
+  if (!t) { if (e.target.id === 'modal' && !e.target.classList.contains('opaque')) closeModal(); return; }
   const fn = actions[t.dataset.act];
   if (fn) { e.preventDefault(); fn(t, e); }
 });
@@ -5709,7 +6160,7 @@ document.addEventListener('submit', (e) => {
   if (fn) fn(f);
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modalOpen() && !S.authExpired) closeModal();
+  if (e.key === 'Escape' && modalOpen() && !S.authExpired && !document.getElementById('modal').classList.contains('opaque')) closeModal();
   if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-act][tabindex]')) e.target.click();
 });
 document.addEventListener('input', (e) => { if (e.target.id === 'q') { listState.q = e.target.value; render(); } });
